@@ -1,5 +1,4 @@
 const c=document.getElementById('game'),ctx=c.getContext('2d');
-const gameScreenTitle=document.getElementById("title");
 const overlay=document.getElementById("overlay");
 const musicToggle=document.getElementById("musicToggle");
 const menuMusicIcon=document.getElementById("menuMusicIcon");
@@ -12,7 +11,6 @@ const nameInput=document.getElementById("nameInput");
 const saveScoreBtn=document.getElementById("saveScoreBtn");
 const scoreList=document.getElementById("scoreList");
 const introText=document.getElementById("introText");
-const dailyCastleMessage=document.getElementById("dailyCastleMessage");
 const mainMenu=document.getElementById("mainMenu");
 const scoresSection=document.getElementById("scoresSection");
 const helpSection=document.getElementById("helpSection");
@@ -95,36 +93,12 @@ function showLevelTransition(completedLevel,nextLevel){
     levelTransitioning=false;
     state="play";
     spawnLevel();
-    setMusicContext("gameplay");
     if(musicOn){
       if(menuSoundtrack.paused)startMusic();
       else applyMusicVolume();
     }
     document.body.classList.add("gameplayActive");
   },1900);
-}
-
-
-const CASTLE_MESSAGES=[
-  "💡 Drie goede stampen zijn vaak slimmer dan tien haastige.",
-  "🏰 De westelijke toren klinkt vandaag anders.",
-  "🐈 Teddy is ergens in het kasteel gezien. Waarschijnlijk.",
-  "📜 Niet alle verhalen in de Kronieken zijn al voltooid.",
-  "☕ Heb je een idee? Laat het achter in het Stampertjes Café.",
-  "🕯️ Sommige fakkels lijken te flikkeren zonder wind.",
-  "🌫️ Het is vandaag opvallend mistig in de onderste gangen.",
-  "🪨 Hoorde jij dat steentje ook vallen?",
-  "👀 Het kasteel lijkt soms terug te kijken.",
-  "🏆 Eén goede run kan genoeg zijn voor de Hall of Fame.",
-  "🍏 Appelieten houden verrassend weinig van gaten.",
-  "👢 Goede schoenen maken nog geen goede Stamper.",
-  "🪜 Een ladder is soms je beste vriend. Soms ook niet.",
-  "🔒 Sommige hoofdstukken wachten nog op hun ontdekker.",
-  "🏰 Het kasteel wordt met iedere grote update een beetje levendiger."
-];
-function pickCastleMessage(){
-  if(!dailyCastleMessage)return;
-  dailyCastleMessage.textContent=CASTLE_MESSAGES[Math.floor(Math.random()*CASTLE_MESSAGES.length)];
 }
 
 let introFrame=0;
@@ -309,7 +283,6 @@ function showMenuSection(section){
   else if(section===historySection)setMusicContext("chronicles",{playNow:true});
   else if(section===hallSection)setMusicContext("special",{playNow:true});
   else setMusicContext("menu",{playNow:true});
-
   mainMenu.classList.add("hidden");
   scoresSection.classList.add("hidden");
   helpSection.classList.add("hidden");
@@ -1194,7 +1167,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.20-beta4.2";
+const CURRENT_VERSION="2.20-beta5";
 function showUpdateOnce(){
   const seen=localStorage.getItem("stampertjesSeenVersion");
   if(seen!==CURRENT_VERSION){
@@ -1357,7 +1330,8 @@ function startGame(){
 function showGameOverPanel(){
   updateProgressStats();
   document.body.classList.remove("gameplayActive");
-  if(musicOn)startMusic();
+  setMusicContext("menu",{playNow:true});
+  if(musicOn&&menuSoundtrack.paused)startMusic();
   pendingScore=score;
   overlay.classList.remove("hidden");
   mainMenu.classList.add("hidden");
@@ -1419,84 +1393,9 @@ saveScoreBtn.addEventListener("pointerdown",async e=>{
   }
 });
 
-function drawIntroCastleBackdrop(){
-  ictx.save();
-  ictx.fillStyle="#c9c9c9";
-  ictx.fillRect(7,7,406,166);
-
-  // brick wall
-  ictx.strokeStyle="#8b8b8b";ictx.lineWidth=1;
-  for(let y=8,row=0;y<174;y+=16,row++){
-    ictx.beginPath();ictx.moveTo(7,y);ictx.lineTo(413,y);ictx.stroke();
-    const off=row%2?15:0;
-    for(let x=7-off;x<413;x+=30){
-      ictx.beginPath();ictx.moveTo(x,y);ictx.lineTo(x,y+16);ictx.stroke();
-    }
-  }
-
-  // windows
-  const win=(x,y)=>{
-    ictx.fillStyle="#777";ictx.fillRect(x,y+7,34,28);
-    ictx.beginPath();ictx.arc(x+17,y+8,17,Math.PI,0);ictx.fill();
-    ictx.strokeStyle="#ddd";ictx.lineWidth=2;
-    ictx.strokeRect(x,y+8,34,27);
-    ictx.beginPath();ictx.moveTo(x+17,y+1);ictx.lineTo(x+17,y+35);ictx.stroke();
-  };
-  win(20,18);win(366,18);
-
-  // torch brackets/flames
-  const torch=(x,y,phase)=>{
-    const f=.6+.4*Math.sin(introFrame*.14+phase);
-    ictx.fillStyle="#333";ictx.fillRect(x-2,y+4,4,9);ictx.fillRect(x-6,y+11,12,2);
-    ictx.fillStyle="#fff";
-    ictx.beginPath();ictx.moveTo(x,y-10-f*4);ictx.lineTo(x-4,y+3);ictx.lineTo(x+4,y+3);ictx.closePath();ictx.fill();
-  };
-  torch(112,41,0);torch(307,41,2);
-
-  // low mist
-  ictx.globalAlpha=.36;ictx.fillStyle="#eee";
-  const off=(introFrame*.45)%500;
-  for(let i=0;i<3;i++){
-    const x=((off+i*155)%520)-70;
-    ictx.beginPath();ictx.ellipse(x,154+i%2*7,55,7,0,0,Math.PI*2);ictx.fill();
-  }
-  ictx.restore();
-}
-
-function drawIntroCastleLadder(x,y1,y2){
-  ictx.fillStyle="#444";
-  ictx.fillRect(x-2,y1,4,y2-y1);
-  ictx.fillRect(x+19,y1,4,y2-y1);
-  ictx.fillStyle="#777";
-  for(let y=y1+7;y<y2;y+=10)ictx.fillRect(x,y,21,3);
-}
-
-function drawIntroCastleFloor(y,holeX=null,crackStage=0){
-  ictx.fillStyle="#333";
-  if(holeX===null){
-    ictx.fillRect(12,y-5,396,10);
-  }else{
-    ictx.fillRect(12,y-5,holeX-12,10);
-    ictx.fillRect(holeX+42,y-5,408-(holeX+42),10);
-  }
-  ictx.fillStyle="#eee";
-  ictx.fillRect(12,y-5,396,2);
-  ictx.strokeStyle="#999";ictx.lineWidth=1;
-  for(let x=14;x<407;x+=22){
-    if(holeX!==null && x>holeX-8 && x<holeX+45)continue;
-    ictx.strokeRect(x,y-3,20,7);
-  }
-  ictx.fillStyle="#111";ictx.strokeStyle="#111";
-  if(crackStage>0){
-    ictx.lineWidth=2;ictx.beginPath();
-    ictx.moveTo(holeX+10,y-7);ictx.lineTo(holeX+20,y);ictx.lineTo(holeX+13,y+7);
-    if(crackStage>1){
-      ictx.moveTo(holeX+32,y-7);ictx.lineTo(holeX+23,y);ictx.lineTo(holeX+31,y+7);
-    }
-    ictx.stroke();
-  }
-}
-
+function drawIntroCastleBackdrop(){ictx.save();ictx.fillStyle="#c9c9c9";ictx.fillRect(7,7,406,166);ictx.strokeStyle="#888";ictx.lineWidth=1;for(let y=8,row=0;y<174;y+=16,row++){ictx.beginPath();ictx.moveTo(7,y);ictx.lineTo(413,y);ictx.stroke();const off=row%2?15:0;for(let x=7-off;x<413;x+=30){ictx.beginPath();ictx.moveTo(x,y);ictx.lineTo(x,y+16);ictx.stroke()}}const win=(x,y)=>{ictx.fillStyle="#777";ictx.fillRect(x,y+7,34,28);ictx.beginPath();ictx.arc(x+17,y+8,17,Math.PI,0);ictx.fill();ictx.strokeStyle="#ddd";ictx.lineWidth=2;ictx.strokeRect(x,y+8,34,27);ictx.beginPath();ictx.moveTo(x+17,y+1);ictx.lineTo(x+17,y+35);ictx.stroke()};win(20,18);win(366,18);const torch=(x,y,p)=>{const f=.6+.4*Math.sin(introFrame*.14+p);ictx.fillStyle="#333";ictx.fillRect(x-2,y+4,4,9);ictx.fillRect(x-6,y+11,12,2);ictx.fillStyle="#fff";ictx.beginPath();ictx.moveTo(x,y-10-f*4);ictx.lineTo(x-4,y+3);ictx.lineTo(x+4,y+3);ictx.closePath();ictx.fill()};torch(112,41,0);torch(307,41,2);ictx.globalAlpha=.35;ictx.fillStyle="#eee";const off=(introFrame*.45)%500;for(let i=0;i<3;i++){const x=((off+i*155)%520)-70;ictx.beginPath();ictx.ellipse(x,154+i%2*7,55,7,0,0,Math.PI*2);ictx.fill()}ictx.restore()}
+function drawIntroCastleLadder(x,y1,y2){ictx.fillStyle="#444";ictx.fillRect(x-2,y1,4,y2-y1);ictx.fillRect(x+19,y1,4,y2-y1);ictx.fillStyle="#777";for(let y=y1+7;y<y2;y+=10)ictx.fillRect(x,y,21,3)}
+function drawIntroCastleFloor(y,holeX=null,crackStage=0){ictx.fillStyle="#333";if(holeX===null)ictx.fillRect(12,y-5,396,10);else{ictx.fillRect(12,y-5,holeX-12,10);ictx.fillRect(holeX+42,y-5,408-(holeX+42),10)}ictx.fillStyle="#eee";ictx.fillRect(12,y-5,396,2);ictx.strokeStyle="#999";for(let x=14;x<407;x+=22){if(holeX!==null&&x>holeX-8&&x<holeX+45)continue;ictx.strokeRect(x,y-3,20,7)}ictx.fillStyle="#111";ictx.strokeStyle="#111";if(crackStage>0){ictx.lineWidth=2;ictx.beginPath();ictx.moveTo(holeX+10,y-7);ictx.lineTo(holeX+20,y);ictx.lineTo(holeX+13,y+7);if(crackStage>1){ictx.moveTo(holeX+32,y-7);ictx.lineTo(holeX+23,y);ictx.lineTo(holeX+31,y+7)}ictx.stroke()}}
 function drawIntroPlayer(x,y,pose="walk"){
   ictx.fillStyle="#111";
   ictx.fillRect(x+7,y,10,8);
@@ -1579,163 +1478,44 @@ function drawIntroDust(x,y,size){
 }
 function drawIntro(){
   introFrame++;
-
-  // Beta 4.2: langere attract-mode van ongeveer 18 seconden.
-  // De demo laat nu echt lopen, stampen, vangen, uitschakelen en klimmen zien.
   const phase=introFrame%1080;
-
-  ictx.fillStyle="#fff";
-  ictx.fillRect(0,0,420,180);
-  drawIntroCastleBackdrop();
-  ictx.fillStyle="#111";
-  ictx.strokeStyle="#111";
-  ictx.lineWidth=4;
-  ictx.strokeRect(6,6,408,168);
-
-  drawIntroCastleLadder(70,48,96);
-  drawIntroCastleLadder(282,96,144);
-
-  // Fase 1: rustige opening / Appeliet beweegt over bovenste verdieping.
-  if(phase<250){
-    const ax=320-(phase*.65);
-    drawIntroApple(ax,22,false,false);
-  }
-
-  // Fase 2: Appeliet gebruikt de linker ladder.
-  if(phase>=250&&phase<390){
-    const p=(phase-250)/140;
-    drawIntroApple(66,70-(p*46),false,false);
-  }
-
-  // Het gat wordt later pas gemaakt en blijft daarna open.
-  let crackStage=0;
-  let holeOpen=false;
-  if(phase>=430&&phase<475)crackStage=1;
-  if(phase>=475&&phase<520)crackStage=2;
-  if(phase>=520)holeOpen=true;
-
-  drawIntroCastleFloor(48);
-  drawIntroCastleFloor(96);
-  drawIntroCastleFloor(144,holeOpen?274:null,crackStage);
-
-  // Hoofdspeler: verschillende acties over de hele demo.
+  ictx.fillStyle="#fff";ictx.fillRect(0,0,420,180);drawIntroCastleBackdrop();ictx.fillStyle="#111";ictx.strokeStyle="#111";ictx.lineWidth=4;ictx.strokeRect(6,6,408,168);
+  drawIntroCastleLadder(70,48,96);drawIntroCastleLadder(282,96,144);
+  let crackStage=0,holeOpen=false;if(phase>=430&&phase<475)crackStage=1;if(phase>=475&&phase<520)crackStage=2;if(phase>=520)holeOpen=true;
+  drawIntroCastleFloor(48);drawIntroCastleFloor(96);drawIntroCastleFloor(144,holeOpen?274:null,crackStage);
+  // apple on top floor and ladder early in the demo
+  if(phase<220)drawIntroApple(330-phase*.7,22,false,false);else if(phase<360){const p=(phase-220)/140;drawIntroApple(66,70-p*46,false,false)}
   let px=28,py=116,pose="walk";
-
-  // 0–260: van links naar het midden lopen.
-  if(phase<260){
-    px=28+(phase/260)*178;
-    py=116;
-  }
-  // 260–390: even wachten en Appeliet op ladder laten zien.
-  else if(phase<390){
-    px=206;py=116;
-  }
-  // 390–520: naar stampplek lopen en drie keer stampen.
-  else if(phase<430){
-    px=206+((phase-390)/40)*38;py=116;
-  }
-  else if(phase<520){
-    px=244;py=116;pose="stamp";
-  }
-  // 520–670: wachten tot Appeliet in het gat valt.
-  else if(phase<670){
-    px=244;py=116;
-  }
-  // 670–790: Appeliet uitschakelen.
-  else if(phase<790){
-    px=270;py=116;pose=(Math.floor((phase-670)/20)%2===0)?"stamp":"walk";
-  }
-  // 790–900: naar ladder lopen.
-  else if(phase<900){
-    px=270+((phase-790)/110)*12;py=116;
-  }
-  // 900–1010: ladder opklimmen.
-  else if(phase<1010){
-    const p=(phase-900)/110;
-    px=282;py=116-(p*48);
-  }
-  // 1010–1080: bovenaan naar rechts lopen.
-  else{
-    px=282+((phase-1010)/70)*82;py=68;
-  }
-
-  // Appeliet op onderste verdieping nadert het toekomstige gat.
+  if(phase<260)px=28+(phase/260)*178;
+  else if(phase<390)px=206;
+  else if(phase<430)px=206+((phase-390)/40)*38;
+  else if(phase<520){px=244;pose="stamp"}
+  else if(phase<670)px=244;
+  else if(phase<790){px=270;pose=(Math.floor((phase-670)/20)%2===0)?"stamp":"walk"}
+  else if(phase<900)px=270+((phase-790)/110)*12;
+  else if(phase<1010){const p=(phase-900)/110;px=282;py=116-p*48}
+  else{px=282+((phase-1010)/70)*82;py=68}
   let ax=365,ay=116,trapped=false,panic=false,visible=true;
-  if(phase<390){
-    visible=false;
-  }else if(phase<520){
-    ax=365-((phase-390)/130)*58;
-    ay=116;
-  }else if(phase<650){
-    ax=307-((phase-520)/130)*20;
-    ay=116;
-  }else if(phase<790){
-    ax=287;
-    ay=128;
-    trapped=true;
-    panic=true;
-  }else{
-    visible=false;
-  }
-
-  drawIntroPlayer(px,py,pose);
-  if(visible)drawIntroApple(ax,ay,trapped,panic);
-
-  // Tweede Appeliet in de achtergrond tijdens het laatste deel.
-  if(phase>=820&&phase<1080){
-    const bx=40+((phase-820)*.52)%130;
-    drawIntroApple(bx,70,false,false);
-  }
-
-  // Duidelijke arcade-achtige tekstmeldingen per stap.
+  if(phase<390)visible=false;else if(phase<520)ax=365-((phase-390)/130)*58;else if(phase<650)ax=307-((phase-520)/130)*20;else if(phase<790){ax=287;ay=128;trapped=true;panic=true}else visible=false;
+  drawIntroPlayer(px,py,pose);if(visible)drawIntroApple(ax,ay,trapped,panic);
+  if(phase>=820){const bx=40+((phase-820)*.52)%130;drawIntroApple(bx,70,false,false)}
   ictx.font="bold 11px monospace";
-
-  if(phase<90){
-    ictx.fillText("LOK DE APPELIETEN...",135,166);
-  }
+  if(phase<90)ictx.fillText("LOK DE APPELIETEN...",135,166);
   if(phase>=430&&phase<460)ictx.fillText("STAMP 1 — KRAK!",210,108);
   if(phase>=460&&phase<490)ictx.fillText("STAMP 2 — KRAK!!",198,108);
   if(phase>=490&&phase<530)ictx.fillText("STAMP 3 — GAT!",205,108);
-
-  if(phase>=640&&phase<690){
-    ictx.fillText("GEVANGEN!",266,102);
-  }
+  if(phase>=640&&phase<690)ictx.fillText("GEVANGEN!",266,102);
   if(phase>=690&&phase<730)ictx.fillText("BAM!",258,101);
   if(phase>=730&&phase<770)ictx.fillText("BAM!!",254,101);
-
-  if(phase>=770&&phase<820){
-    drawIntroDust(292,136,Math.min((phase-770)*.35,13));
-    ictx.fillText("+300",278,100);
-  }
-
-  if(phase>=895&&phase<980){
-    ictx.fillText("KLIM NAAR DE VOLGENDE VERDIEPING",102,166);
-  }
-
-  if(phase>=1010){
-    ictx.fillText("KLAAR VOOR HET KASTEEL?",127,166);
-  }
-
-  // Extra korte instructietekst bovenin — wisselt rustig.
-  ictx.font="9px monospace";
-  if(phase>=350&&phase<600)ictx.fillText("3× STAMPEN MAAKT EEN GAT",125,18);
-  else if(phase>=600&&phase<840)ictx.fillText("VANG · STAMP · SCOOR",150,18);
-  else if(phase>=840)ictx.fillText("GEBRUIK LADDERS OM TE ONTSNAPPEN",112,18);
-
-  // Teddy easter egg blijft werken.
-  if(teddyEggActive){
-    const tx=20+((introFrame*1.1)%360);
-    ictx.font="20px monospace";
-    ictx.fillText("ᓚᘏᗢ",tx,38);
-  }
-
+  if(phase>=770&&phase<820){drawIntroDust(292,136,Math.min((phase-770)*.35,13));ictx.fillText("+300",278,100)}
+  if(phase>=895&&phase<980)ictx.fillText("KLIM NAAR DE VOLGENDE VERDIEPING",102,166);
+  if(phase>=1010)ictx.fillText("KLAAR VOOR HET KASTEEL?",127,166);
+  ictx.font="9px monospace";if(phase>=350&&phase<600)ictx.fillText("3× STAMPEN MAAKT EEN GAT",125,18);else if(phase>=600&&phase<840)ictx.fillText("VANG · STAMP · SCOOR",150,18);else if(phase>=840)ictx.fillText("GEBRUIK LADDERS OM TE ONTSNAPPEN",112,18);
+  if(teddyEggActive){const tx=20+((introFrame*1.1)%360);ictx.font="20px monospace";ictx.fillText("ᓚᘏᗢ",tx,38)}
   requestAnimationFrame(drawIntro);
 }
-
 window.addEventListener("load",()=>{
-  setMusicContext("menu");
   openIntro();
-  pickCastleMessage();
   drawIntro();
   setTimeout(tryImmediateMenuAutoplay,200);
   setTimeout(showUpdateOnce,250);
@@ -1778,6 +1558,11 @@ const ladderLayouts=[
 ];
 let ladders=ladderLayouts[0];
 let currentLayoutIndex=0;
+const CASTLE_ROOM_THEMES=[
+  {name:"ENTREEHAL",kind:"hall"},{name:"WAPENZAAL",kind:"arms"},{name:"BIBLIOTHEEK",kind:"books"},{name:"KERKERS",kind:"cells"},{name:"TROONZAAL",kind:"throne"}
+];
+function currentCastleTheme(){return CASTLE_ROOM_THEMES[currentLayoutIndex%CASTLE_ROOM_THEMES.length]}
+
 
 let keys={left:false,right:false,up:false,down:false};
 let frame=0,score=0,level=1,lives=3,state="intro",shake=0,startFreeze=0,deathAnimating=false,deathFrame=0;
@@ -1834,63 +1619,24 @@ const sfxHurt=()=>tone(170,.22,"sawtooth",.08,70);
 
 const menuSoundtrack=document.getElementById("menuSoundtrack");
 const MUSIC_TRACKS=window.STAMPERTJES_CONFIG.musicTracks||{
-  menu:"music-menu.mp3",
-  gameplay:"music-gameplay.mp3",
-  cafe:"music-cafe.mp3",
-  chronicles:"music-chronicles.mp3",
-  special:"music-special.mp3",
-  reserve:"music-reserve.mp3"
+  menu:"music-menu.mp3",gameplay:"music-gameplay.mp3",cafe:"music-cafe.mp3",
+  chronicles:"music-chronicles.mp3",special:"music-special.mp3",reserve:"music-reserve.mp3"
 };
 let currentMusicContext="menu";
-
-function musicTrackForContext(context){
-  return MUSIC_TRACKS[context]||MUSIC_TRACKS.menu;
-}
-
 let musicContextFadeTimer=null;
-
-function fadeCurrentTrackTo(target,duration=420){
+function musicTrackForContext(context){return MUSIC_TRACKS[context]||MUSIC_TRACKS.menu}
+function fadeMusicTo(target,duration=400){
   clearInterval(musicContextFadeTimer);
-  const start=menuSoundtrack.volume;
-  const diff=target-start;
-  const steps=Math.max(1,Math.round(duration/35));
-  let step=0;
-  musicContextFadeTimer=setInterval(()=>{
-    step++;
-    const p=Math.min(1,step/steps);
-    menuSoundtrack.volume=Math.max(0,Math.min(1,start+diff*p));
-    if(p>=1){
-      clearInterval(musicContextFadeTimer);
-      musicContextFadeTimer=null;
-    }
-  },35);
+  const start=menuSoundtrack.volume||0,steps=Math.max(1,Math.round(duration/40)),diff=target-start;let n=0;
+  musicContextFadeTimer=setInterval(()=>{n++;const p=Math.min(1,n/steps);menuSoundtrack.volume=Math.max(0,Math.min(1,start+diff*p));if(p>=1){clearInterval(musicContextFadeTimer);musicContextFadeTimer=null}},40);
 }
-
-async function setMusicContext(context,{restart=false,playNow=true}={}){
-  const nextContext=MUSIC_TRACKS[context]?context:"menu";
-  const nextSrc=musicTrackForContext(nextContext);
-  currentMusicContext=nextContext;
-
-  const currentPath=decodeURIComponent((menuSoundtrack.currentSrc||menuSoundtrack.src||"").split("/").pop()||"");
-  const changed=currentPath!==nextSrc||restart;
-
-  if(changed){
-    clearInterval(musicContextFadeTimer);
-    menuSoundtrack.pause();
-    menuSoundtrack.src=nextSrc;
-    menuSoundtrack.load();
-    menuSoundtrack.volume=0;
-  }
-
-  if(playNow&&musicOn){
-    try{
-      await menuSoundtrack.play();
-      fadeCurrentTrackTo(targetMusicVolume(),changed?520:260);
-    }catch(err){
-      console.warn("Trackwissel wacht op gebruikersactie:",err);
-    }
-  }
-  setMusicButton();
+async function setMusicContext(context,{playNow=true}={}){
+  const next=MUSIC_TRACKS[context]?context:"menu";
+  const file=musicTrackForContext(next);
+  currentMusicContext=next;
+  const current=decodeURIComponent((menuSoundtrack.currentSrc||menuSoundtrack.src||"").split("/").pop()||"");
+  if(current!==file){menuSoundtrack.pause();menuSoundtrack.src=file;menuSoundtrack.load();menuSoundtrack.volume=0}
+  if(playNow&&musicOn){try{await menuSoundtrack.play();fadeMusicTo(targetMusicVolume(),480)}catch(err){console.warn("Muziek wacht op gebruikersactie",err)}}
 }
 
 const MUSIC_VOLUME=.16;
@@ -2185,14 +1931,6 @@ function spawnLevel(){
     });
   }
   clearStartZone();
-  // Beta 4.1: de thema-array staat later in het bestand.
-  // Tijdens de allereerste startup mag dat de game niet blokkeren.
-  if(gameScreenTitle){
-    try{
-      const room=currentCastleTheme();
-      if(room&&room.name)gameScreenTitle.setAttribute("data-room",room.name);
-    }catch{}
-  }
 }
 spawnLevel();
 
@@ -2764,56 +2502,14 @@ function drawApple(e){
   }
   ctx.restore();
 }
-const CASTLE_ROOM_THEMES=[
-  {name:"ENTREEHAL",tone:"#c9c9c9",accent:"#666",windows:true,banners:true,bars:false,books:false,throne:false},
-  {name:"WAPENZAAL",tone:"#c0c0c0",accent:"#5a5a5a",windows:false,banners:true,bars:false,books:false,throne:false},
-  {name:"BIBLIOTHEEK",tone:"#d2d2d2",accent:"#707070",windows:true,banners:false,bars:false,books:true,throne:false},
-  {name:"KERKERS",tone:"#b5b5b5",accent:"#4d4d4d",windows:false,banners:false,bars:true,books:false,throne:false},
-  {name:"TROONZAAL",tone:"#c8c8c8",accent:"#555",windows:true,banners:true,bars:false,books:false,throne:true}
-];
-
-function currentCastleTheme(){
-  return CASTLE_ROOM_THEMES[currentLayoutIndex%CASTLE_ROOM_THEMES.length];
-}
-
-function isCastlePrototypeLevel(){
-  return true;
-}
-
-function drawCastleFloor(a,b,y){
-  ctx.save();
-  ctx.fillStyle="#343434";
-  ctx.fillRect(a,y-7,b-a,14);
-  ctx.fillStyle="#f4f4f4";
-  ctx.fillRect(a,y-7,b-a,2);
-  ctx.strokeStyle="#9a9a9a";
-  ctx.lineWidth=1;
-  for(let x=a+1;x<b;x+=22){
-    ctx.strokeRect(x,y-5,20,10);
-  }
-  ctx.restore();
-}
-
-function drawClassicFloor(a,b,y){
-  ctx.save();
-  ctx.fillStyle="#222";
-  ctx.fillRect(a,y-5,b-a,10);
-  ctx.strokeStyle="#aaa";
-  ctx.lineWidth=1;
-  for(let x=a+2;x<b;x+=20){
-    ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+4);ctx.stroke();
-  }
-  ctx.beginPath();ctx.moveTo(a,y);ctx.lineTo(b,y);ctx.stroke();
-  ctx.fillStyle="#ddd";
-  for(let x=a+8;x<b;x+=22)ctx.fillRect(x,y-1,8,1);
-  ctx.restore();
-}
-
-function drawFloor(a,b,y){
-  if(isCastlePrototypeLevel())drawCastleFloor(a,b,y);
-  else drawClassicFloor(a,b,y);
-  ctx.fillStyle="#111";ctx.strokeStyle="#111";
-}
+const livingCastle={fogOffset:0,dust:Array.from({length:14},()=>({x:Math.random()*W,y:35+Math.random()*260,vx:(Math.random()-.5)*.05,vy:.02+Math.random()*.04,a:.15+Math.random()*.18})),pebble:null,nextPebble:performance.now()+5000};
+function drawGothicWindow(x,y){ctx.save();ctx.fillStyle="#777";ctx.fillRect(x,y+8,38,31);ctx.beginPath();ctx.arc(x+19,y+9,19,Math.PI,0);ctx.fill();ctx.strokeStyle="#ddd";ctx.lineWidth=2;ctx.strokeRect(x,y+9,38,30);ctx.beginPath();ctx.moveTo(x+19,y+1);ctx.lineTo(x+19,y+39);ctx.moveTo(x,y+24);ctx.lineTo(x+38,y+24);ctx.stroke();ctx.restore()}
+function drawCastleTorch(x,y,phase,now=performance.now()){const f=.55+.45*Math.sin(now*.011+phase);ctx.save();ctx.fillStyle="#333";ctx.fillRect(x-2,y+5,4,10);ctx.fillRect(x-7,y+13,14,3);const h=12+Math.round(f*5);ctx.fillStyle="#555";ctx.beginPath();ctx.moveTo(x,y-h);ctx.lineTo(x-6,y+5);ctx.lineTo(x,y+1);ctx.lineTo(x+6,y+5);ctx.closePath();ctx.fill();ctx.fillStyle="#fff";ctx.beginPath();ctx.moveTo(x,y-h+4);ctx.lineTo(x-2,y+3);ctx.lineTo(x+2,y+3);ctx.closePath();ctx.fill();ctx.restore()}
+function drawCastleBackdrop(){const theme=currentCastleTheme();ctx.save();ctx.fillStyle=theme.kind==="cells"?"#b6b6b6":"#cacaca";ctx.fillRect(10,30,W-20,276);ctx.strokeStyle="#8a8a8a";ctx.lineWidth=1;for(let y=31,row=0;y<306;y+=17,row++){ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(W-10,y);ctx.stroke();const off=row%2?17:0;for(let x=10-off;x<W-10;x+=34){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+17);ctx.stroke()}}ctx.fillStyle="#8a8a8a";ctx.fillRect(10,30,14,276);ctx.fillRect(W-24,30,14,276);[127,343].forEach(x=>{ctx.fillStyle="#aaa";ctx.fillRect(x,31,16,274);ctx.fillStyle="#666";ctx.fillRect(x-3,31,22,5);ctx.fillRect(x-3,300,22,5)});if(theme.kind!=="cells"){drawGothicWindow(40,89);drawGothicWindow(220,151);drawGothicWindow(401,89)}if(theme.kind==="books")[[35,98],[370,98],[204,212]].forEach(([x,y])=>{ctx.fillStyle="#666";ctx.fillRect(x,y,68,36);ctx.fillStyle="#ddd";for(let bx=x+5;bx<x+64;bx+=8)ctx.fillRect(bx,y+5,5,25)});if(theme.kind==="cells")[[42,94],[365,94],[204,214]].forEach(([x,y])=>{ctx.strokeStyle="#555";ctx.lineWidth=3;ctx.strokeRect(x,y,68,38);for(let bx=x+10;bx<x+66;bx+=12){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx,y+38);ctx.stroke()}});if(theme.kind==="throne"){ctx.fillStyle="#555";ctx.fillRect(212,211,56,40);ctx.fillRect(220,194,40,20);ctx.fillStyle="#ddd";ctx.fillRect(229,201,22,8)}if(theme.kind==="arms"){ctx.strokeStyle="#555";ctx.lineWidth=3;[[70,105],[390,105]].forEach(([x,y])=>{ctx.beginPath();ctx.moveTo(x-12,y-12);ctx.lineTo(x+12,y+12);ctx.moveTo(x+12,y-12);ctx.lineTo(x-12,y+12);ctx.stroke()})}drawCastleTorch(104,108,0);drawCastleTorch(376,108,1.7);drawCastleTorch(155,230,3);drawCastleTorch(325,230,4.4);livingCastle.fogOffset=(livingCastle.fogOffset+.075)%W;ctx.globalAlpha=.35;ctx.fillStyle="#eee";for(let i=0;i<4;i++){const x=((livingCastle.fogOffset+i*135)%(W+170))-105,y=274+(i%2)*12;ctx.beginPath();ctx.ellipse(x,y,56,8,0,0,Math.PI*2);ctx.ellipse(x+42,y+2,48,7,0,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function drawLivingCastle(){if(state!=="play"&&state!=="paused")return;ctx.save();livingCastle.dust.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y>300){p.y=38;p.x=Math.random()*W}ctx.globalAlpha=p.a;ctx.fillStyle="#555";ctx.fillRect(Math.round(p.x),Math.round(p.y),2,2)});const now=performance.now();if(!livingCastle.pebble&&now>livingCastle.nextPebble)livingCastle.pebble={x:40+Math.random()*(W-80),y:34,vy:.75};if(livingCastle.pebble){livingCastle.pebble.y+=livingCastle.pebble.vy;ctx.globalAlpha=.7;ctx.fillStyle="#444";ctx.fillRect(livingCastle.pebble.x,livingCastle.pebble.y,3,3);if(livingCastle.pebble.y>300){livingCastle.pebble=null;livingCastle.nextPebble=now+6000+Math.random()*9000}}ctx.restore()}
+function drawCastleFloor(a,b,y){ctx.save();ctx.fillStyle="#333";ctx.fillRect(a,y-7,b-a,14);ctx.fillStyle="#eee";ctx.fillRect(a,y-7,b-a,2);ctx.strokeStyle="#999";for(let x=a+2;x<b;x+=22)ctx.strokeRect(x,y-5,20,10);ctx.restore();ctx.fillStyle="#111";ctx.strokeStyle="#111"}
+function drawCastleLadder(l){ctx.save();ctx.fillStyle="#444";ctx.fillRect(l.x-2,l.top,4,l.bottom-l.top);ctx.fillRect(l.x+18,l.top,4,l.bottom-l.top);ctx.fillStyle="#777";for(let y=l.top+7;y<l.bottom;y+=10)ctx.fillRect(l.x,y,20,3);ctx.restore()}
+function drawFloor(a,b,y){drawCastleFloor(a,b,y)}
 function drawEffects(){
   effects.forEach(e=>{
     if(e.type==="dust"){
@@ -2847,25 +2543,16 @@ function drawBonus(){
 }
 
 function draw(){
-  if(gameScreenTitle){
-    try{
-      const room=currentCastleTheme();
-      if(room&&room.name)gameScreenTitle.setAttribute("data-room",room.name);
-    }catch{}
-  }
   ctx.save();
   if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
   ctx.fillStyle="#fff";ctx.fillRect(-10,-10,W+20,H+20);
   drawCastleBackdrop();
-  ctx.fillStyle="#222";
-  ctx.fillRect(8,6,W-16,20);
-  ctx.strokeStyle="#888";ctx.lineWidth=1;ctx.strokeRect(8,6,W-16,20);
-  ctx.fillStyle="#fff";
-  ctx.font="11px monospace";
+  ctx.fillStyle="#111";ctx.strokeStyle="#111";
+  ctx.fillStyle="#222";ctx.fillRect(8,6,W-16,20);ctx.strokeStyle="#888";ctx.strokeRect(8,6,W-16,20);ctx.fillStyle="#fff";ctx.font="11px monospace";
   ctx.fillText(`SCORE ${String(score).padStart(5,"0")}`,14,20);
-  ctx.fillText(`LV ${level}`,181,20);
-  ctx.fillText(`${currentCastleTheme().name}`,226,20);
-  ctx.fillText(`♥ ${lives}`,420,20);
+  ctx.fillText(`LV ${level}`,180,20);
+  ctx.fillText(currentCastleTheme().name,228,20);
+  ctx.fillText(`♥ ${lives}`,425,20);
   ctx.fillStyle="#111";ctx.strokeStyle="#111";
   if(player.invulnerable>0){
     ctx.font="10px monospace";
@@ -2895,33 +2582,16 @@ function draw(){
     ctx.stroke();
   });
 
-  ladders.forEach(l=>{
-    if(isCastlePrototypeLevel())drawCastleLadder(l);
-    else drawClassicLadder(l);
-  });
+  ladders.forEach(drawCastleLadder);
 
-  // Subtle monochrome grounding shadows.
-  ctx.save();
-  ctx.globalAlpha=.18;
-  ctx.fillStyle="#111";
-  ctx.beginPath();
-  ctx.ellipse(player.x+player.w/2,player.y+player.h+2,10,2.5,0,0,Math.PI*2);
-  ctx.fill();
-  enemies.forEach(e=>{
-    if(!e.dead){
-      ctx.beginPath();
-      ctx.ellipse(e.x+14,e.y+25,10,2.5,0,0,Math.PI*2);
-      ctx.fill();
-    }
-  });
-  ctx.restore();
-
+  ctx.save();ctx.globalAlpha=.18;ctx.fillStyle="#111";ctx.beginPath();ctx.ellipse(player.x+player.w/2,player.y+player.h+2,10,2.5,0,0,Math.PI*2);ctx.fill();enemies.forEach(e=>{if(!e.dead){ctx.beginPath();ctx.ellipse(e.x+14,e.y+25,10,2.5,0,0,Math.PI*2);ctx.fill()}});ctx.restore();
   if(player.invulnerable<=0 || Math.floor(player.invulnerable/8)%2===0){
     drawPlayer(Math.round(player.x),Math.round(player.y));
   }
   enemies.forEach(drawApple);
   drawBonus();
   drawEffects();
+  drawLivingCastle();
 
   if(state==="gameover"){
     ctx.fillStyle="rgba(255,255,255,.95)";ctx.fillRect(70,108,340,92);
@@ -2930,202 +2600,5 @@ function draw(){
   }
   ctx.restore();
 }
-
-
-const livingCastle={
-  fogOffset:0,
-  dust:Array.from({length:16},()=>({
-    x:Math.random()*W,y:34+Math.random()*270,
-    vx:(Math.random()-.5)*.06,vy:.02+Math.random()*.05,
-    a:.18+Math.random()*.20
-  })),
-  pebble:null,nextPebble:performance.now()+3500+Math.random()*7000
-};
-
-function drawGothicWindow(x,y,w=42,h=38){
-  ctx.save();
-  ctx.fillStyle="#a9a9a9";
-  ctx.fillRect(x,y+9,w,h-9);
-  ctx.beginPath();
-  ctx.arc(x+w/2,y+10,w/2,Math.PI,0);
-  ctx.lineTo(x+w,y+14);ctx.lineTo(x,y+14);ctx.closePath();ctx.fill();
-  ctx.strokeStyle="#4b4b4b";ctx.lineWidth=2;
-  ctx.strokeRect(x,y+10,w,h-10);
-  ctx.beginPath();
-  ctx.moveTo(x+w/2,y+3);ctx.lineTo(x+w/2,y+h);
-  ctx.moveTo(x,y+23);ctx.lineTo(x+w,y+23);
-  ctx.stroke();
-  ctx.fillStyle="#686868";
-  ctx.fillRect(x+5,y+14,w/2-7,h-19);
-  ctx.fillRect(x+w/2+2,y+14,w/2-7,h-19);
-  ctx.restore();
-}
-
-function drawCastleTorch(x,y,phase,now=performance.now()){
-  const f=.55+.45*Math.sin(now*.011+phase)+.15*Math.sin(now*.029+phase*2);
-  ctx.save();
-  ctx.fillStyle="#222";
-  ctx.fillRect(x-2,y+5,4,10);
-  ctx.fillRect(x-7,y+13,14,3);
-  const h=12+Math.round(f*5);
-  ctx.fillStyle="#444";
-  ctx.beginPath();
-  ctx.moveTo(x,y-h);ctx.lineTo(x-6,y+5);ctx.lineTo(x,y+1);ctx.lineTo(x+6,y+5);ctx.closePath();ctx.fill();
-  ctx.fillStyle="#fff";
-  ctx.beginPath();
-  ctx.moveTo(x,y-h+4);ctx.lineTo(x-2,y+3);ctx.lineTo(x+2,y+3);ctx.closePath();ctx.fill();
-  ctx.globalAlpha=.14+.05*f;
-  ctx.beginPath();ctx.arc(x,y-2,14+3*f,0,Math.PI*2);ctx.fill();
-  ctx.restore();
-}
-
-function drawCastleBackdrop(now=performance.now()){
-  const theme=currentCastleTheme();
-  ctx.save();
-
-  ctx.fillStyle=theme.tone;
-  ctx.fillRect(10,30,W-20,276);
-
-  const brickW=34,rowH=17;
-  ctx.strokeStyle="#888";ctx.lineWidth=1;
-  for(let y=31,row=0;y<306;y+=rowH,row++){
-    ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(W-10,y);ctx.stroke();
-    const offset=row%2?brickW/2:0;
-    for(let x=10-offset;x<W-10;x+=brickW){
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+rowH);ctx.stroke();
-    }
-  }
-
-  // Strong sidewalls and columns.
-  ctx.fillStyle="#888";
-  ctx.fillRect(10,30,14,276);ctx.fillRect(W-24,30,14,276);
-  [127,343].forEach(x=>{
-    ctx.fillStyle="#aaa";ctx.fillRect(x,31,16,274);
-    ctx.fillStyle="#666";ctx.fillRect(x-3,31,22,5);ctx.fillRect(x-3,300,22,5);
-    for(let y=46;y<294;y+=28)ctx.fillRect(x+3,y,10,2);
-  });
-
-  if(theme.windows){
-    drawGothicWindow(38,88,42,38);
-    drawGothicWindow(219,151,42,38);
-    drawGothicWindow(400,88,42,38);
-  }
-
-  if(theme.banners){
-    const banner=(x,y)=>{
-      ctx.fillStyle=theme.accent;ctx.fillRect(x,y,18,31);
-      ctx.beginPath();ctx.moveTo(x,y+31);ctx.lineTo(x+9,y+39);ctx.lineTo(x+18,y+31);ctx.closePath();ctx.fill();
-      ctx.fillStyle="#ddd";ctx.fillRect(x+7,y+8,4,14);
-    };
-    banner(168,91);banner(294,215);
-  }
-
-  if(theme.books){
-    // bookcases behind gameplay
-    [[34,96],[370,96],[196,208]].forEach(([x,y])=>{
-      ctx.fillStyle="#777";ctx.fillRect(x,y,72,42);
-      ctx.fillStyle="#e0e0e0";
-      for(let bx=x+5;bx<x+67;bx+=8)ctx.fillRect(bx,y+6,5,29);
-      ctx.fillStyle="#555";ctx.fillRect(x,y+20,72,3);
-    });
-  }
-
-  if(theme.bars){
-    // dungeon cells
-    [[42,92],[365,92],[204,211]].forEach(([x,y])=>{
-      ctx.strokeStyle="#555";ctx.lineWidth=3;ctx.strokeRect(x,y,70,42);
-      for(let bx=x+10;bx<x+68;bx+=12){
-        ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx,y+42);ctx.stroke();
-      }
-    });
-  }
-
-  if(theme.throne){
-    // simple monochrome throne silhouette
-    ctx.fillStyle="#555";
-    ctx.fillRect(212,208,56,45);
-    ctx.fillRect(220,190,40,24);
-    ctx.fillStyle="#ddd";
-    ctx.fillRect(229,199,22,9);
-    ctx.fillStyle="#444";
-    ctx.fillRect(205,249,70,8);
-  }
-
-  // Decorative cobwebs vary naturally.
-  ctx.strokeStyle="#666";ctx.lineWidth=1;
-  [[27,43,1],[449,43,-1]].forEach(([x,y,d])=>{
-    ctx.beginPath();
-    ctx.moveTo(x,y);ctx.lineTo(x+d*23,y);
-    ctx.moveTo(x,y);ctx.lineTo(x,y+20);
-    ctx.moveTo(x,y);ctx.lineTo(x+d*19,y+17);
-    ctx.moveTo(x+d*8,y);ctx.lineTo(x,y+8);
-    ctx.stroke();
-  });
-
-  // Four physical torches.
-  drawCastleTorch(104,108,0,now);
-  drawCastleTorch(376,108,1.7,now);
-  drawCastleTorch(155,230,3.0,now);
-  drawCastleTorch(325,230,4.4,now);
-
-  // Layered fog.
-  livingCastle.fogOffset=(livingCastle.fogOffset+.075)%W;
-  ctx.fillStyle="#eee";ctx.globalAlpha=.34;
-  for(let i=0;i<4;i++){
-    const x=((livingCastle.fogOffset+i*135)%(W+170))-105;
-    const y=274+(i%2)*12;
-    ctx.beginPath();
-    ctx.ellipse(x,y,56,8,0,0,Math.PI*2);
-    ctx.ellipse(x+42,y+2,48,7,0,0,Math.PI*2);
-    ctx.fill();
-  }
-
-  ctx.restore();
-}
-
-function drawCastleLadder(l){
-  ctx.save();
-  ctx.fillStyle="#414141";
-  ctx.fillRect(l.x-2,l.top,4,l.bottom-l.top);
-  ctx.fillRect(l.x+18,l.top,4,l.bottom-l.top);
-  ctx.fillStyle="#777";
-  for(let y=l.top+7;y<l.bottom;y+=10)ctx.fillRect(l.x,y,20,3);
-  ctx.restore();
-}
-
-function drawClassicLadder(l){
-  ctx.lineWidth=2;ctx.beginPath();
-  ctx.moveTo(l.x,l.top);ctx.lineTo(l.x,l.bottom);
-  ctx.moveTo(l.x+20,l.top);ctx.lineTo(l.x+20,l.bottom);ctx.stroke();
-  for(let y=l.top+8;y<l.bottom;y+=10){
-    ctx.beginPath();ctx.moveTo(l.x,y);ctx.lineTo(l.x+20,y);ctx.stroke();
-  }
-}
-
-function drawLivingCastle(now=performance.now()){
-  if(state!=="play"&&state!=="paused")return;
-  ctx.save();
-  livingCastle.dust.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;
-    if(p.y>300){p.y=38;p.x=Math.random()*W}
-    if(p.x<12)p.x=W-12;if(p.x>W-12)p.x=12;
-    ctx.fillStyle="#555";ctx.globalAlpha=p.a;
-    ctx.fillRect(Math.round(p.x),Math.round(p.y),2,2);
-  });
-  if(!livingCastle.pebble&&now>livingCastle.nextPebble){
-    livingCastle.pebble={x:40+Math.random()*(W-80),y:34,vy:.75+Math.random()*.35};
-  }
-  if(livingCastle.pebble){
-    const p=livingCastle.pebble;p.y+=p.vy;
-    ctx.globalAlpha=.8;ctx.fillStyle="#444";
-    ctx.fillRect(Math.round(p.x),Math.round(p.y),4,4);
-    if(p.y>300){
-      livingCastle.pebble=null;
-      livingCastle.nextPebble=now+5000+Math.random()*10000;
-    }
-  }
-  ctx.restore();
-}
-
-function loop(){update();draw();drawLivingCastle();requestAnimationFrame(loop)}
+function loop(){update();draw();requestAnimationFrame(loop)}
 loop();

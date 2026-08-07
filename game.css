@@ -709,123 +709,13 @@ body.attractMode #panel{max-width:520px}
   margin:6px 0;
 }
 
-/* v2.20 Beta 1 */
-#betaBadge{
-  display:inline-block;border:1px solid #fff;padding:3px 7px;
-  margin:0 auto 5px;font-size:10px;letter-spacing:1px;
-}
-#castleSlogan{
-  font-size:9px;letter-spacing:1.3px;opacity:.65;margin-bottom:7px;
-}
-#dailyCastleMessage{
-  border-top:1px dotted rgba(255,255,255,.45);
-  border-bottom:1px dotted rgba(255,255,255,.45);
-  padding:6px 4px;margin:4px 0 8px;font-size:10px;line-height:1.35;opacity:.85;
-}
+.tipBlock{border-style:dashed}
+.roadmapSlogan{margin:16px 0 4px!important;padding:12px;border:2px double #fff;text-align:center!important}
 
-/* v2.20 Beta 2 */
-#betaBadge{
-  border-style:double;
-  border-width:3px;
-}
-
-
-/* ==========================================================
-   v2.20 Beta 4 — Castle UI Refresh
-   ========================================================== */
-#panel{
-  background:
-    linear-gradient(rgba(17,17,17,.96),rgba(17,17,17,.96)),
-    repeating-linear-gradient(0deg,#333 0,#333 1px,#111 1px,#111 18px);
-  border:4px double #fff;
-  box-shadow:inset 0 0 0 3px #333;
-}
-
-#gameTitle{
-  text-shadow:2px 2px 0 #555;
-}
-
-.menuGroup,
-.castleSection{
-  background:
-    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 16px);
-}
-
-.menuGrid button,
-.backBtn,
-#closeUpdateBtn,
-#cafeSubmitBtn,
-#resetStatsBtn{
-  border-radius:3px;
-  border:2px solid #bbb;
-  box-shadow:inset 0 0 0 2px #222;
-  background:#242424;
-}
-
-.menuGrid button:active,
-.backBtn:active{
-  background:#ddd;
-  color:#111;
-}
-
-.helpBlock,
-.newsItem,
-#cafeWelcome,
-.cafePost,
-.cafeStat,
-.statRow{
-  background:#1d1d1d;
-  border-color:#888;
-}
-
-#cafeForm{
-  background:#262626;
-  border:2px solid #777;
-  padding:12px;
-}
-
-#cafeName,#cafeType,#cafeMessage{
-  background:#d8d8d8;
-  color:#111;
-  border-color:#777;
-}
-
-/* Hall of Fame = eregalerij */
-#hallSection{
-  border:3px double #aaa;
-  padding-left:12px;
-  padding-right:12px;
-}
-#hallSection h2::before{content:"⚜ "}
-#hallSection h2::after{content:" ⚜"}
-
-/* Kronieken: monochrome old-book look */
-.chroniclePage{
-  background:#e3e3dd!important;
-  color:#111;
-  border-color:#555!important;
-  box-shadow:inset 0 0 0 4px #d2d2cc,inset 0 0 0 6px #555!important;
-}
-#chroniclePageContent h3{
-  text-shadow:1px 1px 0 #bbb;
-}
-
-/* Demo gets a stronger castle frame */
-#introCanvas{
-  border:4px double #aaa;
-  background:#c9c9c9;
-}
-
-/* Gameplay title */
-body.gameplayActive #title::after{
-  content:" · " attr(data-room);
-}
-
-/* Slightly more compact on phones */
-@media(max-width:430px){
-  #castleSlogan{font-size:8px}
-  #dailyCastleMessage{font-size:9px}
-  .menuGrid button{min-height:44px}
-}
-
-body.gameplayActive #title::after{font-size:9px;opacity:.55}
+#betaBadge{display:inline-block;border:3px double #fff;padding:3px 8px;margin:3px auto 5px;font-size:9px;letter-spacing:1px}
+#castleSlogan{font-size:8px;letter-spacing:1.2px;opacity:.72;margin-bottom:7px}
+#introCanvas{border:4px double #aaa;background:#c9c9c9}
+#panel{border:4px double #fff;box-shadow:inset 0 0 0 3px #333}
+.menuGroup,.menuSection{background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 1px,transparent 16px)}
+.menuGrid button,.backBtn{background:#242424;border-color:#aaa;box-shadow:inset 0 0 0 2px #222}
+.chroniclePage{background:#e1e1dc!important;color:#111!important;border-color:#555!important}
