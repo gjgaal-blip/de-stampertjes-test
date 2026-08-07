@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
-<title>De Stampertjes v2.12.5</title>
+<title>De Stampertjes v2.12.6</title>
 <style>
 :root{--bg:#111;--fg:#fff}
 *{box-sizing:border-box}
@@ -592,7 +592,7 @@ body.attractMode #panel{max-width:520px}
     <h1 id="gameTitle"><span class="titleBlock">▓▓</span> DE STAMPERTJES <span class="titleBlock">▓▓</span></h1>
     <div id="studioLine">A GJ STUDIOS GAME</div>
     <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
-    <div id="versionLabel" style="font-size:13px;letter-spacing:2px;margin-top:-2px;margin-bottom:8px;opacity:.85">v2.12.5</div>
+    <div id="versionLabel" style="font-size:13px;letter-spacing:2px;margin-top:-2px;margin-bottom:8px;opacity:.85">v2.12.6</div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
     <div id="attractPrompt" class="hidden">DRUK OP SPELEN</div>
 
@@ -845,7 +845,7 @@ body.attractMode #panel{max-width:520px}
 <div id="updateOverlay" class="hidden">
   <div id="updateCard">
     <div class="updateKicker">🎉 NIEUWE VERSIE</div>
-    <h2>v2.12.5</h2>
+    <h2>v2.12.6</h2>
     <div class="updateList">
       <div>✓ Stampertjes Café vernieuwd</div>
       <div>✓ Berichten staan nu bovenaan</div>
@@ -1492,6 +1492,27 @@ function isCafeAdmin(){
   return Boolean(cafeAdminCode);
 }
 
+
+async function verifyCafeAdminCode(code){
+  try{
+    const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/verify_stampertjes_admin`,{
+      method:"POST",
+      headers:{
+        "apikey":SUPABASE_KEY,
+        "Authorization":`Bearer ${SUPABASE_KEY}`,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({p_admin_code:String(code||"")})
+    });
+    if(!response.ok)return false;
+    const result=await response.json();
+    return result===true;
+  }catch(err){
+    console.error("Admincode controleren mislukt:",err);
+    return false;
+  }
+}
+
 function setCafeAdminMode(on,code=""){
   cafeAdminCode=on?String(code||""):"";
   if(cafeAdminCode){
@@ -1688,6 +1709,10 @@ function renderCafePosts(posts){
           body:JSON.stringify(body)
         });
         if(!response.ok)throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+        const deleted=await response.json();
+        if(deleted!==true){
+          throw new Error("Supabase heeft het bericht niet verwijderd.");
+        }
         cafeStatus.textContent="Bericht verwijderd.";
         await loadCafePosts();
       }catch(err){
@@ -1804,6 +1829,13 @@ activateButton(cafeCancelEditBtn,()=>{
 
 async function loadDeveloperConsole(){
   if(!isCafeAdmin())return;
+  const adminStillValid=await verifyCafeAdminCode(cafeAdminCode);
+  if(!adminStillValid){
+    setCafeAdminMode(false);
+    alert("Je beheersessie is niet meer geldig. Log opnieuw in.");
+    showMainMenu();
+    return;
+  }
 
   devMusicStatus.textContent=musicOn?"AAN":"UIT";
   devSupabaseStatus.textContent="CONTROLEREN…";
@@ -1930,9 +1962,16 @@ activateButton(studioLine,()=>{
 
     const code=prompt("GJ Studios beheercode:");
     if(code){
-      setCafeAdminMode(true,code);
-      alert("Beheermodus actief.");
-      openDeveloperConsole();
+      verifyCafeAdminCode(code).then(valid=>{
+        if(!valid){
+          setCafeAdminMode(false);
+          alert("Onjuiste beheercode.");
+          return;
+        }
+        setCafeAdminMode(true,code);
+        alert("Beheermodus actief.");
+        openDeveloperConsole();
+      });
     }
   }
 });

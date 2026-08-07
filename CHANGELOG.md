@@ -1,12 +1,8 @@
 # De Stampertjes – Changelog
 
-## v2.12.5 – Developer Console
-- Verborgen GJ Studios Developer Console toegevoegd.
-- Console opent via 5× tikken op `A GJ STUDIOS GAME`.
-- Live Supabase-status, aantal spelers en aantal Café-berichten.
-- Live wereldstatistieken in de console.
-- Direct Café openen in beheermodus.
-- Muziek testen.
-- Naar een level springen voor tests.
-- +1 leven als veilige testtool.
-- Beheermodus vanuit de console uitschakelen.
+## v2.12.6 – Admin Delete Fix
+- Beheercode wordt nu eerst echt door Supabase gevalideerd.
+- Verkeerde code activeert de beheermodus niet meer.
+- Verwijderen van andermans Café-bericht controleert nu de boolean response van Supabase.
+- Developer Console controleert of de beheersessie nog geldig is.
+- Nieuwe RPC `verify_stampertjes_admin` toegevoegd.
