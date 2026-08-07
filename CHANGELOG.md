@@ -1,9 +1,9 @@
 # De Stampertjes
 
-## v2.20 Beta 6.4
-- Zwart scherm in fullscreen attract mode opgelost.
-- Demo-canvas blijft zichtbaar omdat #panel niet meer wordt verborgen.
-- Kleine demo past nu inclusief border binnen het menu-frame.
-- Fullscreen attract schaalt correct in portrait en landscape.
-- 60-seconden attract mode krijgt zes gevarieerde scènes per cyclus.
-- Cache-bust naar game-22064.js / game.css?v=22064.
+## v2.20 Beta 6.5
+- Attract/demo uitgebreid van drie naar vier zichtbare vloeren.
+- Demo-ladders en animatie aangepast aan vier vloeren.
+- Extra Appeliet-activiteit op onderste demo-verdieping.
+- Dynamische fakkelplaatsing toegevoegd.
+- Fakkels schuiven automatisch op wanneer een ladder hun positie zou overlappen.
+- Cache-bust naar game-22065.js / game.css?v=22065.

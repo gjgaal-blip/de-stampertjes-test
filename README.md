@@ -1,15 +1,17 @@
-# De Stampertjes v2.20 Beta 6.4
+# De Stampertjes v2.20 Beta 6.5
 
-Gerichte reparatie van de demo.
+Deze build verwerkt de laatste visuele feedback direct in de game.
 
-## Opgelost
-- De kleine demo blijft nu inclusief rand netjes binnen het witte menu-frame.
-- De fullscreen demo na 12 seconden werkt weer.
-- Oorzaak van het zwarte scherm: `introCanvas` zit in `#panel`, terwijl Beta 6.3 het volledige `#panel` verborg.
-- In Beta 6.4 blijft het panel bestaan en worden alleen de andere menu-elementen verborgen.
-- Tik/swipe/toets keert terug naar het menu.
-- De attract mode blijft 60 seconden doorlopen met 6 verschillende scène-offsets per minuut.
-- Iedere nieuwe minuut wordt opnieuw gerandomiseerd.
+## Demo
+- De compacte én fullscreen attract-demo tonen nu vier zichtbare speelvloeren.
+- De vier vloeren zijn met drie ladders verbonden.
+- De animatie is aangepast zodat speler en Appelieten logisch over de nieuwe hoogtes bewegen.
+- Op de onderste demo-verdieping verschijnt ook activiteit, zodat de vierde vloer echt onderdeel van de scène is.
 
-Alle gameplay-, audio-, level- en scrollfixes uit Beta 6.2/6.3 blijven behouden.
+## Gameplaydecoratie
+- Fakkels controleren voortaan automatisch of een ladder hun positie overlapt.
+- Als een ladder te dichtbij staat, verhuist de fakkel naar de eerstvolgende vrije plek.
+- Dit werkt voor alle vijf zaal-layouts en toekomstige laddervarianten.
+
+De fullscreen attract mode, scrollfix, audio-modi, bonusfix en vier-verdiepingen-gameplay blijven behouden.
 Geen Supabase-wijziging nodig.
