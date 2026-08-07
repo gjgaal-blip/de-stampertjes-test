@@ -1029,7 +1029,11 @@ let startingGame=false;
 function startGame(){
   ensureGameplayControlsVisible();
   menuMusicIcon.classList.add("hidden");
-  stopMenuMusic(250);
+  if(musicOn&&!menuSoundtrack.paused){
+    fadeSoundtrack(GAMEPLAY_MUSIC_VOLUME,500,false);
+  }else{
+    stopMenuMusic(120);
+  }
   stopAttractMode();
   document.body.classList.remove("scoreMode");
   document.body.classList.add("gameplayActive");
@@ -1049,7 +1053,13 @@ function startGame(){
 }
 function showGameOverPanel(){
   document.body.classList.remove("gameplayActive");
-  if(musicOn)startMenuMusic();
+  if(musicOn){
+    if(menuSoundtrack.paused){
+      startMenuMusic();
+    }else{
+      fadeSoundtrack(MUSIC_VOLUME,500,false);
+    }
+  }
   pendingScore=score;
   overlay.classList.remove("hidden");
   mainMenu.classList.add("hidden");
@@ -1377,6 +1387,7 @@ const sfxHurt=()=>tone(170,.22,"sawtooth",.08,70);
 
 const menuSoundtrack=document.getElementById("menuSoundtrack");
 const MUSIC_VOLUME=.16;
+const GAMEPLAY_MUSIC_VOLUME=.07;
 let musicOn=true;
 let musicFadeFrame=null;
 let musicTimer=null;
@@ -1420,12 +1431,18 @@ function fadeSoundtrack(target,duration=500,pauseAfter=false){
 function isMenuState(){
   return state==="intro"||state==="gameover";
 }
+function isGameplayState(){
+  return state==="play"||state==="paused"||state==="transition";
+}
+function currentMusicVolume(){
+  return isGameplayState()?GAMEPLAY_MUSIC_VOLUME:MUSIC_VOLUME;
+}
 async function playMenuMusic(){
-  if(!musicOn||!isMenuState())return false;
+  if(!musicOn)return false;
   try{
     await menuSoundtrack.play();
     musicTimer=true;
-    fadeSoundtrack(MUSIC_VOLUME,650,false);
+    fadeSoundtrack(currentMusicVolume(),650,false);
     return true;
   }catch(err){
     console.warn("Muziek wacht op de eerste aanraking:",err);
@@ -1458,7 +1475,7 @@ async function setMusic(on){
 if(isCafeAdmin())cafeAdminStatus.classList.remove("hidden");
 
 function retryMenuMusic(){
-  if(musicOn&&isMenuState()&&menuSoundtrack.paused){
+  if(musicOn&&menuSoundtrack.paused){
     menuSoundtrack.play()
       .then(()=>fadeSoundtrack(MUSIC_VOLUME,500,false))
       .catch(()=>{});
@@ -1466,9 +1483,9 @@ function retryMenuMusic(){
 }
 document.getElementById("panel").addEventListener("mouseenter",retryMenuMusic,{once:true});
 
-  if(musicOn&&isMenuState()){
+  if(musicOn){
     await playMenuMusic();
-  }else if(!musicOn){
+  }else{
     stopMenuMusic(120);
   }
 }
@@ -1478,7 +1495,7 @@ async function tryImmediateMenuAutoplay(){
 function handleFirstAudioGesture(){
   // Start het MP3-bestand direct binnen dezelfde klik/tik.
   // Eerst wachten op de Web Audio-engine kan de browsertoestemming laten verlopen.
-  if(musicOn&&isMenuState()&&menuSoundtrack.paused){
+  if(musicOn&&menuSoundtrack.paused){
     const playPromise=menuSoundtrack.play();
     if(playPromise){
       playPromise.then(()=>{
@@ -1511,12 +1528,15 @@ musicToggle.addEventListener("pointerdown",e=>{
   localStorage.setItem("stampertjesMusic",musicOn?"1":"0");
   setMusicButton();
 
-  if(turnOn&&isMenuState()){
+  if(turnOn){
     menuSoundtrack.play()
-      .then(()=>fadeSoundtrack(MUSIC_VOLUME,650,false))
+      .then(()=>{
+        musicTimer=true;
+        fadeSoundtrack(currentMusicVolume(),500,false);
+      })
       .catch(err=>console.warn("Muziek kon niet worden ingeschakeld:",err));
-  }else if(!turnOn){
-    stopMenuMusic(180);
+  }else{
+    stopMenuMusic(120);
   }
 
   audio();
@@ -1536,7 +1556,7 @@ menuMusicIcon.addEventListener("pointerdown",e=>{
   if(turnOn){
     // Ook hier direct binnen de muisklik afspelen.
     menuSoundtrack.play()
-      .then(()=>fadeSoundtrack(MUSIC_VOLUME,650,false))
+      .then(()=>fadeSoundtrack(currentMusicVolume(),650,false))
       .catch(err=>console.warn("Muziek kon niet worden ingeschakeld:",err));
   }else{
     stopMenuMusic(180);
@@ -1555,7 +1575,7 @@ document.addEventListener("visibilitychange",()=>{
   if(document.hidden){
     menuSoundtrack.pause();
     menuSoundtrack.volume=0;
-  }else if(musicOn&&isMenuState()){
+  }else if(musicOn){
     playMenuMusic();
   }
 });
@@ -1573,7 +1593,7 @@ let previousState="play";
 let pauseLocked=false;
 
 function togglePause(){
-  stopMenuMusic(120);
+  if(musicOn&&!menuSoundtrack.paused)fadeSoundtrack(GAMEPLAY_MUSIC_VOLUME,180,false);
   if(pauseLocked)return;
   if(state==="intro"||state==="gameover"||state==="transition")return;
 
@@ -1953,7 +1973,7 @@ function animateDeath(startTime,duration,isGameOver){
 }
 
 function showDeathSequence(isGameOver){
-  stopMenuMusic(120);
+  if(musicOn&&!menuSoundtrack.paused)fadeSoundtrack(.04,120,false);
   if(deathAnimating)return;
   deathAnimating=true;
   state="dying";

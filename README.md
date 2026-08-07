@@ -1,25 +1,9 @@
-# De Stampertjes v2.13 – iPhone Edition
+# De Stampertjes v2.13.1 – iPhone Edition
 
-Alles staat in één map zodat je op iPhone alle bestanden tegelijk kunt selecteren en uploaden naar GitHub.
+Alles staat in één map zodat je alle bestanden via de iPhone naar GitHub kunt uploaden.
 
-## Upload naar GitHub Pages
-Upload deze bestanden samen:
-- index.html
-- admin.html
-- game.css
-- admin.css
-- config.js
-- game.js
-- admin.js
-- manifest.json
-- the-castle-awakens.mp3
+Voor deze testfix hoef je niets nieuws in Supabase uit te voeren.
 
-## Supabase
-Voer één keer uit:
-- 001_v213_stable_migration.txt
-
-De beheercode is:
-MijnStampertjes2026!
-
-## Test
-Gebruik TEST-CHECKLIST.md voordat je deze versie live zet.
+Belangrijkste wijziging:
+de muziekknop tijdens het spelen schakelt de soundtrack nu echt aan/uit.
+Tijdens gameplay staat het muziekvolume bewust veel lager dan in het menu.
