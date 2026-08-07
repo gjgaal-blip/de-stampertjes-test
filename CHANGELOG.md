@@ -1,9 +1,7 @@
 # De Stampertjes
 
-## v2.20 Beta 5.1
-- Grotere bonusicoontjes.
-- Wit knippervlak achter verdwijnende bonussen verwijderd.
-- Bonusitems krijgen zweef-, pulse- en schaduweffect.
-- Nieuwe Castle-style doodanimatie.
-- Doodscene met fakkels, steenwand, mist en impactdeeltjes.
-- Stabiele Beta 5-basis behouden.
+## v2.20 Beta 5.2
+- Unieke game-22052.js om Safari-cache te omzeilen.
+- Bonusflits volledig verwijderd.
+- Bonusobjecten groter en rustiger weergegeven.
+- Doodanimatie van Beta 5.1 behouden.

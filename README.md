@@ -1,13 +1,16 @@
-# De Stampertjes v2.20 Beta 5.1 — Visual Polish
+# De Stampertjes v2.20 Beta 5.2
 
-Gebouwd op de stabiele Beta 5.
+Gerichte fix voor de bonusobjecten.
 
-## Nieuw
-- Bonusiconen circa 40–50% groter.
-- Banaan, kers, ster en klok hebben nu eigen grotere tekenvormen.
-- Het oude witte knippervierkant is volledig verwijderd.
-- Bonusitems zweven licht, pulseren bij verdwijnen en hebben een subtiele schaduw.
-- Doodanimatie opnieuw opgebouwd in de Monochrome Castle Style.
-- Doodscene heeft steenwerk, fakkels, mist, stof/steendeeltjes en een vloeiendere valanimatie.
+De browser laadt nu `game-22052.js` met een unieke bestandsnaam, zodat iPhone/Safari geen oudere game.js uit cache kan hergebruiken.
 
-Geen nieuwe Supabase-SQL nodig.
+Bonusobjecten:
+- geen rechthoekige flits;
+- geen transparantie-knippering;
+- groter getekend;
+- subtiel zweven;
+- donkere schaduw;
+- vlak voor verdwijnen alleen kleine donkergrijze pixels.
+
+Upload index.html en game-22052.js beide naar GitHub.
+Geen Supabase-wijziging nodig.
