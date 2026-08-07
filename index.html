@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
-<title>De Stampertjes v2.12.6</title>
+<title>De Stampertjes v2.12.7</title>
 <style>
 :root{--bg:#111;--fg:#fff}
 *{box-sizing:border-box}
@@ -592,7 +592,7 @@ body.attractMode #panel{max-width:520px}
     <h1 id="gameTitle"><span class="titleBlock">▓▓</span> DE STAMPERTJES <span class="titleBlock">▓▓</span></h1>
     <div id="studioLine">A GJ STUDIOS GAME</div>
     <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
-    <div id="versionLabel" style="font-size:13px;letter-spacing:2px;margin-top:-2px;margin-bottom:8px;opacity:.85">v2.12.6</div>
+    <div id="versionLabel" style="font-size:13px;letter-spacing:2px;margin-top:-2px;margin-bottom:8px;opacity:.85">v2.12.7</div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
     <div id="attractPrompt" class="hidden">DRUK OP SPELEN</div>
 
@@ -732,7 +732,7 @@ body.attractMode #panel{max-width:520px}
         <p><strong>🎮 Gameplay</strong><br>
         Nieuwe Appelieten, leveltypes, geheimen en easter eggs.</p>
         <p><strong>👥 Community</strong><br>
-        Meer wereldstatistieken, een uitgebreidere Developer Console en verdere verbeteringen aan het Stampertjes Café.</p>
+        Meer wereldstatistieken, een aparte Developer Portal en verdere verbeteringen aan het Stampertjes Café.</p>
         <p><em>Heb je zelf een leuk idee? Deel het via het Stampertjes Café.</em></p>
       </article>
 
@@ -741,38 +741,6 @@ body.attractMode #panel{max-width:520px}
 
       <button class="backBtn" data-back>TERUG</button>
     </div>
-
-    
-    <div id="developerSection" class="menuSection hidden">
-      <h2>🛠️ GJ STUDIOS DEVELOPER CONSOLE</h2>
-
-      <div class="devStatusCard">
-        <div><strong>Versie</strong><span>2.12.5</span></div>
-        <div><strong>Supabase</strong><span id="devSupabaseStatus">CONTROLEREN…</span></div>
-        <div><strong>Muziek</strong><span id="devMusicStatus">-</span></div>
-        <div><strong>Spelers</strong><span id="devPlayers">-</span></div>
-        <div><strong>Café berichten</strong><span id="devPosts">-</span></div>
-      </div>
-
-      <h3>📢 COMMUNITY</h3>
-      <button id="devOpenCafeBtn">OPEN CAFÉ IN BEHEERMODUS</button>
-      <button id="devReloadCafeBtn">CAFÉ VERVERSEN</button>
-
-      <h3>📊 STATISTIEKEN</h3>
-      <button id="devRefreshStatsBtn">LIVE STATISTIEKEN VERVERSEN</button>
-      <div id="devStatsBox" class="devBox">Nog niet geladen.</div>
-
-      <h3>🧪 ONTWIKKELING</h3>
-      <button id="devTestMusicBtn">🎵 TEST MUZIEK</button>
-      <button id="devJumpLevelBtn">🚪 SPRING NAAR LEVEL</button>
-      <button id="devExtraLifeBtn">❤️ +1 LEVEN</button>
-
-      <h3>⚙️ BEHEER</h3>
-      <button id="devLogoutBtn">BEHEERMODUS UIT</button>
-
-      <button class="backBtn" data-back>TERUG</button>
-    </div>
-
 <div id="cafeSection" class="menuSection hidden">
       <h2>🍏 STAMPERTJES CAFÉ</h2>
       <div id="cafeAdminStatus" class="hidden">🛠️ GJ STUDIOS BEHEER ACTIEF</div>
@@ -845,7 +813,7 @@ body.attractMode #panel{max-width:520px}
 <div id="updateOverlay" class="hidden">
   <div id="updateCard">
     <div class="updateKicker">🎉 NIEUWE VERSIE</div>
-    <h2>v2.12.6</h2>
+    <h2>v2.12.7</h2>
     <div class="updateList">
       <div>✓ Stampertjes Café vernieuwd</div>
       <div>✓ Berichten staan nu bovenaan</div>
@@ -945,19 +913,6 @@ const cafeCounter=document.getElementById("cafeCounter");
 const cafeSubmitBtn=document.getElementById("cafeSubmitBtn");
 const cafeStatus=document.getElementById("cafeStatus");
 const cafeAdminStatus=document.getElementById("cafeAdminStatus");
-const developerSection=document.getElementById("developerSection");
-const devSupabaseStatus=document.getElementById("devSupabaseStatus");
-const devMusicStatus=document.getElementById("devMusicStatus");
-const devPlayers=document.getElementById("devPlayers");
-const devPosts=document.getElementById("devPosts");
-const devStatsBox=document.getElementById("devStatsBox");
-const devOpenCafeBtn=document.getElementById("devOpenCafeBtn");
-const devReloadCafeBtn=document.getElementById("devReloadCafeBtn");
-const devRefreshStatsBtn=document.getElementById("devRefreshStatsBtn");
-const devTestMusicBtn=document.getElementById("devTestMusicBtn");
-const devJumpLevelBtn=document.getElementById("devJumpLevelBtn");
-const devExtraLifeBtn=document.getElementById("devExtraLifeBtn");
-const devLogoutBtn=document.getElementById("devLogoutBtn");
 const cafeCancelEditBtn=document.getElementById("cafeCancelEditBtn");
 const cafePosts=document.getElementById("cafePosts");
 const cafeTotalCount=document.getElementById("cafeTotalCount");
@@ -1123,7 +1078,6 @@ function showMainMenu(){
   historySection.classList.add("hidden");
   roadmapSection.classList.add("hidden");
   cafeSection.classList.add("hidden");
-  developerSection.classList.add("hidden");
   statsSection.classList.add("hidden");
   highscoreEntry.classList.add("hidden");
   document.getElementById("highscoreBox").classList.add("hidden");
@@ -1138,7 +1092,6 @@ function showMenuSection(section){
   historySection.classList.add("hidden");
   roadmapSection.classList.add("hidden");
   cafeSection.classList.add("hidden");
-  developerSection.classList.add("hidden");
   statsSection.classList.add("hidden");
   section.classList.remove("hidden");
   updateMenuMusicIconVisibility();
@@ -1827,152 +1780,15 @@ activateButton(cafeCancelEditBtn,()=>{
 
 
 
-async function loadDeveloperConsole(){
-  if(!isCafeAdmin())return;
-  const adminStillValid=await verifyCafeAdminCode(cafeAdminCode);
-  if(!adminStillValid){
-    setCafeAdminMode(false);
-    alert("Je beheersessie is niet meer geldig. Log opnieuw in.");
-    showMainMenu();
-    return;
-  }
-
-  devMusicStatus.textContent=musicOn?"AAN":"UIT";
-  devSupabaseStatus.textContent="CONTROLEREN…";
-  devPlayers.textContent="-";
-  devPosts.textContent="-";
-  devStatsBox.textContent="Live gegevens laden…";
-
-  try{
-    const [statsResponse,postsResponse]=await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_stats`,{
-        method:"POST",
-        headers:{
-          "apikey":SUPABASE_KEY,
-          "Authorization":`Bearer ${SUPABASE_KEY}`,
-          "Content-Type":"application/json"
-        },
-        body:"{}"
-      }),
-      fetch(`${SUPABASE_URL}/rest/v1/rpc/get_community_posts`,{
-        method:"POST",
-        headers:{
-          "apikey":SUPABASE_KEY,
-          "Authorization":`Bearer ${SUPABASE_KEY}`,
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({p_device_id:getCafeDeviceId()})
-      })
-    ]);
-
-    if(!statsResponse.ok)throw new Error("stats");
-    if(!postsResponse.ok)throw new Error("posts");
-
-    const stats=await statsResponse.json();
-    const posts=await postsResponse.json();
-    const totals=stats?.totals||{};
-
-    devSupabaseStatus.textContent="🟢 VERBONDEN";
-    devPlayers.textContent=Number(totals.players)||0;
-    devPosts.textContent=Array.isArray(posts)?posts.length:0;
-
-    devStatsBox.textContent=[
-      `Spelers: ${Number(totals.players)||0}`,
-      `Gespeelde potjes: ${Number(totals.games_played)||0}`,
-      `Appelieten verslagen: ${Number(totals.apples_defeated)||0}`,
-      `Sterfgevallen: ${Number(totals.deaths)||0}`,
-      `Teddy gevonden: ${Number(totals.teddy_finders)||0}`,
-      `Hoogste level: ${Number(totals.highest_level)||1}`
-    ].join("\n");
-  }catch(err){
-    console.error(err);
-    devSupabaseStatus.textContent="🔴 FOUT";
-    devStatsBox.textContent="Kon live gegevens niet laden.";
-  }
-}
-
-async function openDeveloperConsole(){
-  if(!isCafeAdmin())return;
-  stopAttractMode();
-  showMenuSection(developerSection);
-  await loadDeveloperConsole();
-}
-
-activateButton(devOpenCafeBtn,async()=>{
-  if(!isCafeAdmin())return;
-  showMenuSection(cafeSection);
-  await loadCafePosts();
-});
-
-activateButton(devReloadCafeBtn,async()=>{
-  if(!isCafeAdmin())return;
-  await loadCafePosts();
-  devPosts.textContent="Bijgewerkt";
-});
-
-activateButton(devRefreshStatsBtn,async()=>{
-  await loadDeveloperConsole();
-});
-
-activateButton(devTestMusicBtn,async()=>{
-  if(menuSoundtrack.paused){
-    musicOn=true;
-    setMusicButton();
-    await playMenuMusic();
-  }else{
-    stopMenuMusic(180);
-  }
-  devMusicStatus.textContent=musicOn&&!menuSoundtrack.paused?"AAN":"UIT";
-});
-
-activateButton(devJumpLevelBtn,()=>{
-  const input=prompt("Naar welk level wil je springen?",String(level));
-  if(input===null)return;
-  const next=Math.max(1,Math.min(99,parseInt(input,10)||1));
-  level=next;
-  spawnLevel();
-  alert(`Level ${level} geladen. Start het spel om te testen.`);
-});
-
-activateButton(devExtraLifeBtn,()=>{
-  lives=Math.min(9,lives+1);
-  alert(`Levens: ${lives}`);
-});
-
-activateButton(devLogoutBtn,()=>{
-  setCafeAdminMode(false);
-  cafeAdminStatus.classList.add("hidden");
-  showMainMenu();
-  alert("GJ Studios beheermodus uitgeschakeld.");
-});
-
 let studioAdminTapCount=0;
 let studioAdminTapTimer=null;
 activateButton(studioLine,()=>{
   studioAdminTapCount++;
   clearTimeout(studioAdminTapTimer);
   studioAdminTapTimer=setTimeout(()=>{studioAdminTapCount=0},1800);
-
   if(studioAdminTapCount>=5){
     studioAdminTapCount=0;
-    if(isCafeAdmin()){
-      openDeveloperConsole();
-      return;
-    }
-
-    const code=prompt("GJ Studios beheercode:");
-    if(code){
-      verifyCafeAdminCode(code).then(valid=>{
-        if(!valid){
-          setCafeAdminMode(false);
-          alert("Onjuiste beheercode.");
-          return;
-        }
-        setCafeAdminMode(true,code);
-        alert("Beheermodus actief.");
-        openDeveloperConsole();
-      });
-    }
+    window.location.href="./admin.html";
   }
 });
 

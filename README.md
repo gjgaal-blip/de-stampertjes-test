@@ -1,12 +1,17 @@
-# De Stampertjes v2.12.6
+# De Stampertjes v2.12.7
 
-Voor GitHub Pages:
+## GitHub Pages
+Upload:
 - index.html
+- admin.html
 - manifest.json
 - the-castle-awakens.mp3
 
-Voor Supabase:
-- voer `setup_admin_fix_v2126.sql` één keer uit.
+## Supabase
+Voer `setup_admin_portal_v2127.txt` één keer uit.
 
-Je hoeft je beheercode niet opnieuw in dit SQL-bestand te zetten.
-Het gebruikt de bestaande hash uit v2.12.4.
+Beheercode:
+MijnStampertjes2026!
+
+## Adminportal
+Open `admin.html` of tik in het hoofdmenu 5× op `A GJ STUDIOS GAME`.
