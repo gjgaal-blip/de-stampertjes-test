@@ -1,17 +1,12 @@
-# De Stampertjes v2.20 Beta 6.5
+# De Stampertjes v2.20 Beta 6.6
 
-Deze build verwerkt de laatste visuele feedback direct in de game.
+Polish-update op Beta 6.5.
 
-## Demo
-- De compacte én fullscreen attract-demo tonen nu vier zichtbare speelvloeren.
-- De vier vloeren zijn met drie ladders verbonden.
-- De animatie is aangepast zodat speler en Appelieten logisch over de nieuwe hoogtes bewegen.
-- Op de onderste demo-verdieping verschijnt ook activiteit, zodat de vierde vloer echt onderdeel van de scène is.
+- De compacte demo staat nu met een vaste binnenmarge netjes tussen de lijnen van het hoofdmenu.
+- Oude mobiele CSS die de demo op viewport-breedte forceerde wordt door een gerichte eindregel overschreven.
+- Fullscreen attract mode blijft ongewijzigd fullscreen werken.
+- Actuele update- en knopteksten verwijzen nu consequent naar Beta 6.6.
+- Verouderde technische teksten zoals 'Beta 4.x', 'v2.15.5' en de oude 18-seconden-demo zijn uit de actuele updatekaart gehaald.
+- Echte historische versienummers in de Kronieken/Kasteelkrant blijven bewust staan: die beschrijven eerdere releases.
 
-## Gameplaydecoratie
-- Fakkels controleren voortaan automatisch of een ladder hun positie overlapt.
-- Als een ladder te dichtbij staat, verhuist de fakkel naar de eerstvolgende vrije plek.
-- Dit werkt voor alle vijf zaal-layouts en toekomstige laddervarianten.
-
-De fullscreen attract mode, scrollfix, audio-modi, bonusfix en vier-verdiepingen-gameplay blijven behouden.
 Geen Supabase-wijziging nodig.

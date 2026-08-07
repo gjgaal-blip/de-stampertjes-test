@@ -1056,3 +1056,27 @@ body.attractMode #attractPrompt{
     max-width:100vw !important;
   }
 }
+
+
+/* =========================================================
+   v2.20 Beta 6.6 — compact demo aligned inside panel rules
+   ========================================================= */
+body:not(.attractMode) #panel #introCanvas{
+  display:block;
+  box-sizing:border-box;
+  width:calc(100% - 12px) !important;
+  max-width:calc(100% - 12px) !important;
+  height:auto !important;
+  margin:2px auto 12px !important;
+  border:4px double #aaa !important;
+}
+
+/* On narrow iPhones keep a visible black gutter between demo and panel frame. */
+@media (max-width:600px){
+  body:not(.attractMode) #panel #introCanvas{
+    width:calc(100% - 10px) !important;
+    max-width:calc(100% - 10px) !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+}
