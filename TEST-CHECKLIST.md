@@ -1,11 +1,17 @@
-# Beta 6.9.2
+# Beta 6.9.4
 
-- [ ] Level 1: ladders verspringen logisch
-- [ ] Level 2: geen ladders meer vrijwel boven elkaar
-- [ ] Level 3: zig-zag blijft logisch
-- [ ] Level 4: geen verticale ladderstapeling
-- [ ] Level 5: geen verticale ladderstapeling
-- [ ] Iedere onderste verdieping heeft 2 vluchtladders
-- [ ] Fakkels ontwijken ladders
-- [ ] Appelieten kunnen alle routes gebruiken
-- [ ] Vier verdiepingen/demo/analytics blijven werken
+- [ ] Teddy verschijnt pas na een zeldzame wachttijd
+- [ ] Teddy staat op een bereikbare vloer
+- [ ] Teddy staat niet op een gat of ladder
+- [ ] Teddy verdwijnt na circa 8 sec als je hem mist
+- [ ] Aanraken vereist dezelfde verdieping
+- [ ] Aanraken geeft exact +2000
+- [ ] Vijanden bevriezen tijdens Teddy moment
+- [ ] Gewone muziek stopt volledig
+- [ ] Teddy danst ongeveer 3 sec
+- [ ] Teddy-jingle klinkt bij ALLES AAN
+- [ ] Teddy-jingle klinkt bij ALLEEN FX
+- [ ] Geen jingle bij ALLES UIT
+- [ ] Achtergrondmuziek hervat na moment
+- [ ] teddy_found analytics wordt geregistreerd
+- [ ] Level/zaal-sync en ladder-polish blijven werken

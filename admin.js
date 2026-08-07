@@ -114,7 +114,7 @@ function renderPlayers(list){
         await refreshAll();
       }catch(err){
         console.error(err);
-        alert("Verwijderen is mislukt. Controleer of de Beta 6.9.2 SQL-migratie is uitgevoerd.");
+        alert("Verwijderen is mislukt. Controleer of de Beta 6.9.4 SQL-migratie is uitgevoerd.");
         btn.disabled=false;
         btn.textContent=original;
       }
@@ -131,7 +131,7 @@ function renderLevels(list){
       <strong>LEVEL ${n(x.level)}</strong>
       <span>${starts} starts</span><span>${done} klaar</span><span>${deaths} deaths</span><b>${pct}%</b>
     </div>`;
-  }).join(""):"<div class='small emptyBox'>Nog geen level-events geregistreerd. Speel Beta 6.9.2 om deze data te vullen.</div>";
+  }).join(""):"<div class='small emptyBox'>Nog geen level-events geregistreerd. Speel Beta 6.9.4 om deze data te vullen.</div>";
 }
 
 function renderBonuses(list){
@@ -162,7 +162,7 @@ function renderEvents(list){
       <span>${e.bonus_type?esc(e.bonus_type):""}</span>
       <small>${date(e.created_at)}</small>
     </div>
-  `).join(""):"<div class='small emptyBox'>Nog geen Beta 6.9.2-events.</div>";
+  `).join(""):"<div class='small emptyBox'>Nog geen Beta 6.9.4-events.</div>";
 }
 
 function renderPosts(list){
@@ -245,7 +245,7 @@ logoutBtn.addEventListener("click",()=>{
 });
 
 (async()=>{
-  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9.2";
+  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9.4";
   const version=$("portalVersion");
   if(version)version.textContent="v"+raw.replace("-beta"," Beta ");
   if(activeAdminCode){
