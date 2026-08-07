@@ -4,30 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>De Stampertjes - GJ Studios Admin</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#111;color:#fff;font-family:monospace;min-height:100vh;padding:18px}
-.wrap{max-width:760px;margin:0 auto}
-h1,h2,h3{letter-spacing:1px}
-.card{border:2px solid #fff;padding:14px;margin:12px 0;background:#111}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.row{display:grid;grid-template-columns:1fr auto;gap:10px;border-bottom:1px dotted #777;padding:6px 0}
-button,input{font:inherit;background:#111;color:#fff;border:2px solid #fff;padding:10px}
-button{cursor:pointer;font-weight:bold}
-button:disabled{opacity:.5}
-.hidden{display:none!important}
-.post{border:2px solid #fff;padding:12px;margin:10px 0}
-.postHeader{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.postMsg{margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.small{font-size:12px;opacity:.8}
-@media(max-width:560px){.grid{grid-template-columns:1fr}}
-</style>
+<link rel="stylesheet" href="admin.css">
+
 </head>
 <body>
 <div class="wrap">
   <h1>🍏 GJ STUDIOS</h1>
-  <div class="small">De Stampertjes Developer Portal · v2.12.7</div>
+  <div class="small">De Stampertjes Developer Portal · v2.13</div>
 
   <section id="loginCard" class="card">
     <h2>🔐 Beheerlogin</h2>
@@ -64,137 +47,8 @@ button:disabled{opacity:.5}
   </section>
 </div>
 
-<script>
-const SUPABASE_URL="https://rtmnlirxnalqxrdhussk.supabase.co";
-const SUPABASE_KEY="sb_publishable__lQ_g5HZ0fXy1aWzJuoexA_D-8QNqty";
-const adminCode=document.getElementById("adminCode");
-const loginBtn=document.getElementById("loginBtn");
-const loginStatus=document.getElementById("loginStatus");
-const loginCard=document.getElementById("loginCard");
-const portal=document.getElementById("portal");
-const sbStatus=document.getElementById("sbStatus");
-const players=document.getElementById("players");
-const postCount=document.getElementById("postCount");
-const games=document.getElementById("games");
-const apples=document.getElementById("apples");
-const teddy=document.getElementById("teddy");
-const posts=document.getElementById("posts");
-const cafeStatus=document.getElementById("cafeStatus");
-const refreshBtn=document.getElementById("refreshBtn");
-const openGameBtn=document.getElementById("openGameBtn");
-const logoutBtn=document.getElementById("logoutBtn");
+<script src="config.js"></script>
+<script src="admin.js" defer></script>
 
-let activeAdminCode=sessionStorage.getItem("stampertjesAdminPortalCode")||"";
-
-function esc(v){
-  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-}
-async function rpc(name,body={}){
-  const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`,{
-    method:"POST",
-    headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,"Content-Type":"application/json"},
-    body:JSON.stringify(body)
-  });
-  if(!res.ok)throw new Error(`${res.status}: ${await res.text()}`);
-  return await res.json();
-}
-async function verify(code){
-  return (await rpc("verify_stampertjes_admin",{p_admin_code:code}))===true;
-}
-async function login(){
-  const code=adminCode.value;
-  loginBtn.disabled=true;
-  loginStatus.textContent="Controleren…";
-  try{
-    if(!(await verify(code))){
-      loginStatus.textContent="Onjuiste beheercode.";
-      return;
-    }
-    activeAdminCode=code;
-    sessionStorage.setItem("stampertjesAdminPortalCode",code);
-    loginCard.classList.add("hidden");
-    portal.classList.remove("hidden");
-    await refreshAll();
-  }catch(err){
-    console.error(err);
-    loginStatus.textContent="Logincontrole mislukt. Is de v2.12.7 SQL uitgevoerd?";
-  }finally{loginBtn.disabled=false}
-}
-async function refreshAll(){
-  sbStatus.textContent="CONTROLEREN…";
-  try{
-    if(!(await verify(activeAdminCode)))throw new Error("admin");
-    const [stats,community]=await Promise.all([
-      rpc("get_public_stats",{}),
-      rpc("admin_get_community_posts",{p_admin_code:activeAdminCode})
-    ]);
-    const t=stats?.totals||{};
-    sbStatus.textContent="🟢 VERBONDEN";
-    players.textContent=Number(t.players)||0;
-    games.textContent=Number(t.games_played)||0;
-    apples.textContent=Number(t.apples_defeated)||0;
-    teddy.textContent=Number(t.teddy_finders)||0;
-    postCount.textContent=Array.isArray(community)?community.length:0;
-    renderPosts(Array.isArray(community)?community:[]);
-  }catch(err){
-    console.error(err);
-    sbStatus.textContent="🔴 FOUT";
-    cafeStatus.textContent="Kon beheerdata niet laden.";
-  }
-}
-function renderPosts(list){
-  posts.innerHTML=list.length?list.map(p=>`
-    <article class="post">
-      <div class="postHeader"><strong>${esc(p.name)}</strong><span>${new Date(p.created_at).toLocaleString("nl-NL")}</span></div>
-      <div class="small">${esc(p.type)} · ${Number(p.likes)||0} likes</div>
-      <div class="postMsg">${esc(p.message)}</div>
-      <div class="actions"><button data-delete="${Number(p.id)}">🗑️ VERWIJDER</button></div>
-    </article>
-  `).join(""):"<div class='small'>Geen berichten.</div>";
-
-  posts.querySelectorAll("[data-delete]").forEach(btn=>{
-    btn.addEventListener("click",async()=>{
-      const id=Number(btn.dataset.delete);
-      if(!confirm("Weet je zeker dat je dit bericht wilt verwijderen?"))return;
-      btn.disabled=true;
-      try{
-        const ok=await rpc("admin_delete_community_post",{p_post_id:id,p_admin_code:activeAdminCode});
-        if(ok!==true)throw new Error("delete false");
-        cafeStatus.textContent="Bericht verwijderd.";
-        await refreshAll();
-      }catch(err){
-        console.error(err);
-        cafeStatus.textContent="Verwijderen mislukt.";
-      }finally{btn.disabled=false}
-    });
-  });
-}
-loginBtn.addEventListener("click",login);
-adminCode.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-refreshBtn.addEventListener("click",refreshAll);
-openGameBtn.addEventListener("click",()=>location.href="./index.html");
-logoutBtn.addEventListener("click",()=>{
-  sessionStorage.removeItem("stampertjesAdminPortalCode");
-  activeAdminCode="";
-  portal.classList.add("hidden");
-  loginCard.classList.remove("hidden");
-  adminCode.value="";
-  loginStatus.textContent="Uitgelogd.";
-});
-(async()=>{
-  if(activeAdminCode){
-    try{
-      if(await verify(activeAdminCode)){
-        loginCard.classList.add("hidden");
-        portal.classList.remove("hidden");
-        await refreshAll();
-      }else{
-        sessionStorage.removeItem("stampertjesAdminPortalCode");
-        activeAdminCode="";
-      }
-    }catch{}
-  }
-})();
-</script>
 </body>
 </html>

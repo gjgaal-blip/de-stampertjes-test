@@ -1,17 +1,25 @@
-# De Stampertjes v2.12.7
+# De Stampertjes v2.13 – iPhone Edition
 
-## GitHub Pages
-Upload:
+Alles staat in één map zodat je op iPhone alle bestanden tegelijk kunt selecteren en uploaden naar GitHub.
+
+## Upload naar GitHub Pages
+Upload deze bestanden samen:
 - index.html
 - admin.html
+- game.css
+- admin.css
+- config.js
+- game.js
+- admin.js
 - manifest.json
 - the-castle-awakens.mp3
 
 ## Supabase
-Voer `setup_admin_portal_v2127.txt` één keer uit.
+Voer één keer uit:
+- 001_v213_stable_migration.txt
 
-Beheercode:
+De beheercode is:
 MijnStampertjes2026!
 
-## Adminportal
-Open `admin.html` of tik in het hoofdmenu 5× op `A GJ STUDIOS GAME`.
+## Test
+Gebruik TEST-CHECKLIST.md voordat je deze versie live zet.

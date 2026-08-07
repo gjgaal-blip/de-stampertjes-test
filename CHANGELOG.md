@@ -1,9 +1,11 @@
 # De Stampertjes – Changelog
 
-## v2.12.7 – Separate Admin Portal
-- Developer Console uit het spel gehaald.
-- Nieuwe aparte `admin.html` beheerpagina.
-- 5× tikken op `A GJ STUDIOS GAME` opent de adminportal.
-- Eenvoudige Supabase-admincontrole zonder hashingextensies.
-- Café-berichten bekijken en als admin verwijderen.
-- Live wereldstatistieken in het adminportal.
+## v2.13 – Stable Foundation
+- Spelcode opgesplitst in losse HTML, CSS en JavaScript-bestanden.
+- `index.html` bevat alleen nog de structuur van het spel.
+- `admin.html` blijft een aparte Developer Portal.
+- Centrale `js/config.js` voor versie en Supabase-configuratie.
+- Muziek verplaatst naar `/audio`.
+- Eén veilige Supabase-migratie toegevoegd die bestaande data behoudt.
+- Geen pgcrypto of hashes meer nodig.
+- Alle JavaScript-bestanden afzonderlijk gevalideerd.
