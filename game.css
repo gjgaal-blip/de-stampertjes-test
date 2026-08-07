@@ -719,3 +719,111 @@ body.attractMode #panel{max-width:520px}
 .menuGroup,.menuSection{background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 1px,transparent 16px)}
 .menuGrid button,.backBtn{background:#242424;border-color:#aaa;box-shadow:inset 0 0 0 2px #222}
 .chroniclePage{background:#e1e1dc!important;color:#111!important;border-color:#555!important}
+
+
+/* =========================================================
+   v2.20 Beta 5.3 — iPhone / small-screen space optimisation
+   Desktop rules above remain unchanged.
+   ========================================================= */
+@media (max-width: 600px) {
+  html, body {
+    min-height: 100dvh;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  #gameScreen {
+    width: 100%;
+    max-width: none;
+    min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding-left: 8px;
+    padding-right: 8px;
+    box-sizing: border-box;
+  }
+
+  #gameScreenTitle {
+    margin-top: 5px;
+    margin-bottom: 8px;
+    font-size: clamp(22px, 7vw, 31px);
+    line-height: 1.05;
+  }
+
+  #gameScreenTitle::after {
+    font-size: clamp(9px, 2.8vw, 12px);
+    margin-left: 7px;
+  }
+
+  /* The internal canvas resolution does not change; only its visual size. */
+  #gameCanvas {
+    display: block;
+    width: calc(100vw - 18px) !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 auto;
+  }
+
+  .controls {
+    width: calc(100vw - 18px);
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 7px;
+  }
+
+  .controlGroup {
+    gap: 6px;
+  }
+
+  .controlLabel {
+    margin-top: 5px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .controlBtn,
+  #stampBtn {
+    min-height: 58px;
+  }
+
+  #stampBtn {
+    min-width: 128px;
+  }
+
+  .secondaryControls {
+    width: min(78vw, 430px);
+    margin: 8px auto 0;
+    gap: 8px;
+  }
+
+  .secondaryControls button {
+    min-height: 48px;
+  }
+
+  #gameHint {
+    margin: 8px auto 0;
+    max-width: calc(100vw - 30px);
+    font-size: 12px;
+    line-height: 1.25;
+  }
+}
+
+/* Extra optimisation for tall modern iPhones. */
+@media (max-width: 430px) and (min-height: 760px) {
+  #gameCanvas {
+    width: calc(100vw - 12px) !important;
+  }
+
+  #gameScreen {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  #gameScreenTitle {
+    margin-top: 2px;
+    margin-bottom: 6px;
+  }
+}

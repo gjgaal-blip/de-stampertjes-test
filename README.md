@@ -1,16 +1,16 @@
-# De Stampertjes v2.20 Beta 5.2
+# De Stampertjes v2.20 Beta 5.3 — Mobile Space Test
 
-Gerichte fix voor de bonusobjecten.
+Deze build is bedoeld om de iPhone-layout groter te testen zonder de laptop/desktop-layout te wijzigen.
 
-De browser laadt nu `game-22052.js` met een unieke bestandsnaam, zodat iPhone/Safari geen oudere game.js uit cache kan hergebruiken.
+Mobiel (max. 600 px):
+- speelveld gebruikt vrijwel de volledige schermbreedte;
+- titel en marges compacter;
+- bediening dichter bij het speelveld;
+- secundaire knoppen compacter;
+- instructieregel neemt minder hoogte in;
+- rekening gehouden met `100dvh` en iPhone safe areas.
 
-Bonusobjecten:
-- geen rechthoekige flits;
-- geen transparantie-knippering;
-- groter getekend;
-- subtiel zweven;
-- donkere schaduw;
-- vlak voor verdwijnen alleen kleine donkergrijze pixels.
+Desktop:
+- bestaande layoutregels blijven ongewijzigd.
 
-Upload index.html en game-22052.js beide naar GitHub.
-Geen Supabase-wijziging nodig.
+De bonusfix uit Beta 5.2 en de nieuwe doodanimatie blijven behouden.
