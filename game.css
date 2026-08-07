@@ -1080,3 +1080,11 @@ body:not(.attractMode) #panel #introCanvas{
     margin-right:auto !important;
   }
 }
+
+/* Beta 6.9 — living castle */
+.dailyCastleMessage{
+  max-width:720px;margin:8px auto 13px;padding:7px 10px;
+  border-top:1px dotted #555;border-bottom:1px dotted #555;
+  font:11px/1.45 monospace;letter-spacing:.7px;color:#bbb;text-align:center;
+}
+@media(max-width:600px){.dailyCastleMessage{font-size:9px;margin:6px 10px 10px}}

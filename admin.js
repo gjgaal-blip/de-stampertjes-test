@@ -206,7 +206,7 @@ logoutBtn.addEventListener("click",()=>{
 });
 
 (async()=>{
-  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.8";
+  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9";
   const version=$("portalVersion");
   if(version)version.textContent="v"+raw.replace("-beta"," Beta ");
   if(activeAdminCode){
