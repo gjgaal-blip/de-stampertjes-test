@@ -1,12 +1,20 @@
-# De Stampertjes v2.13.2 – iPhone Edition
+# De Stampertjes v2.15
 
-Geen nieuwe Supabase-wijziging nodig.
+Alles staat in één map zodat je de bestanden vanaf een iPhone naar GitHub kunt uploaden.
 
-Upload alle bestanden naar de testrepository en overschrijf de bestaande bestanden.
+## Upload naar GitHub
+Upload alle bestanden uit deze ZIP en overschrijf de bestaande bestanden.
 
-Belangrijkste tests:
-1. Startscherm: 🔊/🔇 naast v2.13.2.
-2. Start spel.
-3. Tik MUZIEK: UIT/AAN tijdens gameplay.
-4. Controleer dat de muziek hoorbaar schakelt.
-5. Test hetzelfde met M op laptop.
+## Supabase
+Voor v2.15 is geen nieuwe SQL nodig als de v2.13-migratie al succesvol is uitgevoerd.
+
+## Nieuw
+- uitgebreide Kronieken;
+- Kasteelkrant met geruchten;
+- uitgebreide roadmap;
+- Hall of Fame;
+- speciale dank aan Vera;
+- bladzijde-omslaangeluid.
+
+## Admin
+De bestaande `admin.html` blijft werken met dezelfde Supabase-instellingen.

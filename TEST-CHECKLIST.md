@@ -1,17 +1,22 @@
-# v2.13 Test Checklist
+# v2.15 testchecklist
 
-- [ ] Startscherm opent
-- [ ] Muziek start / 🔊🔇 werkt
-- [ ] Spelen werkt op iPhone
-- [ ] Spelen werkt op laptop
-- [ ] Pijltjestoetsen + spatie werken
-- [ ] Café toont bestaande berichten
-- [ ] Nieuw Café-bericht plaatsen
-- [ ] Eigen bericht bewerken
-- [ ] Eigen bericht verwijderen
-- [ ] Online statistieken laden
-- [ ] 5× tikken opent admin.html
+- [ ] Hoofdmenu toont v2.15
+- [ ] Muziekicoon staat naast het versienummer
+- [ ] Muziek aan/uit werkt in menu
+- [ ] Muziek aan/uit werkt tijdens gameplay
+- [ ] Muziek blijft werken na levelovergang
+- [ ] Historie opent
+- [ ] Alle 13 Kronieken-pagina's zijn te bladeren
+- [ ] Pagina-omslaangeluid werkt na een gebruikersactie
+- [ ] Geheime pagina toont een slot
+- [ ] Kasteelkrant toont v2.15 en de geruchten
+- [ ] Roadmap toont v2.20 t/m v3.00
+- [ ] Vera wordt bedankt in v2.15 en Hall of Fame
+- [ ] Hall of Fame opent
+- [ ] Hall of Fame haalt live kampioen/statistieken op
+- [ ] Café opent en scrollt op iPhone
+- [ ] Café berichten plaatsen/bewerken/verwijderen werkt
+- [ ] Highscores werken
+- [ ] Statistieken werken
+- [ ] 5× A GJ STUDIOS GAME opent admin.html
 - [ ] Adminlogin werkt
-- [ ] Admin ziet Café-berichten
-- [ ] Admin kan bericht verwijderen
-- [ ] Terug naar spel werkt

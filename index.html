@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
-<title>De Stampertjes v2.13.2</title>
+<title>De Stampertjes v2.15</title>
 <link rel="stylesheet" href="game.css">
 
 </head>
@@ -20,7 +20,7 @@
     <h1 id="gameTitle"><span class="titleBlock">▓▓</span> DE STAMPERTJES <span class="titleBlock">▓▓</span></h1>
     <div id="studioLine">A GJ STUDIOS GAME</div>
     <div id="versionMusicRow">
-      <div id="versionLabel">v2.13.2</div>
+      <div id="versionLabel">v2.15</div>
       <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
     </div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
@@ -51,8 +51,9 @@
 
       <section class="menuGroup">
         <h3>🌍 COMMUNITY</h3>
-        <div class="menuGrid single">
+        <div class="menuGrid">
           <button id="cafeMenuBtn">CAFÉ</button>
+          <button id="hallMenuBtn">HALL OF FAME</button>
         </div>
       </section>
     </div>
@@ -105,7 +106,7 @@
 
         <div id="chronicleNav">
           <button id="chroniclePrev">◀ VORIGE</button>
-          <div id="chroniclePageNumber">Pagina 1 van 6</div>
+          <div id="chroniclePageNumber">Pagina 1 van 13</div>
           <button id="chronicleNext">VOLGENDE ▶</button>
         </div>
       </div>
@@ -117,60 +118,145 @@
       <h2>📰 KASTEELKRANT</h2>
 
       <article class="newsItem featured">
+        <div class="newsVersion">📖 v2.15</div>
+        <h3>Nieuwe verhalen uit het kasteel</h3>
+        <p><strong>De geschiedenis van De Stampertjes is flink uitgebreid.</strong></p>
+        <p>• De Kronieken vertellen nu een doorlopend verhaal met nieuwe hoofdstukken en cliffhangers.<br>
+        • De Verborgen Bibliotheek, de Verdwenen Held en de Donkere Kerkers doen hun intrede.<br>
+        • Teddy krijgt een eigen rol in de legende van het kasteel.<br>
+        • Er is een geheim, nog niet ontdekt hoofdstuk toegevoegd.<br>
+        • De Hall of Fame eert spelers, ontdekkers en belangrijke helpers.<br>
+        • De Kasteelkrant brengt voortaan ook geruchten uit de wereld van De Stampertjes.</p>
+        <p><strong>🙏 Speciale dank aan Vera</strong><br>
+        Voor het uitgebreid testen van de testversies en het melden van bugs. Dankzij haar feedback wordt De Stampertjes iedere update weer een stukje beter.</p>
+      </article>
+
+      <article class="newsItem rumor">
+        <div class="newsVersion">🕯️ GERUCHTEN UIT HET KASTEEL</div>
+        <h3>Wat fluistert men in de gangen?</h3>
+        <p>📰 Een avonturier beweert een <strong>gouden Appeliet</strong> te hebben gezien bij een afgesloten trap.<br><br>
+        📰 Uit de westelijke toren klinkt 's nachts een melodie die niemand kent.<br><br>
+        📰 In de bibliotheek zou een kaart liggen waarop verdiepingen staan die op geen enkele bouwtekening voorkomen.<br><br>
+        📰 Teddy is opnieuw tussen de oude muren gezien. Sommigen noemen hem inmiddels de Wachter van het Kasteel.<br><br>
+        📰 Diep onder de kelder is een zware poort gevonden. Niemand heeft hem nog kunnen openen.</p>
+        <p><em>Geruchten zijn geruchten... tot een volgende update het tegendeel bewijst.</em></p>
+      </article>
+
+      <h3>📜 UIT DE ARCHIEVEN</h3>
+
+      <article class="newsItem">
+        <div class="newsVersion">🛠️ v2.13</div>
+        <p>De technische basis werd verstevigd, het Café-beheer uitgebreid, de aparte Admin Portal toegevoegd en de muziekbediening opnieuw opgebouwd.</p>
+      </article>
+
+      <article class="newsItem">
         <div class="newsVersion">🌍 v2.11</div>
-        <h3>Community Update</h3>
-        <p><strong>Een van de grootste updates sinds de eerste release!</strong></p>
-        <p>• De Stampertjes Kronieken zijn een bladerbaar verhaalboek geworden.<br>
-        • Het Stampertjes Café is geopend.<br>
-        • Online highscores en wereldstatistieken toegevoegd.<br>
-        • Persoonlijke statistieken en Teddy-achievement.<br>
-        • Nieuwe doodanimatie en rustigere respawn.<br>
-        • Toetsenbordbesturing voor pc.<br>
-        • Hoofdmenu opnieuw ingedeeld in Spelen, Ontdekken en Community.<br>
-        • De Kasteelkrant vervangt het oude ontwikkelscherm.</p>
+        <p>Het Stampertjes Café opende zijn deuren, online highscores en wereldstatistieken verschenen en de eerste versie van de Kronieken werd een bladerbaar boek.</p>
       </article>
 
       <article class="newsItem">
         <div class="newsVersion">🎮 v2.10</div>
-        <h3>The Arcade Update</h3>
-        <p>Nieuw retro-hoofdmenu, attract mode, gameplaydemo, online Top 10 en vele gameplayverbeteringen.</p>
+        <p>Het retro-hoofdmenu, de attract mode, gameplaydemo en vele spelverbeteringen werden toegevoegd.</p>
       </article>
 
       <article class="newsItem">
         <div class="newsVersion">🏰 v2.00</div>
-        <h3>The Arcade Reborn</h3>
-        <p>Complete remake van het spel met nieuwe engine, levels, geluid en eerste publieke release.</p>
+        <p>De grote remake: een nieuwe engine, levels, geluid en de eerste publieke versie van het vernieuwde kasteel.</p>
       </article>
 
       <article class="newsItem">
         <div class="newsVersion">🍏 v1.00</div>
-        <h3>The Beginning</h3>
-        <p>Het allereerste speelbare prototype waarin het avontuur van De Stampertjes begon.</p>
+        <p>Het allereerste speelbare prototype. Eén Stampertje, een vloer en de eerste Appelieten.</p>
       </article>
 
-      <h3>🔮 Volgende grote hoofdstukken</h3>
+      <h3>🔮 ROADMAP</h3>
 
-      <article class="newsItem featured">
+      <article class="newsItem roadmapCard">
         <div class="newsVersion">🌙 v2.20</div>
-        <h3>Castle Expansion &amp; Soundtrack Update</h3>
-        <p><strong>🏰 Sfeer</strong><br>
-        Bewegende fakkels, maanlicht, mist, nieuwe achtergronden en meer kasteelanimaties.</p>
-        <p><strong>⚙️ Instellingen</strong><br>
-        Muziek, geluidseffecten, trillen, besturing, taal en thema’s instellen.</p>
-        <p><strong>🎵 Soundtrack</strong><br>
-        Eigen muziek per level, overwinningsmuziek, eindbaasmuziek en een Jukebox met vrijspeelbare nummers.</p>
-        <p><strong>🎮 Gameplay</strong><br>
-        Nieuwe Appelieten, leveltypes, geheimen en easter eggs.</p>
-        <p><strong>👥 Community</strong><br>
-        Meer wereldstatistieken, een aparte Developer Portal en verdere verbeteringen aan het Stampertjes Café.</p>
-        <p><em>Heb je zelf een leuk idee? Deel het via het Stampertjes Café.</em></p>
+        <h3>Kasteeluitbreiding</h3>
+        <p>🔥 Bewegende fakkels · 🌙 maanlicht en nachtvarianten · 🌫️ mist en stof · 🦇 achtergrondleven · 💧 kerkers en water · 🎵 eigen muziek per level · 📖 korte intro's per level · ⚙️ uitgebreider instellingenmenu · 🎼 vrijspeelbare Jukebox.</p>
       </article>
 
-      <p>👑 <strong>v3.00 – The Apple King</strong><br>
-      Een toekomstige grote release met de Appelkoning en nieuwe eindbaasinhoud.</p>
+      <article class="newsItem roadmapCard">
+        <div class="newsVersion">👾 v2.30</div>
+        <h3>Nieuwe Appelieten</h3>
+        <p>🍎 Snelle rode Appeliet · 🟡 zeldzame gouden Appeliet · 👻 geest-Appeliet · 🛡️ gepantserde Appeliet · 😴 slaperige Appeliet, ieder met eigen gedrag en tactiek.</p>
+      </article>
+
+      <article class="newsItem roadmapCard">
+        <div class="newsVersion">⭐ v2.40</div>
+        <h3>Power-ups</h3>
+        <p>⭐ onkwetsbaarheid · ⏱️ tijd vertragen · ⚡ sneller lopen · 💥 Superstamp · ❤️ extra leven · 🧲 puntenmagneet.</p>
+      </article>
+
+      <article class="newsItem roadmapCard">
+        <div class="newsVersion">🌍 v2.50</div>
+        <h3>Community</h3>
+        <p>🏆 dagelijkse uitdagingen · 📅 weekklassement · 👤 spelerprofielen · 🎥 replays van topscores · ❤️ likes voor prestaties · 🌐 community-events.</p>
+      </article>
+
+      <article class="newsItem featured roadmapCard">
+        <div class="newsVersion">👑 v3.00</div>
+        <h3>De Appelkoning</h3>
+        <p>Een eindbaas met meerdere fases, een groot eindkasteel, unieke muziek, intro- en eindscènes, eindcredits en misschien zelfs een verborgen einde.</p>
+      </article>
+
+      <p class="cafeInvite">💡 Heb jij een idee voor een Appeliet, level, geheim of toekomstig hoofdstuk? Laat het achter in het <strong>Stampertjes Café</strong>.</p>
 
       <button class="backBtn" data-back>TERUG</button>
     </div>
+<div id="hallSection" class="menuSection hidden">
+      <h2>🏛️ HALL OF FAME</h2>
+      <p class="hallIntro">In deze zaal krijgen de helden, ontdekkers en helpers van het kasteel een plek in de geschiedenis.</p>
+
+      <div class="hallGrid">
+        <div class="hallCard">
+          <div class="hallIcon">🏆</div>
+          <div class="hallLabel">KASTEELKAMPIOEN</div>
+          <strong id="hallChampion">LADEN…</strong>
+          <span id="hallChampionScore">—</span>
+        </div>
+
+        <div class="hallCard">
+          <div class="hallIcon">🏰</div>
+          <div class="hallLabel">HOOGSTE LEVEL</div>
+          <strong id="hallHighestLevel">—</strong>
+          <span>wereldwijd</span>
+        </div>
+
+        <div class="hallCard">
+          <div class="hallIcon">🐈</div>
+          <div class="hallLabel">TEDDY-VINDERS</div>
+          <strong id="hallTeddyFinders">—</strong>
+          <span>avonturiers</span>
+        </div>
+
+        <div class="hallCard veraCard">
+          <div class="hallIcon">🐞</div>
+          <div class="hallLabel">BUG HUNTER</div>
+          <strong>VERA</strong>
+          <span>speciale dank voor het testen</span>
+        </div>
+
+        <div class="hallCard">
+          <div class="hallIcon">📜</div>
+          <div class="hallLabel">EERSTE SPELER</div>
+          <strong>NOG NIET VASTGELEGD</strong>
+          <span>een plek voor de toekomst</span>
+        </div>
+
+        <div class="hallCard">
+          <div class="hallIcon">💡</div>
+          <div class="hallLabel">COMMUNITY-EREPLEK</div>
+          <strong>NOG VRIJ</strong>
+          <span>wie schrijft geschiedenis?</span>
+        </div>
+      </div>
+
+      <p id="hallStatus" class="hallStatus">Live gegevens worden uit het kasteel opgehaald…</p>
+      <button class="backBtn" data-back>TERUG</button>
+    </div>
+
 <div id="cafeSection" class="menuSection hidden">
       <h2>🍏 STAMPERTJES CAFÉ</h2>
       <div id="cafeAdminStatus" class="hidden">🛠️ GJ STUDIOS BEHEER ACTIEF</div>
@@ -243,15 +329,17 @@
 <div id="updateOverlay" class="hidden">
   <div id="updateCard">
     <div class="updateKicker">🎉 NIEUWE VERSIE</div>
-    <h2>v2.13.2</h2>
+    <h2>v2.15</h2>
     <div class="updateList">
-      <div>✓ Stampertjes Café vernieuwd</div>
-      <div>✓ Berichten staan nu bovenaan</div>
-      <div>✓ Communitystatistieken toegevoegd</div>
-      <div>✓ Kronieken uitgebreid</div>
-      <div>✓ Idee-, bug- en highscorelabels</div>
+      <div>✓ Kronieken uitgebreid tot een echt kasteelverhaal</div>
+      <div>✓ Nieuwe hoofdstukken, cliffhangers en een geheim hoofdstuk</div>
+      <div>✓ Kasteelkrant brengt nu ook geruchten en ontdekkingen</div>
+      <div>✓ Roadmap uitgebreid tot en met v3.00</div>
+      <div>✓ Nieuwe Hall of Fame</div>
+      <div>✓ Subtiel bladzijde-omslaangeluid in de Kronieken</div>
+      <div>✓ Speciale dank aan Vera voor het bugtesten ❤️</div>
     </div>
-    <p>Veel speelplezier!</p>
+    <p><strong>Er is meer aan de hand in het kasteel dan de Appelieten willen laten zien...</strong></p>
     <p><strong>— GJ Studios</strong></p>
     <button id="closeUpdateBtn">BEKIJK HET SPEL</button>
   </div>

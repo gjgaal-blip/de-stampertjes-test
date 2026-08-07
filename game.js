@@ -34,6 +34,14 @@ const chroniclePrev=document.getElementById("chroniclePrev");
 const chronicleNext=document.getElementById("chronicleNext");
 const chroniclePageNumber=document.getElementById("chroniclePageNumber");
 
+const hallMenuBtn=document.getElementById("hallMenuBtn");
+const hallSection=document.getElementById("hallSection");
+const hallChampion=document.getElementById("hallChampion");
+const hallChampionScore=document.getElementById("hallChampionScore");
+const hallHighestLevel=document.getElementById("hallHighestLevel");
+const hallTeddyFinders=document.getElementById("hallTeddyFinders");
+const hallStatus=document.getElementById("hallStatus");
+
 const cafeMenuBtn=document.getElementById("cafeMenuBtn");
 const cafeSection=document.getElementById("cafeSection");
 const cafeName=document.getElementById("cafeName");
@@ -62,7 +70,7 @@ const levelSubtitle=document.getElementById("levelSubtitle");
 let levelTransitioning=false;
 
 function showLevelTransition(completedLevel,nextLevel){
-  stopMenuMusic(120);
+  if(musicOn&&!menuSoundtrack.paused)menuSoundtrack.volume=.06;
   levelTransitioning=true;
   state="transition";
   document.body.classList.remove("gameplayActive");
@@ -80,6 +88,10 @@ function showLevelTransition(completedLevel,nextLevel){
     levelTransitioning=false;
     state="play";
     spawnLevel();
+    if(musicOn){
+      if(menuSoundtrack.paused)startMusic();
+      else applyMusicVolume();
+    }
     document.body.classList.add("gameplayActive");
   },1900);
 }
@@ -114,6 +126,50 @@ function normalizeScores(rows){
     })
     .slice(0,10);
 }
+async function loadHallOfFame(){
+  hallStatus.textContent="Live gegevens worden uit het kasteel opgehaald…";
+  try{
+    const [scoreResponse,statsResponse]=await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/highscores?select=name,score,level,created_at&order=score.desc&limit=1`,{
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Authorization":`Bearer ${SUPABASE_KEY}`
+        }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_stats`,{
+        method:"POST",
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Authorization":`Bearer ${SUPABASE_KEY}`,
+          "Content-Type":"application/json"
+        },
+        body:"{}"
+      })
+    ]);
+
+    if(!scoreResponse.ok)throw new Error(`Scores ${scoreResponse.status}`);
+    if(!statsResponse.ok)throw new Error(`Stats ${statsResponse.status}`);
+
+    const scores=await scoreResponse.json();
+    const stats=await statsResponse.json();
+    const champion=Array.isArray(scores)&&scores.length?scores[0]:null;
+    const totals=stats?.totals||{};
+
+    hallChampion.textContent=champion?String(champion.name||"SPELER").toUpperCase():"NOG GEEN";
+    hallChampionScore.textContent=champion?`${Number(champion.score)||0} punten · Lv${Number(champion.level)||1}`:"De troon is nog vrij";
+    hallHighestLevel.textContent=`LEVEL ${Number(totals.highest_level)||1}`;
+    hallTeddyFinders.textContent=String(Number(totals.teddy_finders)||0);
+    hallStatus.textContent="Hall of Fame bijgewerkt vanuit de wereldstatistieken.";
+  }catch(err){
+    console.error("Hall of Fame laden mislukt:",err);
+    hallChampion.textContent="NIET BEREIKBAAR";
+    hallChampionScore.textContent="probeer later opnieuw";
+    hallHighestLevel.textContent="—";
+    hallTeddyFinders.textContent="—";
+    hallStatus.textContent="Live Hall of Fame-gegevens zijn tijdelijk niet bereikbaar.";
+  }
+}
+
 async function loadOnlineHighscores(){
   scoreList.innerHTML="<div>Online scores laden…</div>";
   try{
@@ -207,6 +263,7 @@ function showMainMenu(){
   helpSection.classList.add("hidden");
   historySection.classList.add("hidden");
   roadmapSection.classList.add("hidden");
+  hallSection.classList.add("hidden");
   cafeSection.classList.add("hidden");
   statsSection.classList.add("hidden");
   highscoreEntry.classList.add("hidden");
@@ -221,6 +278,7 @@ function showMenuSection(section){
   helpSection.classList.add("hidden");
   historySection.classList.add("hidden");
   roadmapSection.classList.add("hidden");
+  hallSection.classList.add("hidden");
   cafeSection.classList.add("hidden");
   statsSection.classList.add("hidden");
   section.classList.remove("hidden");
@@ -277,6 +335,12 @@ activateButton(newsMenuBtn,()=>{
   stopAttractMode();
   showMenuSection(roadmapSection);
 });
+activateButton(hallMenuBtn,async()=>{
+  stopAttractMode();
+  showMenuSection(hallSection);
+  await loadHallOfFame();
+});
+
 activateButton(cafeMenuBtn,async()=>{
   stopAttractMode();
   showMenuSection(cafeSection);
@@ -467,58 +531,148 @@ async function loadOnlineStats(){
 
 const chroniclePages=[
   {
-    title:"🍏 Het begon met één Appeliet...",
-    body:`<p><span class="chapterDrop">L</span>ang geleden was het kasteel een rustige plek.
-    Tot op een dag de eerste Appeliet verscheen. Hij liep nieuwsgierig door de gangen,
-    maar niemand wist hoe hij gestopt moest worden.</p>
-    <p>Toen ontdekte een dappere bewoner dat stevig stampen de vloer kon laten breken.
-    Zo begon een heel nieuw avontuur.</p>`
+    title:"🌩️ De Eerste Scheur",
+    art:"🏰  ⚡  🪨",
+    body:`<p><span class="chapterDrop">L</span>ang voordat iemand het woord Appeliet kende, was het kasteel een rustige plek. De vloeren kraakten, de torens piepten in de wind en 's nachts sloeg alleen de oude klok.</p>
+    <p>Tot een storm boven het dal bleef hangen. Bij de laatste donderslag trilde de grote zaal en verscheen midden in de stenen vloer een haarfijne scheur.</p>
+    <p>De volgende ochtend was de scheur breder. En vanuit de diepte klonk iets dat verdacht veel leek op... gelach.</p>
+    <p class="chronicleCliff">Die nacht rolde er iets groens uit de opening.</p>`
   },
   {
-    title:"👣 De eerste Stampertjes",
-    body:`<p>De kasteelbewoners leerden de Appelieten naar zwakke plekken in de vloer te lokken.</p>
-    <p>Zodra een Appeliet vastzat, renden ze eropaf en stampten hem met volle kracht weg.</p>
-    <p>De bewoners die dit durfden, kregen al snel een naam: <strong>de Stampertjes</strong>.</p>`
+    title:"🍏 De Eerste Appeliet",
+    art:"🕳️  🍏  ❓",
+    body:`<p>Het wezen was rond, groen en opvallend eigenwijs. Het wandelde door de gangen alsof het kasteel altijd al van hem was geweest.</p>
+    <p>De bewoners probeerden hem weg te jagen met bezems, emmers en een bijzonder slechte vioolspeler. Niets hielp.</p>
+    <p>Toen verschenen er twee. Daarna vijf. Binnen enkele dagen krioelde het op de onderste verdieping van de Appelieten.</p>
+    <p class="chronicleCliff">En precies toen begaf de eerste vloerplaat het.</p>`
   },
   {
-    title:"🏰 Het kasteel groeit",
-    body:`<p>Er kwamen meer verdiepingen, langere ladders en steeds moeilijkere zalen.</p>
-    <p>De Appelieten werden slimmer, sneller en eigenwijzer. Sommige namen andere routes,
-    andere ontsnapten uit hun val als een Stampertje niet snel genoeg was.</p>
-    <p>Het kasteel werd groter... en gevaarlijker.</p>`
+    title:"👣 De Eerste Stampertjes",
+    art:"👢  💥  🍏",
+    body:`<p><span class="chapterDrop">N</span>iemand weet meer wie de eerste was. Volgens de ene legende was het een bewaker, volgens de andere een kok die zijn soeppan liet vallen.</p>
+    <p>Wat wel vaststaat: drie harde stampen maakten de verzwakte vloer open. Een Appeliet viel erin en zat muurvast.</p>
+    <p>De bewoners begrepen het onmiddellijk. Lokken. Stampen. Vangen. En nog één laatste dreun.</p>
+    <p>De dappersten onder hen kregen al snel een naam: <strong>De Stampertjes</strong>.</p>
+    <p class="chronicleCliff">Maar de Appelieten leerden sneller dan iemand had verwacht.</p>`
   },
   {
-    title:"🌍 De wereld ontdekt het kasteel",
-    body:`<p>Steeds meer avonturiers vonden hun weg naar het kasteel.</p>
-    <p>Hun scores verschenen op een wereldwijde ranglijst en in het Stampertjes Café
-    deelden zij ideeën, bugmeldingen en sterke verhalen.</p>
-    <p>Er werden geheimen ontdekt... en soms werd zelfs een mysterieuze kat genaamd
-    <strong>Teddy</strong> door de gangen gezien.</p>`
+    title:"🏰 Het Kasteel Groeit",
+    art:"🪜  🏰  🪜",
+    body:`<p>Nieuwe zalen werden geopend en oude trappen hersteld. Waar eerst één verdieping was, ontstond een doolhof van ladders, balkons en gangen.</p>
+    <p>De Appelieten pasten zich aan. Sommige werden sneller, andere taaier. Ze begonnen ladders te gebruiken en wachtten soms precies naast de plek waar een Stampertje wilde landen.</p>
+    <p>Voor iedere nieuwe zaal ontstonden nieuwe trucs, nieuwe helden en nieuwe verhalen.</p>
+    <p class="chronicleCliff">Tot iemand achter een dichtgemetselde muur een deur vond zonder klink.</p>`
   },
   {
-    title:"👑 Geruchten uit de diepte",
-    body:`<p>Het kasteel is nog lang niet volledig ontdekt.</p>
-    <p>Er gaan geruchten over onbekende zalen, nieuwe soorten Appelieten
-    en vreemde geluiden diep onder de kelder.</p>
-    <p>En ergens, ver beneden de laatste vloer, zou misschien...</p>
-    <p style="text-align:center;font-size:18px"><strong>...de Appelkoning wachten.</strong></p>`
+    title:"📚 De Verborgen Bibliotheek",
+    art:"📚  🗝️  🗺️",
+    body:`<p>Achter de deur lag een bibliotheek die op geen enkele plattegrond stond. Het stof was dik, maar één boek lag open alsof iemand het zojuist had neergelegd.</p>
+    <p>Op de tafel lag een kaart van het kasteel. Alleen... de kaart toonde veel meer verdiepingen dan er volgens de bouwmeester bestonden.</p>
+    <p>Sommige routes eindigden bij zwarte inktvlekken. Eén route liep recht naar beneden en eindigde bij een klein kroontje.</p>
+    <p class="chronicleCliff">In de marge stond slechts één woord: <strong>KONING</strong>.</p>`
   },
   {
-    title:"✍️ Jouw hoofdstuk",
-    body:`<p><strong>Deze bladzijde is nog niet geschreven...</strong></p>
-    <p>Heb jij een idee voor een nieuw level, een Appeliet, een geheim of een eindbaas?</p>
-    <p>Laat het weten in het <strong>Stampertjes Café</strong>.</p>
-    <p>Misschien wordt jouw idee onderdeel van het volgende hoofdstuk van de Kronieken.</p>
-    <p style="text-align:center;margin-top:28px"><strong>Ontwikkeld door GJ Studios</strong></p>`
+    title:"🐈 Teddy, de Wachter",
+    art:"🌙  🐈  🔑",
+    body:`<p><span class="chapterDrop">V</span>anaf die dag begonnen avonturiers een grote kat in de gangen te zien. Hij verscheen nooit lang en zat vaak op plekken waar kort daarna iets bijzonders werd ontdekt.</p>
+    <p>Zijn naam was Teddy. Niemand wist waar hij vandaan kwam. Sommige Stampertjes beweerden dat hij ouder was dan het kasteel zelf.</p>
+    <p>Wie hem volgde, vond soms een verborgen doorgang. Wie hem probeerde te vangen, vond meestal alleen een lege gang en een paar haren op de vloer.</p>
+    <p class="chronicleCliff">Op een nacht bleef Teddy voor het eerst staan... voor de trap naar de kelder.</p>`
+  },
+  {
+    title:"⚔️ De Verdwenen Held",
+    art:"🛡️  🕯️  ?",
+    body:`<p>Een beroemde Stampertjes-held besloot de waarschuwingen te negeren en alleen af te dalen. Hij nam een lamp, een hamer en de kaart uit de bibliotheek mee.</p>
+    <p>Drie dagen later werd de lamp teruggevonden. De kaart was verdwenen. Van de held zelf ontbrak ieder spoor.</p>
+    <p>Alleen twee afdrukken van laarzen stonden in het stof. Ze wezen niet naar de uitgang, maar naar een muur.</p>
+    <p class="chronicleCliff">Achter die muur klonk heel zacht: drie stampen.</p>`
+  },
+  {
+    title:"🕯️ De Donkere Kerkers",
+    art:"🕯️  🌫️  🚪",
+    body:`<p>De oude kerkers werden afgesloten. Toch hoorden wachters 's nachts kettingen, druppelend water en voetstappen onder de stenen.</p>
+    <p>Soms waaide er koude mist omhoog door scheuren in de vloer. Andere keren doofden alle fakkels tegelijk.</p>
+    <p>De meest ervaren Stampertjes zeiden dat de Appelieten daar beneden anders bewogen. Alsof ze bevelen ontvingen.</p>
+    <p class="chronicleCliff">En toen werd er voor het eerst een gouden glans in het donker gezien.</p>`
+  },
+  {
+    title:"🌍 De Wereld Ontdekt het Kasteel",
+    art:"🌍  🏆  🏰",
+    body:`<p>Verhalen over het kasteel verspreidden zich tot ver buiten het dal. Nieuwe avonturiers kwamen hun geluk beproeven.</p>
+    <p>Scores verschenen op een wereldwijde ranglijst. In het Stampertjes Café werden tactieken gedeeld, bugs gemeld en wilde theorieën besproken.</p>
+    <p>Sommige spelers kwamen voor de punten. Anderen zochten Teddy. Een enkeling zocht vooral naar de deur uit de oude kaart.</p>
+    <p class="chronicleCliff">Toen plaatste iemand in het Café een bericht: “Ik heb de kroon gezien.”</p>`
+  },
+  {
+    title:"☕ Geruchten uit het Café",
+    art:"☕  💬  👑",
+    body:`<p>Niet ieder verhaal in het Café is waar. Waarschijnlijk.</p>
+    <p>Er wordt gesproken over een Appeliet die door muren kan lopen, een kamer waarin de tijd langzamer gaat en een melodie die alleen klinkt als alle lichten uit zijn.</p>
+    <p>Ook zou er ergens een sleutel bestaan die niet op een deur past, maar op een hoofdstuk.</p>
+    <p class="chronicleCliff">Opvallend genoeg verdween het bericht over die sleutel dezelfde nacht.</p>`
+  },
+  {
+    title:"👑 De Schaduw van de Appelkoning",
+    art:"🚪  👁️👁️  👑",
+    body:`<p><span class="chapterDrop">O</span>nder het oudste deel van het kasteel staat een poort die geen enkele smid heeft kunnen openen.</p>
+    <p>Op de steen erboven staat een kroon. Soms trilt de poort als een Appeliet wordt verslagen. Soms klinkt er aan de andere kant iets dat op applaus lijkt.</p>
+    <p>Niemand weet wie of wat er wacht. Maar één ding wordt steeds duidelijker: de Appelieten kwamen niet zomaar naar boven.</p>
+    <p class="chronicleCliff">Iemand heeft ze gestuurd.</p>`
+  },
+  {
+    title:"✍️ Jouw Hoofdstuk",
+    art:"📜  ✍️  💡",
+    body:`<p>De Kronieken zijn nog niet af. Nieuwe zalen worden ontdekt, nieuwe Appelieten verschijnen en iedere speler schrijft een klein stukje geschiedenis.</p>
+    <p>Heb jij een idee voor een level, vijand, geheim, power-up of eindbaas? Laat het achter in het <strong>Stampertjes Café</strong>.</p>
+    <p>Misschien wordt jouw idee ooit onderdeel van het kasteel.</p>
+    <p style="text-align:center;margin-top:24px"><strong>🙏 Speciale dank aan Vera voor het bugtesten.</strong></p>
+    <p style="text-align:center"><strong>Ontwikkeld door GJ Studios</strong></p>`
+  },
+  {
+    title:"❓ Hoofdstuk XIII",
+    art:"🔒  ?  🔒",
+    locked:true,
+    body:`<div class="chronicleLocked">
+      <div class="lock">🔒</div>
+      <p><strong>DIT HOOFDSTUK IS NOG NIET ONTDEKT...</strong></p>
+      <p>Ergens in een toekomstige versie verandert deze bladzijde.</p>
+      <p>Tot die tijd blijft de laatste pagina van de Kronieken verzegeld.</p>
+    </div>`
   }
 ];
 
 let chronicleIndex=0;
 let chronicleTurning=false;
 
+async function sfxPageTurn(){
+  const ready=await audio();
+  if(!ready||!audioCtx)return;
+  const now=audioCtx.currentTime;
+  const buffer=audioCtx.createBuffer(1,Math.floor(audioCtx.sampleRate*.11),audioCtx.sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<data.length;i++){
+    const fade=1-(i/data.length);
+    data[i]=(Math.random()*2-1)*fade*.06;
+  }
+  const source=audioCtx.createBufferSource();
+  const filter=audioCtx.createBiquadFilter();
+  const gain=audioCtx.createGain();
+  filter.type="highpass";
+  filter.frequency.value=650;
+  gain.gain.value=.20;
+  source.buffer=buffer;
+  source.connect(filter);filter.connect(gain);gain.connect(audioCtx.destination);
+  source.start(now);
+}
+
 function renderChroniclePage(direction=0){
   const page=chroniclePages[chronicleIndex];
-  chroniclePageContent.innerHTML=`<h3>${page.title}</h3>${page.body}`;
+  chroniclePageContent.innerHTML=`
+    <div class="chronicleChapter">HOOFDSTUK ${String(chronicleIndex+1).padStart(2,"0")}</div>
+    <h3>${page.title}</h3>
+    <div class="chronicleArt">${page.art||"🏰"}</div>
+    ${page.body}
+  `;
   chroniclePageNumber.textContent=`Pagina ${chronicleIndex+1} van ${chroniclePages.length}`;
   chroniclePrev.disabled=chronicleIndex===0;
   chronicleNext.disabled=chronicleIndex===chroniclePages.length-1;
@@ -536,6 +690,7 @@ activateButton(chroniclePrev,()=>{
   if(chronicleTurning||chronicleIndex===0)return;
   chronicleTurning=true;
   chronicleIndex--;
+  sfxPageTurn();
   renderChroniclePage(-1);
   setTimeout(()=>{chronicleTurning=false},380);
 });
@@ -544,6 +699,7 @@ activateButton(chronicleNext,()=>{
   if(chronicleTurning||chronicleIndex===chroniclePages.length-1)return;
   chronicleTurning=true;
   chronicleIndex++;
+  sfxPageTurn();
   renderChroniclePage(1);
   setTimeout(()=>{chronicleTurning=false},380);
 });
@@ -702,7 +858,7 @@ async function loadCafePosts(){
     renderCafePosts(posts);
   }catch(err){
     console.error(err);
-    cafePosts.innerHTML="<div>Het café is tijdelijk niet bereikbaar. Voer zo nodig de nieuwe v2.12.4 Supabase-SQL uit.</div>";
+    cafePosts.innerHTML="<div>Het Café is tijdelijk niet bereikbaar. Probeer het later opnieuw.</div>";
   }
 }
 
@@ -882,14 +1038,14 @@ activateButton(cafeSubmitBtn,async()=>{
     await loadCafePosts();
   }catch(err){
     console.error(err);
-    cafeStatus.textContent="Opslaan lukte niet. Is de v2.12.4 Café-SQL uitgevoerd?";
+    cafeStatus.textContent="Opslaan lukte niet. Probeer het later opnieuw.";
   }finally{
     cafeSubmitBtn.disabled=false;
     if(!cafeEditingPostId)cafeSubmitBtn.textContent="BERICHT PLAATSEN";
   }
 });
 
-const CURRENT_VERSION="2.11.1";
+const CURRENT_VERSION="2.15";
 function showUpdateOnce(){
   const seen=localStorage.getItem("stampertjesSeenVersion");
   if(seen!==CURRENT_VERSION){
@@ -1057,6 +1213,7 @@ function showGameOverPanel(){
   helpSection.classList.add("hidden");
   historySection.classList.add("hidden");
   roadmapSection.classList.add("hidden");
+  hallSection.classList.add("hidden");
   cafeSection.classList.add("hidden");
   statsSection.classList.add("hidden");
   startBtn.classList.add("hidden");
