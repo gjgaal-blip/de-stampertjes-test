@@ -1,4 +1,4 @@
-# De Stampertjes v2.12.4
+# De Stampertjes v2.12.5
 
 ## GitHub Pages
 Upload:
@@ -6,20 +6,14 @@ Upload:
 - manifest.json
 - the-castle-awakens.mp3
 
-## Supabase - nieuw voor v2.12.4
-Voer `setup_cafe_moderation_v2124.sql` één keer uit.
+## Supabase
+Gebruik dezelfde database als v2.12.4.
+Als `setup_cafe_moderation_v2124.sql` al is uitgevoerd, hoef je voor v2.12.5 niets nieuws in Supabase te doen.
 
-BELANGRIJK:
-Open het SQL-bestand en vervang eerst:
-`CHANGE_ME_GJ_ADMIN_CODE`
-door je eigen geheime beheercode.
+## Developer Console
+1. Open het hoofdmenu.
+2. Tik 5× snel op `A GJ STUDIOS GAME`.
+3. Voer je beheercode in.
+4. De Developer Console opent automatisch.
 
-## Beheermodus
-Tik op het hoofdscherm 5 keer snel op:
-`A GJ STUDIOS GAME`
-
-Voer daarna je beheercode in.
-In het Café verschijnt dan bij ieder bericht `🗑️ VERWIJDER`.
-
-Gewone spelers zien `✏️ BEWERK` en `🗑️ VERWIJDER`
-alleen bij berichten die vanaf hun eigen apparaat zijn geplaatst.
+Als beheer al actief is, opent 5× tikken direct de console.
