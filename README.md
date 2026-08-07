@@ -1,9 +1,12 @@
-# De Stampertjes v2.13.1 – iPhone Edition
+# De Stampertjes v2.13.2 – iPhone Edition
 
-Alles staat in één map zodat je alle bestanden via de iPhone naar GitHub kunt uploaden.
+Geen nieuwe Supabase-wijziging nodig.
 
-Voor deze testfix hoef je niets nieuws in Supabase uit te voeren.
+Upload alle bestanden naar de testrepository en overschrijf de bestaande bestanden.
 
-Belangrijkste wijziging:
-de muziekknop tijdens het spelen schakelt de soundtrack nu echt aan/uit.
-Tijdens gameplay staat het muziekvolume bewust veel lager dan in het menu.
+Belangrijkste tests:
+1. Startscherm: 🔊/🔇 naast v2.13.2.
+2. Start spel.
+3. Tik MUZIEK: UIT/AAN tijdens gameplay.
+4. Controleer dat de muziek hoorbaar schakelt.
+5. Test hetzelfde met M op laptop.

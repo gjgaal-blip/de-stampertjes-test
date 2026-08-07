@@ -212,7 +212,7 @@ function showMainMenu(){
   highscoreEntry.classList.add("hidden");
   document.getElementById("highscoreBox").classList.add("hidden");
   introText.innerHTML="<strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.";
-  if(musicOn&&state==="intro")startMenuMusic();
+  if(musicOn&&state==="intro")startMusic();
   updateMenuMusicIconVisibility();
 }
 function showMenuSection(section){
@@ -1029,11 +1029,6 @@ let startingGame=false;
 function startGame(){
   ensureGameplayControlsVisible();
   menuMusicIcon.classList.add("hidden");
-  if(musicOn&&!menuSoundtrack.paused){
-    fadeSoundtrack(GAMEPLAY_MUSIC_VOLUME,500,false);
-  }else{
-    stopMenuMusic(120);
-  }
   stopAttractMode();
   document.body.classList.remove("scoreMode");
   document.body.classList.add("gameplayActive");
@@ -1042,6 +1037,7 @@ function startGame(){
   playMenuBtn.textContent="SPELEN";
   audio();
   score=0;level=1;lives=3;state="play";
+  if(musicOn)startMusic();
   const gameStats=getStats();
   gameStats.gamesPlayed=(Number(gameStats.gamesPlayed)||0)+1;
   saveStats(gameStats);player.fastStamp=0;pauseOverlay.classList.add("hidden");pauseToggle.textContent="⏸ PAUZE";
@@ -1053,13 +1049,7 @@ function startGame(){
 }
 function showGameOverPanel(){
   document.body.classList.remove("gameplayActive");
-  if(musicOn){
-    if(menuSoundtrack.paused){
-      startMenuMusic();
-    }else{
-      fadeSoundtrack(MUSIC_VOLUME,500,false);
-    }
-  }
+  if(musicOn)startMusic();
   pendingScore=score;
   overlay.classList.remove("hidden");
   mainMenu.classList.add("hidden");
@@ -1387,7 +1377,7 @@ const sfxHurt=()=>tone(170,.22,"sawtooth",.08,70);
 
 const menuSoundtrack=document.getElementById("menuSoundtrack");
 const MUSIC_VOLUME=.16;
-const GAMEPLAY_MUSIC_VOLUME=.07;
+const GAMEPLAY_MUSIC_VOLUME=.11;
 let musicOn=true;
 let musicFadeFrame=null;
 let musicTimer=null;
@@ -1404,165 +1394,128 @@ function setMusicButton(){
   menuMusicIcon.classList.toggle("musicOff",!musicOn);
   menuMusicIcon.setAttribute("aria-label",musicOn?"Muziek uitzetten":"Muziek aanzetten");
 }
-function cancelMusicFade(){
-  if(musicFadeFrame){
-    cancelAnimationFrame(musicFadeFrame);
-    musicFadeFrame=null;
-  }
-}
-function fadeSoundtrack(target,duration=500,pauseAfter=false){
-  cancelMusicFade();
-  const startVolume=Number(menuSoundtrack.volume)||0;
-  const startTime=performance.now();
 
-  function tick(now){
-    const p=Math.min((now-startTime)/Math.max(duration,1),1);
-    menuSoundtrack.volume=startVolume+(target-startVolume)*p;
-    if(p<1){
-      musicFadeFrame=requestAnimationFrame(tick);
-    }else{
-      musicFadeFrame=null;
-      menuSoundtrack.volume=target;
-      if(pauseAfter&&target<=.001)menuSoundtrack.pause();
-    }
-  }
-  musicFadeFrame=requestAnimationFrame(tick);
-}
 function isMenuState(){
   return state==="intro"||state==="gameover";
 }
 function isGameplayState(){
-  return state==="play"||state==="paused"||state==="transition";
+  return state==="play"||state==="paused"||state==="transition"||state==="dying";
 }
-function currentMusicVolume(){
+function targetMusicVolume(){
+  if(state==="dying")return .05;
   return isGameplayState()?GAMEPLAY_MUSIC_VOLUME:MUSIC_VOLUME;
 }
-async function playMenuMusic(){
+
+function applyMusicVolume(){
+  menuSoundtrack.volume=targetMusicVolume();
+}
+
+async function startMusic(){
   if(!musicOn)return false;
   try{
+    applyMusicVolume();
     await menuSoundtrack.play();
     musicTimer=true;
-    fadeSoundtrack(currentMusicVolume(),650,false);
     return true;
   }catch(err){
-    console.warn("Muziek wacht op de eerste aanraking:",err);
+    console.warn("Muziek kon niet starten:",err);
     return false;
   }
 }
-function startMenuMusic(){return playMenuMusic();}
-function playMusicStep(){return playMenuMusic();}
-function stopMenuMusic(duration=250){
+
+function stopMusic(){
   musicTimer=null;
-  if(menuSoundtrack.paused){
-    menuSoundtrack.volume=0;
-    return;
-  }
-  fadeSoundtrack(0,duration,true);
+  menuSoundtrack.pause();
 }
-function duckMenuMusic(duration=400){
-  if(menuSoundtrack.paused||!musicOn||!isMenuState())return;
-  fadeSoundtrack(.06,80,false);
-  setTimeout(()=>{
-    if(musicOn&&isMenuState()&&!menuSoundtrack.paused){
-      fadeSoundtrack(MUSIC_VOLUME,220,false);
-    }
-  },duration);
-}
-async function setMusic(on){
+
+function setMusic(on){
   musicOn=Boolean(on);
   localStorage.setItem("stampertjesMusic",musicOn?"1":"0");
   setMusicButton();
-if(isCafeAdmin())cafeAdminStatus.classList.remove("hidden");
-
-function retryMenuMusic(){
-  if(musicOn&&menuSoundtrack.paused){
-    menuSoundtrack.play()
-      .then(()=>fadeSoundtrack(MUSIC_VOLUME,500,false))
-      .catch(()=>{});
-  }
-}
-document.getElementById("panel").addEventListener("mouseenter",retryMenuMusic,{once:true});
 
   if(musicOn){
-    await playMenuMusic();
-  }else{
-    stopMenuMusic(120);
-  }
-}
-async function tryImmediateMenuAutoplay(){
-  if(musicOn&&state==="intro")await playMenuMusic();
-}
-function handleFirstAudioGesture(){
-  // Start het MP3-bestand direct binnen dezelfde klik/tik.
-  // Eerst wachten op de Web Audio-engine kan de browsertoestemming laten verlopen.
-  if(musicOn&&menuSoundtrack.paused){
-    const playPromise=menuSoundtrack.play();
-    if(playPromise){
-      playPromise.then(()=>{
-        musicTimer=true;
-        fadeSoundtrack(MUSIC_VOLUME,650,false);
-      }).catch(err=>{
-        console.warn("Muziek kon nog niet starten:",err);
-      });
-    }
+    return startMusic();
   }
 
-  // Geluidseffecten mogen daarna worden ontgrendeld.
+  stopMusic();
+  return Promise.resolve(false);
+}
+
+// Compatibiliteit met bestaande menu/game code.
+function playMenuMusic(){return startMusic();}
+function startMenuMusic(){return startMusic();}
+function playMusicStep(){return startMusic();}
+function stopMenuMusic(){stopMusic();}
+function fadeSoundtrack(target,duration=0,pauseAfter=false){
+  // v2.13.2: bewust eenvoudig en betrouwbaar.
+  menuSoundtrack.volume=Math.max(0,Math.min(1,target));
+  if(pauseAfter&&target<=.001)menuSoundtrack.pause();
+}
+function duckMenuMusic(duration=400){
+  if(menuSoundtrack.paused||!musicOn)return;
+  const original=targetMusicVolume();
+  menuSoundtrack.volume=Math.min(original,.06);
+  setTimeout(()=>{
+    if(musicOn&&!menuSoundtrack.paused)menuSoundtrack.volume=targetMusicVolume();
+  },duration);
+}
+
+async function tryImmediateMenuAutoplay(){
+  if(musicOn&&state==="intro")await startMusic();
+}
+
+function handleFirstAudioGesture(){
+  if(musicOn&&menuSoundtrack.paused){
+    // Direct in dezelfde gebruikersactie proberen te starten.
+    startMusic();
+  }
   audio();
 }
-
-["pointerdown","mousedown","touchstart","keydown"].forEach(eventName=>{
+["pointerdown","touchstart","mousedown","keydown"].forEach(eventName=>{
   window.addEventListener(eventName,handleFirstAudioGesture,{
     passive:true,
-    capture:true,
-    once:false
+    capture:true
   });
 });
+
+function toggleMusicFromUser(){
+  const next=!musicOn;
+  setMusicButton();
+  if(next){
+    musicOn=true;
+    localStorage.setItem("stampertjesMusic","1");
+    setMusicButton();
+    startMusic();
+  }else{
+    musicOn=false;
+    localStorage.setItem("stampertjesMusic","0");
+    setMusicButton();
+    stopMusic();
+  }
+  audio();
+}
 
 musicToggle.addEventListener("pointerdown",e=>{
   e.preventDefault();
   e.stopPropagation();
-
-  const turnOn=!musicOn;
-  musicOn=turnOn;
-  localStorage.setItem("stampertjesMusic",musicOn?"1":"0");
-  setMusicButton();
-
-  if(turnOn){
-    menuSoundtrack.play()
-      .then(()=>{
-        musicTimer=true;
-        fadeSoundtrack(currentMusicVolume(),500,false);
-      })
-      .catch(err=>console.warn("Muziek kon niet worden ingeschakeld:",err));
-  }else{
-    stopMenuMusic(120);
-  }
-
-  audio();
+  toggleMusicFromUser();
 });
+
+musicToggle.addEventListener("click",e=>{
+  // Desktop fallback als pointerdown niet geleverd wordt.
+  if(e.detail===0){
+    e.preventDefault();
+    e.stopPropagation();
+    toggleMusicFromUser();
+  }
+});
+
 menuMusicIcon.addEventListener("pointerdown",e=>{
   e.preventDefault();
   e.stopPropagation();
-
-  const turnOn=!musicOn;
-  musicOn=turnOn;
-  localStorage.setItem("stampertjesMusic",musicOn?"1":"0");
-  setMusicButton();
-
   menuMusicIcon.classList.add("musicPulse");
   setTimeout(()=>menuMusicIcon.classList.remove("musicPulse"),160);
-
-  if(turnOn){
-    // Ook hier direct binnen de muisklik afspelen.
-    menuSoundtrack.play()
-      .then(()=>fadeSoundtrack(currentMusicVolume(),650,false))
-      .catch(err=>console.warn("Muziek kon niet worden ingeschakeld:",err));
-  }else{
-    stopMenuMusic(180);
-  }
-
-  audio();
+  toggleMusicFromUser();
 });
 
 menuSoundtrack.addEventListener("error",()=>{
@@ -1571,14 +1524,15 @@ menuSoundtrack.addEventListener("error",()=>{
   menuMusicIcon.textContent="⚠️";
   menuMusicIcon.title="Muziekbestand niet gevonden";
 });
+
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){
     menuSoundtrack.pause();
-    menuSoundtrack.volume=0;
   }else if(musicOn){
-    playMenuMusic();
+    startMusic();
   }
 });
+
 setMusicButton();
 
 const pauseToggle=document.getElementById("pauseToggle");
@@ -1593,7 +1547,7 @@ let previousState="play";
 let pauseLocked=false;
 
 function togglePause(){
-  if(musicOn&&!menuSoundtrack.paused)fadeSoundtrack(GAMEPLAY_MUSIC_VOLUME,180,false);
+  if(musicOn&&!menuSoundtrack.paused)applyMusicVolume();
   if(pauseLocked)return;
   if(state==="intro"||state==="gameover"||state==="transition")return;
 
@@ -1821,8 +1775,7 @@ window.addEventListener("keydown",e=>{
   }
 
   if((e.key==="m"||e.key==="M")&&!e.repeat){
-    audio();
-    setMusic(!musicOn);
+    toggleMusicFromUser();
   }
 
   if(e.key==="Escape"&&!e.repeat){
@@ -1973,7 +1926,7 @@ function animateDeath(startTime,duration,isGameOver){
 }
 
 function showDeathSequence(isGameOver){
-  if(musicOn&&!menuSoundtrack.paused)fadeSoundtrack(.04,120,false);
+  if(musicOn&&!menuSoundtrack.paused){ menuSoundtrack.volume=.05; }
   if(deathAnimating)return;
   deathAnimating=true;
   state="dying";
@@ -2006,6 +1959,7 @@ function showDeathSequence(isGameOver){
       ensureGameplayControlsVisible();
       startFreeze=90;
       state="play";
+      if(musicOn&&!menuSoundtrack.paused)applyMusicVolume();
       document.body.classList.add("gameplayActive");
     }
   },2200);
