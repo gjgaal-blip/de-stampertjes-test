@@ -1194,7 +1194,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.20-beta4";
+const CURRENT_VERSION="2.20-beta4.2";
 function showUpdateOnce(){
   const seen=localStorage.getItem("stampertjesSeenVersion");
   if(seen!==CURRENT_VERSION){
@@ -1579,7 +1579,10 @@ function drawIntroDust(x,y,size){
 }
 function drawIntro(){
   introFrame++;
-  const phase=introFrame%420;
+
+  // Beta 4.2: langere attract-mode van ongeveer 18 seconden.
+  // De demo laat nu echt lopen, stampen, vangen, uitschakelen en klimmen zien.
+  const phase=introFrame%1080;
 
   ictx.fillStyle="#fff";
   ictx.fillRect(0,0,420,180);
@@ -1592,79 +1595,143 @@ function drawIntro(){
   drawIntroCastleLadder(70,48,96);
   drawIntroCastleLadder(282,96,144);
 
-  // Extra attract-mode detail: een Appeliet klimt rustig op de linker ladder.
-  const ladderCycle=introFrame%300;
-  if(ladderCycle<110){
-    const climbProgress=ladderCycle/110;
-    drawIntroApple(66,70-(climbProgress*46),false,false);
+  // Fase 1: rustige opening / Appeliet beweegt over bovenste verdieping.
+  if(phase<250){
+    const ax=320-(phase*.65);
+    drawIntroApple(ax,22,false,false);
   }
 
+  // Fase 2: Appeliet gebruikt de linker ladder.
+  if(phase>=250&&phase<390){
+    const p=(phase-250)/140;
+    drawIntroApple(66,70-(p*46),false,false);
+  }
+
+  // Het gat wordt later pas gemaakt en blijft daarna open.
   let crackStage=0;
   let holeOpen=false;
-  if(phase>=80&&phase<115)crackStage=1;
-  if(phase>=115&&phase<150)crackStage=2;
-  if(phase>=150)holeOpen=true;
+  if(phase>=430&&phase<475)crackStage=1;
+  if(phase>=475&&phase<520)crackStage=2;
+  if(phase>=520)holeOpen=true;
 
   drawIntroCastleFloor(48);
   drawIntroCastleFloor(96);
   drawIntroCastleFloor(144,holeOpen?274:null,crackStage);
 
-  // Player movement and stamping
-  let px=34,pose="walk";
-  if(phase<70){
-    px=34+phase*2.8;
-  }else if(phase<150){
-    px=230;pose="stamp";
-  }else if(phase<250){
-    px=230;
-  }else if(phase<330){
-    px=230+(phase-250)*.55;
-  }else if(phase<400){
-    px=274;pose="stamp";
-  }else{
-    px=274-(phase-400)*3.2;
+  // Hoofdspeler: verschillende acties over de hele demo.
+  let px=28,py=116,pose="walk";
+
+  // 0–260: van links naar het midden lopen.
+  if(phase<260){
+    px=28+(phase/260)*178;
+    py=116;
+  }
+  // 260–390: even wachten en Appeliet op ladder laten zien.
+  else if(phase<390){
+    px=206;py=116;
+  }
+  // 390–520: naar stampplek lopen en drie keer stampen.
+  else if(phase<430){
+    px=206+((phase-390)/40)*38;py=116;
+  }
+  else if(phase<520){
+    px=244;py=116;pose="stamp";
+  }
+  // 520–670: wachten tot Appeliet in het gat valt.
+  else if(phase<670){
+    px=244;py=116;
+  }
+  // 670–790: Appeliet uitschakelen.
+  else if(phase<790){
+    px=270;py=116;pose=(Math.floor((phase-670)/20)%2===0)?"stamp":"walk";
+  }
+  // 790–900: naar ladder lopen.
+  else if(phase<900){
+    px=270+((phase-790)/110)*12;py=116;
+  }
+  // 900–1010: ladder opklimmen.
+  else if(phase<1010){
+    const p=(phase-900)/110;
+    px=282;py=116-(p*48);
+  }
+  // 1010–1080: bovenaan naar rechts lopen.
+  else{
+    px=282+((phase-1010)/70)*82;py=68;
   }
 
-  // Apple approaches and gets trapped
-  let ax=355,ay=116,trapped=false,panic=false,visible=true;
-  if(phase<150){
-    ax=355-(phase*.45);
-  }else if(phase<235){
+  // Appeliet op onderste verdieping nadert het toekomstige gat.
+  let ax=365,ay=116,trapped=false,panic=false,visible=true;
+  if(phase<390){
+    visible=false;
+  }else if(phase<520){
+    ax=365-((phase-390)/130)*58;
+    ay=116;
+  }else if(phase<650){
+    ax=307-((phase-520)/130)*20;
+    ay=116;
+  }else if(phase<790){
     ax=287;
     ay=128;
-    trapped=true;panic=true;
-  }else if(phase<330){
-    ax=287;ay=128;trapped=true;panic=true;
-  }else if(phase<365){
-    ax=287;ay=132;trapped=true;panic=true;
+    trapped=true;
+    panic=true;
   }else{
     visible=false;
   }
 
-  drawIntroPlayer(px,116,pose);
+  drawIntroPlayer(px,py,pose);
   if(visible)drawIntroApple(ax,ay,trapped,panic);
 
-  // Text effects
-  ictx.font="bold 12px monospace";
-  if(phase>=80&&phase<115)ictx.fillText("KRAK!",235,112);
-  if(phase>=115&&phase<150)ictx.fillText("KRAK!!",232,112);
-  if(phase>=150&&phase<175)ictx.fillText("GAT!",242,112);
-  if(phase>=330&&phase<350)ictx.fillText("BAM!",250,106);
-  if(phase>=350&&phase<370)ictx.fillText("BAM!!",246,106);
-  if(phase>=365&&phase<400){
-    drawIntroDust(292,136,Math.min((phase-365)*.7,14));
-    ictx.fillText("+300",276,105);
+  // Tweede Appeliet in de achtergrond tijdens het laatste deel.
+  if(phase>=820&&phase<1080){
+    const bx=40+((phase-820)*.52)%130;
+    drawIntroApple(bx,70,false,false);
   }
 
-  // Teddy easter egg runs through intro when active
+  // Duidelijke arcade-achtige tekstmeldingen per stap.
+  ictx.font="bold 11px monospace";
+
+  if(phase<90){
+    ictx.fillText("LOK DE APPELIETEN...",135,166);
+  }
+  if(phase>=430&&phase<460)ictx.fillText("STAMP 1 — KRAK!",210,108);
+  if(phase>=460&&phase<490)ictx.fillText("STAMP 2 — KRAK!!",198,108);
+  if(phase>=490&&phase<530)ictx.fillText("STAMP 3 — GAT!",205,108);
+
+  if(phase>=640&&phase<690){
+    ictx.fillText("GEVANGEN!",266,102);
+  }
+  if(phase>=690&&phase<730)ictx.fillText("BAM!",258,101);
+  if(phase>=730&&phase<770)ictx.fillText("BAM!!",254,101);
+
+  if(phase>=770&&phase<820){
+    drawIntroDust(292,136,Math.min((phase-770)*.35,13));
+    ictx.fillText("+300",278,100);
+  }
+
+  if(phase>=895&&phase<980){
+    ictx.fillText("KLIM NAAR DE VOLGENDE VERDIEPING",102,166);
+  }
+
+  if(phase>=1010){
+    ictx.fillText("KLAAR VOOR HET KASTEEL?",127,166);
+  }
+
+  // Extra korte instructietekst bovenin — wisselt rustig.
+  ictx.font="9px monospace";
+  if(phase>=350&&phase<600)ictx.fillText("3× STAMPEN MAAKT EEN GAT",125,18);
+  else if(phase>=600&&phase<840)ictx.fillText("VANG · STAMP · SCOOR",150,18);
+  else if(phase>=840)ictx.fillText("GEBRUIK LADDERS OM TE ONTSNAPPEN",112,18);
+
+  // Teddy easter egg blijft werken.
   if(teddyEggActive){
-    const tx=20+((introFrame*1.8)%360);
+    const tx=20+((introFrame*1.1)%360);
     ictx.font="20px monospace";
     ictx.fillText("ᓚᘏᗢ",tx,38);
   }
 
   requestAnimationFrame(drawIntro);
 }
+
 window.addEventListener("load",()=>{
   setMusicContext("menu");
   openIntro();
@@ -2118,7 +2185,14 @@ function spawnLevel(){
     });
   }
   clearStartZone();
-  if(gameScreenTitle)gameScreenTitle.setAttribute("data-room",currentCastleTheme().name);
+  // Beta 4.1: de thema-array staat later in het bestand.
+  // Tijdens de allereerste startup mag dat de game niet blokkeren.
+  if(gameScreenTitle){
+    try{
+      const room=currentCastleTheme();
+      if(room&&room.name)gameScreenTitle.setAttribute("data-room",room.name);
+    }catch{}
+  }
 }
 spawnLevel();
 
@@ -2773,6 +2847,12 @@ function drawBonus(){
 }
 
 function draw(){
+  if(gameScreenTitle){
+    try{
+      const room=currentCastleTheme();
+      if(room&&room.name)gameScreenTitle.setAttribute("data-room",room.name);
+    }catch{}
+  }
   ctx.save();
   if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
   ctx.fillStyle="#fff";ctx.fillRect(-10,-10,W+20,H+20);

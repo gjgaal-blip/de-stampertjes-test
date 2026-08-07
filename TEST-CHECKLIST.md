@@ -1,43 +1,21 @@
-# v2.20 Beta 4
+# v2.20 Beta 4.2
 
-## Start/demo
-- [ ] Demo heeft stenen kasteelachtergrond
-- [ ] Demo heeft fakkels/mist
-- [ ] Demo toont nog correct speler/Appeliet/gat
-- [ ] Startmenu voelt onderdeel van Castle UI
+## Demo
+- [ ] Demo blijft circa 18 seconden lopen voordat hij herhaalt
+- [ ] Speler loopt zichtbaar door de zaal
+- [ ] Appeliet beweegt over de verdieping
+- [ ] Appeliet gebruikt een ladder
+- [ ] 3 stampmomenten zichtbaar
+- [ ] Gat verschijnt
+- [ ] Appeliet raakt gevangen
+- [ ] BAM/BAM en +300 zichtbaar
+- [ ] Speler loopt naar ladder
+- [ ] Speler klimt omhoog
+- [ ] Demo start daarna opnieuw
 
-## Gameplay
-- [ ] Entreehal zichtbaar
-- [ ] Wapenzaal zichtbaar
-- [ ] Bibliotheek zichtbaar
-- [ ] Kerkers zichtbaar
-- [ ] Troonzaal zichtbaar
-- [ ] HUD toont zaalnaam
-- [ ] Stenen vloeren/ladders in alle zalen
-- [ ] Speler/Appelieten hebben subtiele schaduw
-- [ ] Collision/gaten/ladders werken hetzelfde
-- [ ] Framerate goed op iPhone
-
-## Muziek
-- [ ] Menu = De Stampertjes
-- [ ] Gameplay = The Castle Awakens
-- [ ] Café = Crystal Spire 2
-- [ ] Kronieken = Crystal Spire
-- [ ] Hall of Fame = De Stampertjes 2
-- [ ] Terug naar menu schakelt terug
-- [ ] Fade-in hoorbaar
-- [ ] Muziekknop blijft werken na meerdere wissels
-
-## Menu's
-- [ ] Café Castle UI
-- [ ] Hall of Fame eregalerij-look
-- [ ] Kronieken monochrome boekstijl
-- [ ] Statistieken Castle UI
-- [ ] Uitleg bevat geen toekomstige gekleurde Appelieten
-
-## Regressie
-- [ ] Café plaatsen/bewerken/verwijderen werkt
-- [ ] Café-tellers werken
-- [ ] Statistieken online/lokaal werken
-- [ ] Hall of Fame data werkt
-- [ ] Admin Portal werkt
+## Game
+- [ ] SPELEN-knop werkt
+- [ ] Gameplay start normaal
+- [ ] Muziek wisselt
+- [ ] Castle UI werkt
+- [ ] Café / Statistieken / Hall of Fame werken
