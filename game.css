@@ -827,3 +827,17 @@ body.attractMode #panel{max-width:520px}
     margin-bottom: 6px;
   }
 }
+
+/* v2.20 Beta 6: mobile gameplay controls */
+@media (max-width:600px){
+  body.gameplayActive #wrap{display:flex;flex-direction:column;align-items:center;width:100%;min-height:100dvh}
+  body.gameplayActive #title{order:1;margin:2px 0 4px}
+  body.gameplayActive #gameOptions{order:2;width:calc(100vw - 16px);display:flex;justify-content:flex-end;gap:8px;margin:0 0 6px}
+  body.gameplayActive #gameOptions button{min-height:38px;padding:5px 10px;font-size:11px}
+  body.gameplayActive #game{order:3;width:calc(100vw - 8px)!important;max-width:none!important;height:auto!important}
+  body.gameplayActive #controlLabels{order:4;width:calc(100vw - 16px);margin-top:5px}
+  body.gameplayActive #controls{order:5;width:calc(100vw - 16px);margin-top:2px;gap:8px}
+  body.gameplayActive #keyboardHint{order:6}
+  body.gameplayActive .small{order:7;margin-top:5px;font-size:10px}
+  body.gameplayActive #controls button{min-height:62px}
+}
