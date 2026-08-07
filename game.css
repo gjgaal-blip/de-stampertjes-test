@@ -1138,3 +1138,5 @@ body:not(.attractMode) #panel #introCanvas{
   #updateCard h2{margin:7px 0}
   #updateCard .updateList{font-size:11px;gap:7px}
 }
+
+#shareScoreBox{margin-top:14px;padding:12px;border:2px solid #111;text-align:center}#shareScoreBox p{font-size:11px;line-height:1.45;margin:8px 0 10px}#shareScoreBtn{font-weight:900;border-width:2px;width:100%}
