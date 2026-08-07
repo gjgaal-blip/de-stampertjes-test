@@ -1,3 +1,11 @@
-# De Stampertjes v2.20 RC1
+# De Stampertjes v2.20 RC2
 
-Release Candidate op basis van Beta 6.9.6. Nieuw: deelbare Game Over score challenge via native deelmenu, met clipboard fallback. Voer SQL 005 uit na SQL 004.
+Gebaseerd op RC1.
+
+Nieuw in RC2:
+- Developer Portal > Recente activiteit toont nu de spelersnaam in plaats van de korte device-code.
+- De koppeling gebeurt lokaal op basis van `device_id` uit de bestaande dashboard-spelerslijst.
+- Alleen voor oude/orphaned events zonder bijbehorend spelerprofiel wordt nog teruggevallen op `#device-id`.
+- Geen databasewijziging en geen nieuwe SQL nodig.
+
+Alle RC1-functies, score sharing, Teddy tracking en player cleanup blijven behouden.
