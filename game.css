@@ -890,3 +890,68 @@ body.attractMode #panel{max-width:520px}
     padding-bottom:12px;
   }
 }
+
+
+/* =========================================================
+   v2.20 Beta 6.3 — Fullscreen arcade attract mode
+   Normal menu demo remains compact.
+   ========================================================= */
+body.attractMode{
+  overflow:hidden !important;
+  background:#111;
+}
+
+body.attractMode #overlay{
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  z-index:9000;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  background:#111 !important;
+}
+
+body.attractMode #overlay > *:not(#introCanvas):not(#attractPrompt){
+  display:none !important;
+}
+
+body.attractMode #introCanvas{
+  display:block !important;
+  width:min(100vw, calc(100dvh * 2.3333)) !important;
+  height:auto !important;
+  max-width:none !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  border:0 !important;
+  box-shadow:none !important;
+  image-rendering:pixelated;
+}
+
+body.attractMode #attractPrompt{
+  display:block !important;
+  position:fixed !important;
+  left:50%;
+  bottom:max(22px, calc(env(safe-area-inset-bottom) + 12px));
+  transform:translateX(-50%);
+  z-index:9010;
+  padding:8px 13px;
+  border:1px solid rgba(255,255,255,.65);
+  background:rgba(17,17,17,.76);
+  color:#fff;
+  font:700 10px/1.2 monospace;
+  letter-spacing:2px;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+@media (orientation:portrait){
+  body.attractMode #introCanvas{
+    width:100vw !important;
+    height:auto !important;
+  }
+}

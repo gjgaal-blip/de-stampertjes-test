@@ -1,16 +1,12 @@
-# De Stampertjes v2.20 Beta 6.2
+# De Stampertjes v2.20 Beta 6.3 — Fullscreen Attract Mode
 
-Gerichte iPhone touch/scroll-update op Beta 6.1.
-
-## Nieuw
-- Een menuoptie opent alleen bij een echte korte tik.
-- Beweegt je vinger meer dan 10 px, dan wordt de beweging als scroll gezien.
-- Na een scroll wordt een menu-tik circa 0,28 seconde geblokkeerd.
-- De synthetische Safari-click na `touchend` wordt onderdrukt.
-- Meer verticale ruimte tussen menuknoppen op kleine schermen.
-- Desktop/muisbediening blijft gewone click-bediening.
-
-De grotere demo, vier speelverdiepingen, veiligere level-layouts,
-drie audiostanden en bonusfix blijven behouden.
+- Normale demo blijft compact in het startscherm.
+- Na 12 seconden zonder activiteit neemt de demo het volledige scherm over.
+- Tik, swipe of toets brengt direct het gewone menu terug.
+- Attract mode blijft spelen en kiest iedere 60 seconden een nieuw willekeurig scenario.
+- Scenario's variëren startmoment en ladderroutes, zodat de demo minder voorspelbaar oogt.
+- De demo gebruikt bewust geen externe AI: alles blijft lokaal, snel en stabiel.
+- Versielabels zijn opgeschoond naar Beta 6.3 / Fullscreen Attract.
+- Beta 6.2 touch-scroll fix blijft behouden.
 
 Geen Supabase-wijziging nodig.
