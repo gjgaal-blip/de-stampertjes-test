@@ -722,3 +722,9 @@ body.attractMode #panel{max-width:520px}
   border-bottom:1px dotted rgba(255,255,255,.45);
   padding:6px 4px;margin:4px 0 8px;font-size:10px;line-height:1.35;opacity:.85;
 }
+
+/* v2.20 Beta 2 */
+#betaBadge{
+  border-style:double;
+  border-width:3px;
+}
