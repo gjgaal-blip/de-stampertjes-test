@@ -1,10 +1,8 @@
-# De Stampertjes v2.20 Beta 6.9.1 — Player Cleanup
+# De Stampertjes v2.20 Beta 6.9.2 — Ladder Polish
 
-- Per speler staat in de Developer Portal een knop `🗑️ VERWIJDER SPELER`.
-- De bevestiging toont spelersnaam en verkort device-ID.
-- `admin_delete_player` vereist de bestaande admincode.
-- Spelerprofiel en gekoppelde analytics-events worden verwijderd.
-- Highscores en Café-berichten blijven behouden.
-- Een verwijderd device kan later opnieuw als speler worden aangemaakt wanneer het weer speelt.
-
-Voer eerst `003_v220_beta691_delete_player.sql` uit in Supabase.
+- Wapenzaal / level 2 aangepast: de ladders op opeenvolgende verdiepingen staan niet meer vrijwel recht boven elkaar.
+- Alle vijf zaal-layouts zijn opnieuw gecontroleerd.
+- Tussen iedere ladder en de dichtstbijzijnde ladder in de volgende verdiepingsband zit minimaal 65 px horizontale afstand.
+- Iedere onderste verdieping houdt twee bereikbare vluchtladders.
+- De automatische fakkel-verschuiving blijft actief.
+- Developer Portal, speler-verwijdering en live analytics blijven behouden.
