@@ -1167,7 +1167,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.20-beta5";
+const CURRENT_VERSION="2.20-beta5.1";
 function showUpdateOnce(){
   const seen=localStorage.getItem("stampertjesSeenVersion");
   if(seen!==CURRENT_VERSION){
@@ -2129,35 +2129,77 @@ function startEnemyLadder(e,l,targetFloor){
 
 
 function drawDeathScene(progress){
-  dctx.fillStyle="#fff";
-  dctx.fillRect(0,0,deathCanvas.width,deathCanvas.height);
+  const w=deathCanvas.width;
+  const h=deathCanvas.height;
+
+  // Monochrome stone chamber instead of the old empty white screen.
+  dctx.fillStyle="#c7c7c7";
+  dctx.fillRect(0,0,w,h);
+
+  dctx.strokeStyle="#888";
+  dctx.lineWidth=1;
+  for(let y=0,row=0;y<h;y+=16,row++){
+    dctx.beginPath();dctx.moveTo(0,y);dctx.lineTo(w,y);dctx.stroke();
+    const off=row%2?15:0;
+    for(let x=-off;x<w;x+=30){
+      dctx.beginPath();dctx.moveTo(x,y);dctx.lineTo(x,y+16);dctx.stroke();
+    }
+  }
+
+  // Side columns and floor.
+  dctx.fillStyle="#888";
+  dctx.fillRect(0,0,10,h);
+  dctx.fillRect(w-10,0,10,h);
+
+  dctx.fillStyle="#333";
+  dctx.fillRect(8,124,w-16,9);
+  dctx.fillStyle="#efefef";
+  dctx.fillRect(8,124,w-16,2);
+
+  // Torch flicker in the death scene.
+  const torch=(x,y,phase)=>{
+    const f=.5+.5*Math.sin(progress*28+phase);
+    dctx.fillStyle="#333";
+    dctx.fillRect(x-2,y+5,4,9);
+    dctx.fillRect(x-6,y+12,12,2);
+    dctx.fillStyle="#fff";
+    dctx.beginPath();
+    dctx.moveTo(x,y-11-f*4);
+    dctx.lineTo(x-4,y+3);
+    dctx.lineTo(x+4,y+3);
+    dctx.closePath();
+    dctx.fill();
+  };
+  torch(35,57,0);
+  torch(w-35,57,2);
+
+  // Enemy stays visible as the cause of the hit.
   dctx.fillStyle="#111";
-  dctx.strokeStyle="#111";
-
-  // Ground
-  dctx.fillRect(10,125,220,7);
-
-  // Appleiet
   dctx.beginPath();
   dctx.arc(168,104,15,0,Math.PI*2);
   dctx.fill();
   dctx.fillRect(166,83,4,8);
   dctx.fillRect(156,117,7,5);
   dctx.fillRect(174,117,7,5);
-  dctx.fillStyle="#fff";
+  dctx.fillStyle="#ddd";
   dctx.fillRect(161,99,3,3);
   dctx.fillRect(173,99,3,3);
-  dctx.fillStyle="#111";
 
-  // Player falls backwards in stages
+  // Short hit freeze, then the player tips backwards and sinks down.
+  const freeze=Math.min(1,progress/.14);
+  const fallP=Math.max(0,(progress-.14)/.58);
+  const settleP=Math.max(0,(progress-.72)/.28);
+
   const x=78;
-  const y=94-Math.sin(Math.min(progress,0.55)*Math.PI)*18;
-  const angle=Math.min(progress*1.8,1.4);
+  const hop=Math.sin(Math.min(fallP,1)*Math.PI)*14;
+  const y=94-hop+(settleP*11);
+  const angle=Math.min(fallP*1.25,1.25);
+
   dctx.save();
   dctx.translate(x+12,y+14);
   dctx.rotate(-angle);
   dctx.translate(-12,-14);
-
+  dctx.fillStyle="#111";
   dctx.fillRect(7,0,10,8);
   dctx.fillRect(3,8,18,13);
   dctx.fillRect(0,12,4,8);
@@ -2166,16 +2208,45 @@ function drawDeathScene(progress){
   dctx.fillRect(14,21,7,7);
   dctx.restore();
 
-  // Stars
-  if(progress>.35){
-    dctx.font="18px monospace";
-    dctx.fillText("✦",48,58);
-    dctx.fillText("✦",92,48);
-    dctx.fillText("✦",120,66);
+  // Dust / little stone particles appear on impact.
+  if(progress>.32){
+    const p=Math.min(1,(progress-.32)/.5);
+    dctx.fillStyle="#555";
+    dctx.globalAlpha=1-p*.65;
+    const particles=[
+      [-26,-3],[-18,-13],[-8,-20],[8,-18],[18,-11],[27,-4]
+    ];
+    particles.forEach(([dx,dy],i)=>{
+      const spread=p*(12+i%3*4);
+      dctx.fillRect(
+        Math.round(x+12+dx*(.25+p*.8)),
+        Math.round(119+dy*p-spread*.15),
+        i%2?3:4,
+        i%2?3:4
+      );
+    });
+    dctx.globalAlpha=1;
   }
 
+  // Low drifting mist.
+  dctx.fillStyle="#eee";
+  dctx.globalAlpha=.35;
+  for(let i=0;i<3;i++){
+    const mx=((progress*95+i*85)%(w+70))-40;
+    dctx.beginPath();
+    dctx.ellipse(mx,132+i%2*5,38,6,0,0,Math.PI*2);
+    dctx.fill();
+  }
+  dctx.globalAlpha=1;
+
+  dctx.fillStyle="#111";
   dctx.font="bold 14px monospace";
-  if(progress>.12)dctx.fillText("BAM!",92,28);
+  if(progress>.10&&progress<.52)dctx.fillText("BAM!",92,28);
+
+  if(progress>.68){
+    dctx.font="10px monospace";
+    dctx.fillText("HET KASTEEL GEEFT NIET ZOMAAR OP...",24,151);
+  }
 }
 
 function animateDeath(startTime,duration,isGameOver){
@@ -2204,11 +2275,11 @@ function showDeathSequence(isGameOver){
 
   deathOverlay.classList.remove("hidden");
   sfxHurt();
-  animateDeath(performance.now(),1150,isGameOver);
+  animateDeath(performance.now(),1450,isGameOver);
 
   setTimeout(()=>{
-    deathText.textContent=isGameOver?"Eindscore wordt klaargemaakt...":"Nieuw leven over 1...";
-  },1150);
+    deathText.textContent=isGameOver?"Eindscore wordt klaargemaakt...":"Het kasteel zet je weer op de been...";
+  },1450);
 
   setTimeout(()=>{
     deathOverlay.classList.add("hidden");
@@ -2225,7 +2296,7 @@ function showDeathSequence(isGameOver){
       if(musicOn&&!menuSoundtrack.paused)applyMusicVolume();
       document.body.classList.add("gameplayActive");
     }
-  },2200);
+  },2450);
 }
 
 function updateEnemies(){
@@ -2531,14 +2602,77 @@ function drawEffects(){
 
 function drawBonus(){
   if(!bonus)return;
-  const x=bonus.x,y=bonus.y;
+
+  const baseX=bonus.x;
+  const baseY=bonus.y;
+  const floatY=Math.sin(frame*.10)*2;
+  const x=baseX;
+  const y=baseY+floatY;
+
+  // Pulse only the item itself — never a white rectangle behind it.
+  const expiring=bonus.timer<120;
+  const pulse=expiring ? (.55+.45*Math.abs(Math.sin(frame*.28))) : 1;
+
   ctx.save();
-  ctx.font="bold 16px monospace";
-  const symbol=bonus.type==="cherry"?"●●":bonus.type==="banana"?")":bonus.type==="star"?"★":"◷";
-  ctx.fillText(symbol,x-8,y);
-  if(bonus.timer<120 && Math.floor(bonus.timer/8)%2===0){
-    ctx.fillStyle="#fff";ctx.fillRect(x-12,y-18,30,24);
+  ctx.globalAlpha=pulse;
+
+  // Small shadow grounds the item on the castle floor.
+  ctx.globalAlpha*=.20;
+  ctx.fillStyle="#111";
+  ctx.beginPath();
+  ctx.ellipse(x,y+8,13,3,0,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.globalAlpha=pulse;
+  ctx.fillStyle="#111";
+  ctx.strokeStyle="#111";
+  ctx.lineWidth=2;
+
+  // About 40–50% larger than the old 16px text symbols.
+  if(bonus.type==="banana"){
+    // Pixel-ish banana crescent.
+    ctx.lineWidth=5;
+    ctx.beginPath();
+    ctx.arc(x-1,y-7,12,-.35*Math.PI,.55*Math.PI);
+    ctx.stroke();
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(x+8,y-15);ctx.lineTo(x+12,y-18);
+    ctx.stroke();
+  }else if(bonus.type==="cherry"){
+    ctx.beginPath();ctx.arc(x-7,y-4,7,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(x+7,y-3,7,0,Math.PI*2);ctx.fill();
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(x-5,y-10);ctx.lineTo(x+1,y-21);
+    ctx.lineTo(x+7,y-9);
+    ctx.stroke();
+  }else if(bonus.type==="star"){
+    ctx.font="bold 27px monospace";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText("★",x,y-5);
+  }else{
+    // Clock: larger and clearer than old ◷ glyph.
+    ctx.beginPath();
+    ctx.arc(x,y-6,12,0,Math.PI*2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x,y-6);ctx.lineTo(x,y-14);
+    ctx.moveTo(x,y-6);ctx.lineTo(x+7,y-2);
+    ctx.stroke();
+    ctx.fillRect(x-2,y-21,4,3);
   }
+
+  // Thin grey halo makes bonuses readable against light stone,
+  // without ever becoming a solid white box.
+  ctx.globalAlpha=.16*pulse;
+  ctx.strokeStyle="#555";
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.arc(x,y-6,17,0,Math.PI*2);
+  ctx.stroke();
+
   ctx.restore();
 }
 

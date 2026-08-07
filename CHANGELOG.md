@@ -1,8 +1,9 @@
 # De Stampertjes
 
-## v2.20 Beta 5
-- Opnieuw opgebouwd vanaf stabiele v2.15.5.
-- Lange attract mode toegevoegd.
-- Castle-rendering opnieuw en veilig geïntegreerd.
-- Muziekcontexten opnieuw geïntegreerd.
-- Beta 4.x regressies niet meegenomen.
+## v2.20 Beta 5.1
+- Grotere bonusicoontjes.
+- Wit knippervlak achter verdwijnende bonussen verwijderd.
+- Bonusitems krijgen zweef-, pulse- en schaduweffect.
+- Nieuwe Castle-style doodanimatie.
+- Doodscene met fakkels, steenwand, mist en impactdeeltjes.
+- Stabiele Beta 5-basis behouden.
