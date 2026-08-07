@@ -79,9 +79,48 @@ function renderPlayers(list){
         <div><span>Versie</span><strong>${esc(p.last_version||"ONBEKEND")}</strong></div>
         <div><span>Café posts</span><strong>${n(p.cafe_posts)}</strong></div>
         <div><span>Café likes</span><strong>${n(p.cafe_likes)}</strong></div>
+        <div class="playerDeleteRow">
+          <button class="dangerBtn" data-delete-player="${esc(p.device_id)}" data-player-name="${esc(p.player_name||"SPELER")}">🗑️ VERWIJDER SPELER</button>
+        </div>
       </div>
     </details>
   `).join(""):"<div class='small emptyBox'>Geen spelers gevonden.</div>";
+  playerList.querySelectorAll("[data-delete-player]").forEach(btn=>{
+    btn.addEventListener("click",async e=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      const deviceId=btn.dataset.deletePlayer;
+      const playerName=btn.dataset.playerName||"SPELER";
+      if(!deviceId)return;
+
+      const short=String(deviceId).slice(0,8);
+      const ok=confirm(
+        `Weet je zeker dat je ${playerName} (#${short}) wilt verwijderen?\n\n`+
+        `Dit verwijdert het spelerprofiel én alle gekoppelde analytics-events. `+
+        `Highscores en Café-berichten blijven behouden.`
+      );
+      if(!ok)return;
+
+      btn.disabled=true;
+      const original=btn.textContent;
+      btn.textContent="VERWIJDEREN…";
+      try{
+        const result=await rpc("admin_delete_player",{
+          p_device_id:deviceId,
+          p_admin_code:activeAdminCode
+        });
+        if(result!==true)throw new Error("delete returned false");
+        await refreshAll();
+      }catch(err){
+        console.error(err);
+        alert("Verwijderen is mislukt. Controleer of de Beta 6.9.1 SQL-migratie is uitgevoerd.");
+        btn.disabled=false;
+        btn.textContent=original;
+      }
+    });
+  });
+
 }
 
 function renderLevels(list){
@@ -92,7 +131,7 @@ function renderLevels(list){
       <strong>LEVEL ${n(x.level)}</strong>
       <span>${starts} starts</span><span>${done} klaar</span><span>${deaths} deaths</span><b>${pct}%</b>
     </div>`;
-  }).join(""):"<div class='small emptyBox'>Nog geen level-events geregistreerd. Speel Beta 6.8 om deze data te vullen.</div>";
+  }).join(""):"<div class='small emptyBox'>Nog geen level-events geregistreerd. Speel Beta 6.9.1 om deze data te vullen.</div>";
 }
 
 function renderBonuses(list){
@@ -123,7 +162,7 @@ function renderEvents(list){
       <span>${e.bonus_type?esc(e.bonus_type):""}</span>
       <small>${date(e.created_at)}</small>
     </div>
-  `).join(""):"<div class='small emptyBox'>Nog geen Beta 6.8-events.</div>";
+  `).join(""):"<div class='small emptyBox'>Nog geen Beta 6.9.1-events.</div>";
 }
 
 function renderPosts(list){
@@ -206,7 +245,7 @@ logoutBtn.addEventListener("click",()=>{
 });
 
 (async()=>{
-  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9";
+  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9.1";
   const version=$("portalVersion");
   if(version)version.textContent="v"+raw.replace("-beta"," Beta ");
   if(activeAdminCode){

@@ -1,13 +1,9 @@
-# Beta 6.9 test
-- [ ] Hoofdmenu toont een dagbericht
-- [ ] Dagbericht wisselt per kalenderdag
-- [ ] Mijlpaaloverlay werkt op 10/50/100/250/500/1000 potjes en maar één keer
-- [ ] Levelovergang noemt Entreehal/Wapenzaal/Bibliotheek/Kerkers/Troonzaal
-- [ ] Vlaggen bewegen subtiel
-- [ ] Vleermuis verschijnt af en toe
-- [ ] Ramen variëren
-- [ ] Teddy kan zeldzaam in de achtergrond verschijnen
-- [ ] Kasteelkrant vermeldt Beta 6.9 en v2.50 Het Kasteel Klinkt
-- [ ] Developer Portal blijft Beta 6.9 tonen
-- [ ] Live analytics uit 6.8 blijft werken
-- [ ] Vier verdiepingen en bonus FX behouden
+# Beta 6.9.1
+- [ ] SQL 003 uitgevoerd
+- [ ] VERWIJDER SPELER zichtbaar per speler
+- [ ] Annuleren wist niets
+- [ ] Bevestigen wist speler + analytics-events
+- [ ] Highscores blijven staan
+- [ ] Café-berichten blijven staan
+- [ ] Dashboard refresht na verwijderen
+- [ ] Geen oude actuele bèta-aanduidingen zichtbaar

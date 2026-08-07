@@ -722,7 +722,7 @@ body.attractMode #panel{max-width:520px}
 
 
 /* =========================================================
-   v2.20 Beta 5.3 — iPhone / small-screen space optimisation
+   iPhone / small-screen space optimisation
    Desktop rules above remain unchanged.
    ========================================================= */
 @media (max-width: 600px) {
@@ -842,7 +842,7 @@ body.attractMode #panel{max-width:520px}
   body.gameplayActive #controls button{min-height:62px}
 }
 
-/* v2.20 Beta 6.1 — larger attract/demo presentation */
+/* larger attract/demo presentation */
 #introCanvas{
   width:min(94vw,630px);
   height:auto;
@@ -858,7 +858,7 @@ body.attractMode #panel{max-width:520px}
 
 
 /* =========================================================
-   v2.20 Beta 6.2 — iPhone menu touch safety
+   iPhone menu touch safety
    Desktop layout remains unchanged.
    ========================================================= */
 @media (max-width:600px){
@@ -893,7 +893,7 @@ body.attractMode #panel{max-width:520px}
 
 
 /* =========================================================
-   v2.20 Beta 6.3 — Fullscreen arcade attract mode
+   Fullscreen arcade attract mode
    Normal menu demo remains compact.
    ========================================================= */
 body.attractMode{
@@ -916,7 +916,7 @@ body.attractMode #overlay{
   background:#111 !important;
 }
 
-/* Beta 6.4: do not hide #panel; canvas and prompt are nested inside it. */
+/* do not hide #panel; canvas and prompt are nested inside it. */
 
 body.attractMode #introCanvas{
   display:block !important;
@@ -956,7 +956,7 @@ body.attractMode #attractPrompt{
 
 
 /* =========================================================
-   v2.20 Beta 6.4 — demo fit + working fullscreen attract
+   demo fit + working fullscreen attract
    ========================================================= */
 
 /* Normal menu: canvas including its 3px border stays INSIDE the panel. */
@@ -974,7 +974,7 @@ body.attractMode #attractPrompt{
 
 /* Fullscreen attract:
    introCanvas is nested INSIDE #panel, so the panel itself must stay visible.
-   Beta 6.3 accidentally hid #panel and therefore produced a black screen. */
+   A previous build accidentally hid #panel and therefore produced a black screen. */
 body.attractMode #overlay{
   position:fixed !important;
   inset:0 !important;
@@ -1059,7 +1059,7 @@ body.attractMode #attractPrompt{
 
 
 /* =========================================================
-   v2.20 Beta 6.6 — compact demo aligned inside panel rules
+   compact demo aligned inside panel rules
    ========================================================= */
 body:not(.attractMode) #panel #introCanvas{
   display:block;

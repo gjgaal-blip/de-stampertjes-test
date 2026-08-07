@@ -1,12 +1,10 @@
-# De Stampertjes v2.20 Beta 6.9 — Het Kasteel Leeft
+# De Stampertjes v2.20 Beta 6.9.1 — Player Cleanup
 
-Beta 6.9 rondt de resterende niet-audio beloften van v2.20 af:
-- dagelijks wisselend kasteelbericht;
-- mijlpalen bij 10, 50, 100, 250, 500 en 1000 potjes;
-- duidelijke zaalintro's met zaalnaam;
-- zeldzame Teddy-waarnemingen in de achtergrond;
-- vleermuizen, bewegende vlaggen en wisselende ramen;
-- Kasteelkrant bijgewerkt met wat v2.20 daadwerkelijk bevat;
-- muziek per zaal, ambient sound en Jukebox bewust doorgeschoven naar v2.50 “Het Kasteel Klinkt”.
+- Per speler staat in de Developer Portal een knop `🗑️ VERWIJDER SPELER`.
+- De bevestiging toont spelersnaam en verkort device-ID.
+- `admin_delete_player` vereist de bestaande admincode.
+- Spelerprofiel en gekoppelde analytics-events worden verwijderd.
+- Highscores en Café-berichten blijven behouden.
+- Een verwijderd device kan later opnieuw als speler worden aangemaakt wanneer het weer speelt.
 
-Alle Beta 6.8 live analytics blijven behouden.
+Voer eerst `003_v220_beta691_delete_player.sql` uit in Supabase.
