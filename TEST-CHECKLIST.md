@@ -1,12 +1,12 @@
-# Beta 6.9.5
-
-- [ ] Pagina laadt zonder JavaScript ReferenceError
-- [ ] Updatevenster past binnen iPhone-scherm
-- [ ] Updatelijst kan scrollen
-- [ ] BEKIJK BETA 6.9.5 blijft bereikbaar
-- [ ] SPELEN opent het spel
-- [ ] Level 1 = Entreehal
-- [ ] Levelovergangen blijven werken
-- [ ] Teddy kan verschijnen na 25–50 sec
-- [ ] Teddy aanraken geeft +2000 en speciale jingle
-- [ ] Developer Portal blijft werken
+# Beta 6.9.6
+- [ ] SQL 004 uitgevoerd
+- [ ] Gameplay Teddy verschijnt niet ieder potje
+- [ ] Teddy verschijnt nooit vóór 60 sec
+- [ ] Maximaal één Teddy-poging per potje
+- [ ] Gemiste Teddy komt niet opnieuw in hetzelfde potje
+- [ ] Encounter geeft +2000
+- [ ] Easter Egg toont +1000
+- [ ] Easter +1000 wordt één keer aan volgende game toegevoegd
+- [ ] Portal toont Encounter-vinders
+- [ ] Portal toont Easter-vinders
+- [ ] Spelerprofiel toont beide Teddy-statussen apart

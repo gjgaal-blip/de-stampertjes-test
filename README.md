@@ -1,16 +1,12 @@
-# De Stampertjes v2.20 Beta 6.9.5 — Stability Fix
+# De Stampertjes v2.20 Beta 6.9.6 — Teddy Rarity
 
-Belangrijkste reparatie:
-- Beta 6.9.4 riep `spawnLevel()` al tijdens het laden van JavaScript aan.
-- Door de nieuwe Teddy-code gebruikte `spawnLevel()` daarbij `livingCastle` voordat die `const` was geïnitialiseerd.
-- Dat veroorzaakte een JavaScript ReferenceError en stopte de verdere initialisatie, waardoor SPELEN niets meer deed.
-- De voortijdige `spawnLevel()` is verwijderd. Het level wordt nu alleen gestart vanuit `startGame()` of een echte levelovergang.
+- Gameplay Teddy is niet meer gegarandeerd.
+- Per nieuw potje wordt één keer bepaald of Teddy kán verschijnen: circa 30% kans.
+- Zelfs dan verschijnt hij pas na 60–90 seconden.
+- Maximaal één Teddy-verschijning per potje; gemist = geen tweede kans in dat potje.
+- Gameplay Encounter blijft +2000.
+- Verborgen menu Easter Egg toont nu +1000 en die 1000 punten worden éénmalig aan het eerstvolgende spel toegevoegd.
+- Encounter en Easter Egg worden apart opgeslagen per speler.
+- Developer Portal toont afzonderlijke lijsten met namen/IDs en vinddatum.
 
-Updatevenster:
-- Veel korter gemaakt.
-- Details verwijzen naar Kasteelkrant/Kronieken.
-- Op iPhone scrollt alleen de inhoud van de updatekaart.
-- De knop BEKIJK BETA 6.9.5 blijft onderaan zichtbaar.
-
-Teddy Moment, level/zaal-sync, ladder-polish, analytics en Developer Portal blijven behouden.
-Geen nieuwe Supabase SQL nodig.
+Voer eerst `004_v220_beta696_teddy_tracking.sql` uit in Supabase.

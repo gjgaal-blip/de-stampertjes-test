@@ -34,3 +34,9 @@ button:disabled{opacity:.5}
 .playerDeleteRow{display:block !important;border-bottom:0 !important;padding-top:12px !important}
 .dangerBtn{width:100%;border-color:#fff;background:#111;color:#fff}
 .dangerBtn:disabled{opacity:.55}
+
+/* Beta 6.9.6 Teddy discoveries */
+.teddyDiscoveryGrid{display:grid;gap:14px}
+.discoveryRow{display:grid;grid-template-columns:1.3fr .8fr 1.2fr;gap:7px;padding:8px 0;border-bottom:1px dotted #555;font-size:11px;align-items:center}
+.discoveryRow small{text-align:right;color:#999}
+@media(min-width:760px){.teddyDiscoveryGrid{grid-template-columns:1fr 1fr}}

@@ -8,6 +8,7 @@ const refreshBtn=$("refreshBtn"),openGameBtn=$("openGameBtn"),logoutBtn=$("logou
 const playerSearch=$("playerSearch"),playerList=$("playerList"),levelAnalytics=$("levelAnalytics");
 const bonusAnalytics=$("bonusAnalytics"),platformAnalytics=$("platformAnalytics"),audioAnalytics=$("audioAnalytics");
 const recentEvents=$("recentEvents"),posts=$("posts"),cafeStatus=$("cafeStatus");
+const teddyEncounterList=$("teddyEncounterList"),teddyEasterList=$("teddyEasterList");
 
 let activeAdminCode=sessionStorage.getItem("stampertjesAdminPortalCode")||"";
 let dashboardPlayers=[];
@@ -73,7 +74,9 @@ function renderPlayers(list){
         <div><span>Appelieten</span><strong>${n(p.apples_defeated)}</strong></div>
         <div><span>Deaths</span><strong>${n(p.deaths)}</strong></div>
         <div><span>Langste combo</span><strong>${n(p.longest_combo)}</strong></div>
-        <div><span>Teddy</span><strong>${p.teddy_found?"JA":"NEE"}</strong></div>
+        <div><span>Teddy totaal</span><strong>${p.teddy_found?"JA":"NEE"}</strong></div>
+        <div><span>Teddy Encounter</span><strong>${p.teddy_encounter_found?"JA":"NEE"}</strong></div>
+        <div><span>Teddy Easter Egg</span><strong>${p.teddy_easter_found?"JA":"NEE"}</strong></div>
         <div><span>Platform</span><strong>${esc(p.platform||"ONBEKEND")}</strong></div>
         <div><span>Audio</span><strong>${esc(p.audio_mode||"ONBEKEND")}</strong></div>
         <div><span>Versie</span><strong>${esc(p.last_version||"ONBEKEND")}</strong></div>
@@ -114,7 +117,7 @@ function renderPlayers(list){
         await refreshAll();
       }catch(err){
         console.error(err);
-        alert("Verwijderen is mislukt. Controleer of de Beta 6.9.5 SQL-migratie is uitgevoerd.");
+        alert("Verwijderen is mislukt. Controleer of de Beta 6.9.6 SQL-migratie is uitgevoerd.");
         btn.disabled=false;
         btn.textContent=original;
       }
@@ -131,7 +134,7 @@ function renderLevels(list){
       <strong>LEVEL ${n(x.level)}</strong>
       <span>${starts} starts</span><span>${done} klaar</span><span>${deaths} deaths</span><b>${pct}%</b>
     </div>`;
-  }).join(""):"<div class='small emptyBox'>Nog geen level-events geregistreerd. Speel Beta 6.9.5 om deze data te vullen.</div>";
+  }).join(""):"<div class='small emptyBox'>Nog geen level-events geregistreerd. Speel Beta 6.9.6 om deze data te vullen.</div>";
 }
 
 function renderBonuses(list){
@@ -148,11 +151,26 @@ function renderBreakdown(el,list,key){
   `).join(""):"<div class='small'>Nog geen data.</div>";
 }
 
+
+function renderTeddyDiscoveries(encounters,easters){
+  const render=(el,list,empty)=>{
+    el.innerHTML=(list||[]).length?(list||[]).map(p=>`
+      <div class="discoveryRow">
+        <strong>${esc(p.player_name||"SPELER")}</strong>
+        <span>#${esc(shortId(p.device_id))}</span>
+        <small>${date(p.found_at)}</small>
+      </div>
+    `).join(""):`<div class="small emptyBox">${empty}</div>`;
+  };
+  render(teddyEncounterList,encounters,"Nog niemand heeft Teddy tijdens het spel bereikt.");
+  render(teddyEasterList,easters,"Nog niemand heeft het verborgen Teddy Easter egg gevonden.");
+}
+
 function renderEvents(list){
   const labels={
     game_start:"🎮 START",game_over:"🏁 GAME OVER",level_start:"🚪 LEVEL START",
     level_complete:"✅ LEVEL KLAAR",death:"💀 DEATH",bonus_spawn:"🎁 BONUS",
-    bonus_collect:"✨ BONUS GEPAKT",teddy_found:"🐈 TEDDY"
+    bonus_collect:"✨ BONUS GEPAKT",teddy_found:"🐈 TEDDY",teddy_encounter:"🐈 TEDDY ENCOUNTER",teddy_easter:"🥚 TEDDY EASTER"
   };
   recentEvents.innerHTML=(list||[]).length?(list||[]).slice(0,80).map(e=>`
     <div class="eventRow">
@@ -162,7 +180,7 @@ function renderEvents(list){
       <span>${e.bonus_type?esc(e.bonus_type):""}</span>
       <small>${date(e.created_at)}</small>
     </div>
-  `).join(""):"<div class='small emptyBox'>Nog geen Beta 6.9.5-events.</div>";
+  `).join(""):"<div class='small emptyBox'>Nog geen Beta 6.9.6-events.</div>";
 }
 
 function renderPosts(list){
@@ -222,6 +240,7 @@ async function refreshAll(){
     renderPlayers(dash?.players||[]);
     renderLevels(dash?.levels||[]);
     renderBonuses(dash?.bonuses||[]);
+    renderTeddyDiscoveries(dash?.teddy_encounter_finders||[],dash?.teddy_easter_finders||[]);
     renderBreakdown(platformAnalytics,dash?.platforms||[],"platform");
     renderBreakdown(audioAnalytics,dash?.audio_modes||[],"audio_mode");
     renderEvents(dash?.recent_events||[]);
@@ -245,7 +264,7 @@ logoutBtn.addEventListener("click",()=>{
 });
 
 (async()=>{
-  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9.5";
+  const raw=window.STAMPERTJES_CONFIG?.version||"2.20-beta6.9.6";
   const version=$("portalVersion");
   if(version)version.textContent="v"+raw.replace("-beta"," Beta ");
   if(activeAdminCode){
