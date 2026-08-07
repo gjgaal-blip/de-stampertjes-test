@@ -282,7 +282,7 @@ function updateMenuMusicIconVisibility(){
 }
 
 function showMainMenu(){
-  setMusicContext("menu");
+  setMusicContext("menu",{playNow:true});
   document.body.classList.remove("scoreMode");
   document.body.classList.remove("gameplayActive");
   if(!attractActive){
@@ -304,9 +304,9 @@ function showMainMenu(){
   updateMenuMusicIconVisibility();
 }
 function showMenuSection(section){
-  if(section===cafeSection)setMusicContext("cafe");
-  else if(section===historySection)setMusicContext("chronicles");
-  else setMusicContext("menu");
+  if(section===cafeSection)setMusicContext("cafe",{playNow:true});
+  else if(section===historySection)setMusicContext("chronicles",{playNow:true});
+  else setMusicContext("menu",{playNow:true});
 
   mainMenu.classList.add("hidden");
   scoresSection.classList.add("hidden");
@@ -335,7 +335,7 @@ function activateButton(button,handler){
   button.addEventListener("touchend",run,{passive:false});
 }
 
-activateButton(playMenuBtn,async()=>{await setMusicContext("gameplay");startGame();});
+activateButton(playMenuBtn,()=>startGame());
 activateButton(statsMenuBtn,async()=>{
   stopAttractMode();
   showMenuSection(statsSection);
@@ -1192,7 +1192,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.20-beta2";
+const CURRENT_VERSION="2.20-beta3";
 function showUpdateOnce(){
   const seen=localStorage.getItem("stampertjesSeenVersion");
   if(seen!==CURRENT_VERSION){
@@ -1341,7 +1341,8 @@ function startGame(){
   audio();
   score=0;level=1;lives=3;state="play";
   updateProgressStats();
-  if(musicOn)startMusic();
+  setMusicContext("gameplay",{playNow:true});
+  if(musicOn&&menuSoundtrack.paused)startMusic();
   const gameStats=getStats();
   gameStats.gamesPlayed=(Number(gameStats.gamesPlayed)||0)+1;
   saveStats(gameStats);player.fastStamp=0;pauseOverlay.classList.add("hidden");pauseToggle.textContent="⏸ PAUZE";
@@ -1698,35 +1699,25 @@ function musicTrackForContext(context){
   return MUSIC_TRACKS[context]||MUSIC_TRACKS.menu;
 }
 
-async function setMusicContext(context,{restart=false}={}){
+async function setMusicContext(context,{restart=false,playNow=true}={}){
   const nextContext=MUSIC_TRACKS[context]?context:"menu";
   const nextSrc=musicTrackForContext(nextContext);
-  const currentSrc=(menuSoundtrack.getAttribute("src")||menuSoundtrack.querySelector("source")?.getAttribute("src")||"");
-
   currentMusicContext=nextContext;
 
-  if(currentSrc.endsWith(nextSrc)&&!restart){
+  const currentPath=decodeURIComponent((menuSoundtrack.currentSrc||menuSoundtrack.src||"").split("/").pop()||"");
+  if(currentPath!==nextSrc||restart){
+    menuSoundtrack.pause();
+    menuSoundtrack.src=nextSrc;
+    menuSoundtrack.load();
     applyMusicVolume();
-    if(musicOn&&menuSoundtrack.paused)await startMusic();
-    return;
   }
 
-  const wasPlaying=musicOn&&!menuSoundtrack.paused;
-  menuSoundtrack.pause();
-  menuSoundtrack.removeAttribute("src");
-  menuSoundtrack.innerHTML="";
-  const source=document.createElement("source");
-  source.src=nextSrc;
-  source.type="audio/mpeg";
-  menuSoundtrack.appendChild(source);
-  menuSoundtrack.load();
-  applyMusicVolume();
-
-  if(musicOn&&(wasPlaying||document.hasFocus())){
+  if(playNow&&musicOn){
     try{await menuSoundtrack.play();}catch(err){
-      console.warn("Nieuwe muziektrack wacht op gebruikersactie:",err);
+      console.warn("Trackwissel wacht op gebruikersactie:",err);
     }
   }
+  setMusicButton();
 }
 
 const MUSIC_VOLUME=.16;
@@ -2592,32 +2583,43 @@ function drawApple(e){
   }
   ctx.restore();
 }
-function drawFloor(a,b,y){
-  ctx.save();
+function isCastlePrototypeLevel(){
+  return level===1 && currentLayoutIndex===0;
+}
 
-  // Exact dezelfde collisionhoogte, maar visueel een stenen kasteelvloer.
+function drawCastleFloor(a,b,y){
+  ctx.save();
+  ctx.fillStyle="#343434";
+  ctx.fillRect(a,y-7,b-a,14);
+  ctx.fillStyle="#f4f4f4";
+  ctx.fillRect(a,y-7,b-a,2);
+  ctx.strokeStyle="#9a9a9a";
+  ctx.lineWidth=1;
+  for(let x=a+1;x<b;x+=22){
+    ctx.strokeRect(x,y-5,20,10);
+  }
+  ctx.restore();
+}
+
+function drawClassicFloor(a,b,y){
+  ctx.save();
   ctx.fillStyle="#222";
   ctx.fillRect(a,y-5,b-a,10);
-
-  // Lichte stenen voegen in retro zwart-wit.
   ctx.strokeStyle="#aaa";
   ctx.lineWidth=1;
   for(let x=a+2;x<b;x+=20){
-    ctx.beginPath();
-    ctx.moveTo(x,y-4);ctx.lineTo(x,y+4);
-    ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+4);ctx.stroke();
   }
-  ctx.beginPath();
-  ctx.moveTo(a,y);ctx.lineTo(b,y);
-  ctx.stroke();
-
-  // Oude witte streepjes blijven subtiel herkenbaar als knipoog naar de originele stijl.
+  ctx.beginPath();ctx.moveTo(a,y);ctx.lineTo(b,y);ctx.stroke();
   ctx.fillStyle="#ddd";
   for(let x=a+8;x<b;x+=22)ctx.fillRect(x,y-1,8,1);
-
   ctx.restore();
-  ctx.fillStyle="#111";
-  ctx.strokeStyle="#111";
+}
+
+function drawFloor(a,b,y){
+  if(isCastlePrototypeLevel())drawCastleFloor(a,b,y);
+  else drawClassicFloor(a,b,y);
+  ctx.fillStyle="#111";ctx.strokeStyle="#111";
 }
 function drawEffects(){
   effects.forEach(e=>{
@@ -2691,12 +2693,8 @@ function draw(){
   });
 
   ladders.forEach(l=>{
-    ctx.lineWidth=2;ctx.beginPath();
-    ctx.moveTo(l.x,l.top);ctx.lineTo(l.x,l.bottom);
-    ctx.moveTo(l.x+20,l.top);ctx.lineTo(l.x+20,l.bottom);ctx.stroke();
-    for(let y=l.top+8;y<l.bottom;y+=10){
-      ctx.beginPath();ctx.moveTo(l.x,y);ctx.lineTo(l.x+20,y);ctx.stroke();
-    }
+    if(isCastlePrototypeLevel())drawCastleLadder(l);
+    else drawClassicLadder(l);
   });
 
   if(player.invulnerable<=0 || Math.floor(player.invulnerable/8)%2===0){
@@ -2717,166 +2715,159 @@ function draw(){
 
 const livingCastle={
   fogOffset:0,
-  dust:Array.from({length:18},()=>({
-    x:Math.random()*c.width,
-    y:35+Math.random()*(c.height-65),
-    vx:(Math.random()-.5)*.055,
-    vy:.018+Math.random()*.055,
-    a:.12+Math.random()*.16
+  dust:Array.from({length:16},()=>({
+    x:Math.random()*W,y:34+Math.random()*270,
+    vx:(Math.random()-.5)*.06,vy:.02+Math.random()*.05,
+    a:.18+Math.random()*.20
   })),
-  pebble:null,
-  nextPebble:performance.now()+3500+Math.random()*7000
+  pebble:null,nextPebble:performance.now()+3500+Math.random()*7000
 };
 
-function drawStoneWall(){
+function drawGothicWindow(x,y,w=42,h=38){
   ctx.save();
-
-  // Heel lichte bakstenen achtergrond: de klassieke witte speelruimte blijft dominant.
-  ctx.strokeStyle="#d6d6d6";
-  ctx.lineWidth=1;
-  const top=30,bottom=305,rowH=18,brickW=38;
-  for(let y=top;y<bottom;y+=rowH){
-    const row=Math.floor((y-top)/rowH);
-    const offset=(row%2)*brickW/2;
-    ctx.beginPath();
-    ctx.moveTo(10,y);ctx.lineTo(W-10,y);
-    ctx.stroke();
-
-    for(let x=10-offset;x<W-10;x+=brickW){
-      ctx.beginPath();
-      ctx.moveTo(x,y);ctx.lineTo(x,y+rowH);
-      ctx.stroke();
-    }
-  }
-
-  // Drie eenvoudige gotische nissen/ramen in monochroom.
-  const windows=[
-    {x:52,y:86,w:46,h:42},
-    {x:217,y:148,w:46,h:42},
-    {x:382,y:86,w:46,h:42}
-  ];
-  windows.forEach(win=>{
-    ctx.fillStyle="#ededed";
-    ctx.fillRect(win.x,win.y,win.w,win.h);
-    ctx.strokeStyle="#bdbdbd";
-    ctx.strokeRect(win.x,win.y,win.w,win.h);
-    ctx.beginPath();
-    ctx.moveTo(win.x+win.w/2,win.y);
-    ctx.lineTo(win.x+win.w/2,win.y+win.h);
-    ctx.moveTo(win.x,win.y+win.h/2);
-    ctx.lineTo(win.x+win.w,win.y+win.h/2);
-    ctx.stroke();
-  });
-
-  // Pilaren geven de zaal meer kasteelgevoel, maar blijven achter de gameplay.
-  ctx.fillStyle="#e2e2e2";
-  [116,334].forEach(x=>{
-    ctx.fillRect(x,31,14,273);
-    ctx.fillStyle="#cfcfcf";
-    for(let y=39;y<300;y+=24)ctx.fillRect(x+2,y,10,2);
-    ctx.fillStyle="#e2e2e2";
-  });
-
+  ctx.fillStyle="#a9a9a9";
+  ctx.fillRect(x,y+9,w,h-9);
+  ctx.beginPath();
+  ctx.arc(x+w/2,y+10,w/2,Math.PI,0);
+  ctx.lineTo(x+w,y+14);ctx.lineTo(x,y+14);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="#4b4b4b";ctx.lineWidth=2;
+  ctx.strokeRect(x,y+10,w,h-10);
+  ctx.beginPath();
+  ctx.moveTo(x+w/2,y+3);ctx.lineTo(x+w/2,y+h);
+  ctx.moveTo(x,y+23);ctx.lineTo(x+w,y+23);
+  ctx.stroke();
+  ctx.fillStyle="#686868";
+  ctx.fillRect(x+5,y+14,w/2-7,h-19);
+  ctx.fillRect(x+w/2+2,y+14,w/2-7,h-19);
   ctx.restore();
 }
 
-function drawTorch(x,y,phase,now){
-  const flick=.5+.5*Math.sin(now*.010+phase)+.18*Math.sin(now*.024+phase*2);
+function drawCastleTorch(x,y,phase,now=performance.now()){
+  const f=.55+.45*Math.sin(now*.011+phase)+.15*Math.sin(now*.029+phase*2);
   ctx.save();
-
-  // Smeedijzeren wandhouder.
-  ctx.fillStyle="#555";
-  ctx.fillRect(x-2,y+5,4,9);
-  ctx.fillRect(x-5,y+12,10,2);
-
-  // Grote, duidelijk zichtbare monochrome vlam.
-  const flameH=9+Math.round(flick*5);
-  ctx.fillStyle="#777";
-  ctx.beginPath();
-  ctx.moveTo(x,y-flameH);
-  ctx.lineTo(x-5,y+5);
-  ctx.lineTo(x,y+2);
-  ctx.lineTo(x+5,y+5);
-  ctx.closePath();
-  ctx.fill();
-
   ctx.fillStyle="#222";
+  ctx.fillRect(x-2,y+5,4,10);
+  ctx.fillRect(x-7,y+13,14,3);
+  const h=12+Math.round(f*5);
+  ctx.fillStyle="#444";
   ctx.beginPath();
-  ctx.moveTo(x,y-flameH+5);
-  ctx.lineTo(x-2,y+3);
-  ctx.lineTo(x+2,y+3);
-  ctx.closePath();
-  ctx.fill();
-
-  // Heel subtiele gloed, nog steeds grijs.
-  ctx.globalAlpha=.08+.06*flick;
-  ctx.fillStyle="#666";
+  ctx.moveTo(x,y-h);ctx.lineTo(x-6,y+5);ctx.lineTo(x,y+1);ctx.lineTo(x+6,y+5);ctx.closePath();ctx.fill();
+  ctx.fillStyle="#fff";
   ctx.beginPath();
-  ctx.arc(x,y,14+flick*4,0,Math.PI*2);
-  ctx.fill();
-
+  ctx.moveTo(x,y-h+4);ctx.lineTo(x-2,y+3);ctx.lineTo(x+2,y+3);ctx.closePath();ctx.fill();
+  ctx.globalAlpha=.14+.05*f;
+  ctx.beginPath();ctx.arc(x,y-2,14+3*f,0,Math.PI*2);ctx.fill();
   ctx.restore();
 }
 
 function drawCastleBackdrop(now=performance.now()){
-  drawStoneWall();
-
-  // Fakkels bewust tussen de platforms zodat ze direct herkenbaar zijn.
-  drawTorch(155,103,0,now);
-  drawTorch(325,103,1.6,now);
-  drawTorch(105,225,3.0,now);
-  drawTorch(375,225,4.2,now);
-
-  // Mist achter speler/vijanden, breder dan in Beta 1.
-  livingCastle.fogOffset=(livingCastle.fogOffset+.07)%W;
+  if(!isCastlePrototypeLevel())return;
   ctx.save();
-  ctx.globalAlpha=.11;
-  ctx.fillStyle="#999";
+
+  // Stronger contrast so the castle is clearly visible on iPhone.
+  ctx.fillStyle="#c9c9c9";
+  ctx.fillRect(10,30,W-20,276);
+
+  const brickW=34,rowH=17;
+  ctx.strokeStyle="#888";ctx.lineWidth=1;
+  for(let y=31,row=0;y<306;y+=rowH,row++){
+    ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(W-10,y);ctx.stroke();
+    const offset=row%2?brickW/2:0;
+    for(let x=10-offset;x<W-10;x+=brickW){
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+rowH);ctx.stroke();
+    }
+  }
+
+  ctx.fillStyle="#8e8e8e";
+  ctx.fillRect(10,30,14,276);ctx.fillRect(W-24,30,14,276);
+
+  drawGothicWindow(38,88,42,38);
+  drawGothicWindow(219,151,42,38);
+  drawGothicWindow(400,88,42,38);
+
+  [127,343].forEach(x=>{
+    ctx.fillStyle="#aaa";ctx.fillRect(x,31,16,274);
+    ctx.fillStyle="#666";ctx.fillRect(x-3,31,22,5);ctx.fillRect(x-3,300,22,5);
+    for(let y=46;y<294;y+=28)ctx.fillRect(x+3,y,10,2);
+  });
+
+  const banner=(x,y)=>{
+    ctx.fillStyle="#5a5a5a";ctx.fillRect(x,y,18,31);
+    ctx.beginPath();ctx.moveTo(x,y+31);ctx.lineTo(x+9,y+39);ctx.lineTo(x+18,y+31);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#ddd";ctx.fillRect(x+7,y+8,4,14);
+  };
+  banner(168,91);banner(294,215);
+
+  ctx.strokeStyle="#666";ctx.lineWidth=1;
+  [[27,43,1],[449,43,-1]].forEach(([x,y,d])=>{
+    ctx.beginPath();
+    ctx.moveTo(x,y);ctx.lineTo(x+d*23,y);
+    ctx.moveTo(x,y);ctx.lineTo(x,y+20);
+    ctx.moveTo(x,y);ctx.lineTo(x+d*19,y+17);
+    ctx.moveTo(x+d*8,y);ctx.lineTo(x,y+8);
+    ctx.moveTo(x+d*16,y);ctx.lineTo(x,y+15);
+    ctx.stroke();
+  });
+
+  drawCastleTorch(104,108,0,now);
+  drawCastleTorch(376,108,1.7,now);
+  drawCastleTorch(155,230,3.0,now);
+  drawCastleTorch(325,230,4.4,now);
+
+  livingCastle.fogOffset=(livingCastle.fogOffset+.08)%W;
+  ctx.fillStyle="#eee";ctx.globalAlpha=.48;
   for(let i=0;i<4;i++){
-    const y=248+i*13;
-    const x=((livingCastle.fogOffset+i*135)%(W+160))-100;
-    ctx.fillRect(x,y,145,4);
-    ctx.fillRect(x+38,y-5,90,3);
+    const x=((livingCastle.fogOffset+i*135)%(W+170))-105;
+    const y=274+(i%2)*12;
+    ctx.beginPath();
+    ctx.ellipse(x,y,56,8,0,0,Math.PI*2);
+    ctx.ellipse(x+42,y+2,48,7,0,0,Math.PI*2);
+    ctx.fill();
   }
   ctx.restore();
 }
 
-function drawLivingCastle(now=performance.now()){
-  if(state!=="play"&&state!=="paused")return;
+function drawCastleLadder(l){
   ctx.save();
+  ctx.fillStyle="#414141";
+  ctx.fillRect(l.x-2,l.top,4,l.bottom-l.top);
+  ctx.fillRect(l.x+18,l.top,4,l.bottom-l.top);
+  ctx.fillStyle="#777";
+  for(let y=l.top+7;y<l.bottom;y+=10)ctx.fillRect(l.x,y,20,3);
+  ctx.restore();
+}
 
-  // Stof vóór de achtergrond maar achter/naast de actieve sprites.
+function drawClassicLadder(l){
+  ctx.lineWidth=2;ctx.beginPath();
+  ctx.moveTo(l.x,l.top);ctx.lineTo(l.x,l.bottom);
+  ctx.moveTo(l.x+20,l.top);ctx.lineTo(l.x+20,l.bottom);ctx.stroke();
+  for(let y=l.top+8;y<l.bottom;y+=10){
+    ctx.beginPath();ctx.moveTo(l.x,y);ctx.lineTo(l.x+20,y);ctx.stroke();
+  }
+}
+
+function drawLivingCastle(now=performance.now()){
+  if((state!=="play"&&state!=="paused")||!isCastlePrototypeLevel())return;
+  ctx.save();
   livingCastle.dust.forEach(p=>{
-    p.x+=p.vx;
-    p.y+=p.vy;
+    p.x+=p.vx;p.y+=p.vy;
     if(p.y>300){p.y=38;p.x=Math.random()*W}
-    if(p.x<12)p.x=W-12;
-    if(p.x>W-12)p.x=12;
-    ctx.fillStyle="#777";
-    ctx.globalAlpha=p.a;
-    ctx.fillRect(Math.round(p.x),Math.round(p.y),1,1);
+    if(p.x<12)p.x=W-12;if(p.x>W-12)p.x=12;
+    ctx.fillStyle="#555";ctx.globalAlpha=p.a;
+    ctx.fillRect(Math.round(p.x),Math.round(p.y),2,2);
   });
-
-  // Vallend steentje: duidelijker dan Beta 1, maar zeldzaam.
   if(!livingCastle.pebble&&now>livingCastle.nextPebble){
-    livingCastle.pebble={
-      x:35+Math.random()*(W-70),
-      y:32,
-      vy:.7+Math.random()*.3
-    };
+    livingCastle.pebble={x:40+Math.random()*(W-80),y:34,vy:.75+Math.random()*.35};
   }
   if(livingCastle.pebble){
-    const p=livingCastle.pebble;
-    p.y+=p.vy;
-    ctx.globalAlpha=.6;
-    ctx.fillStyle="#555";
-    ctx.fillRect(Math.round(p.x),Math.round(p.y),3,3);
+    const p=livingCastle.pebble;p.y+=p.vy;
+    ctx.globalAlpha=.8;ctx.fillStyle="#444";
+    ctx.fillRect(Math.round(p.x),Math.round(p.y),4,4);
     if(p.y>300){
       livingCastle.pebble=null;
       livingCastle.nextPebble=now+5000+Math.random()*10000;
     }
   }
-
   ctx.restore();
 }
 

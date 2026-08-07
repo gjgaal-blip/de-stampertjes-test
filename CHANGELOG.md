@@ -1,16 +1,10 @@
 # De Stampertjes
 
-## v2.20 Beta 2
-- Castle Tileset-prototype toegevoegd in zwart-wit/grijstinten.
-- Bakstenen achtergrond, pilaren, nissen en stenen platformtextuur.
-- Vier zichtbare flikkerende fakkels als onderdeel van het decor.
-- Mist, stof en vallende steentjes duidelijker gemaakt.
-- Collision, ladders, speler en gameplayregels niet gewijzigd.
-- Zes muziektracks opgenomen:
-  - menu: De Stampertjes
-  - gameplay: The Castle Awakens
-  - Café: Crystal Spire 2
-  - Kronieken: Crystal Spire
-  - special: De Stampertjes 2
-  - reserve: The Castle Awakens 2
-- Muziek wisselt automatisch tussen menu, gameplay, Café en Kronieken.
+## v2.20 Beta 3
+- Speelbaar Level 1 Castle Prototype.
+- Eerste zaal heeft nu zichtbare stenen muren, gotische ramen, pilaren, banieren en spinnenwebben.
+- Stenen platformen en nieuwe ladderweergave op dezelfde collisionposities.
+- Vier duidelijke flikkerende fakkels.
+- Mist, stof en vallende steentjes.
+- Andere zalen blijven voorlopig oud zodat de nieuwe stijl geïsoleerd getest kan worden.
+- Muziekwissel aangepast voor Safari/iPhone via directe audio.src-wissel.

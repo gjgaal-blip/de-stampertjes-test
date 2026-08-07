@@ -728,3 +728,5 @@ body.attractMode #panel{max-width:520px}
   border-style:double;
   border-width:3px;
 }
+
+body.gameplayActive #title::after{content:" · CASTLE PROTOTYPE";font-size:9px;opacity:.55}
