@@ -1,10 +1,18 @@
 # De Stampertjes
 
-## v2.20 Beta 3
-- Speelbaar Level 1 Castle Prototype.
-- Eerste zaal heeft nu zichtbare stenen muren, gotische ramen, pilaren, banieren en spinnenwebben.
-- Stenen platformen en nieuwe ladderweergave op dezelfde collisionposities.
-- Vier duidelijke flikkerende fakkels.
-- Mist, stof en vallende steentjes.
-- Andere zalen blijven voorlopig oud zodat de nieuwe stijl geïsoleerd getest kan worden.
-- Muziekwissel aangepast voor Safari/iPhone via directe audio.src-wissel.
+## v2.20 Beta 4 — Castle UI Refresh
+- Demo/attract mode vernieuwd naar dezelfde kasteelstijl als gameplay.
+- Alle vijf bestaande zaal-layouts hebben nu een eigen visuele identiteit:
+  - Entreehal
+  - Wapenzaal
+  - Bibliotheek
+  - Kerkers
+  - Troonzaal
+- Stenen platformen en kasteelladders toegepast op alle zalen.
+- Nieuwe monochrome HUD met zaalnaam.
+- Subtiele schaduwen onder speler en Appelieten.
+- Café, Hall of Fame, Statistieken en overige menu's visueel samengebracht in Castle UI.
+- Kronieken verder naar een monochrome oude-boekstijl gebracht.
+- Hall of Fame gebruikt de speciale muziektrack.
+- Muziekwissels gebruiken directe Safari/iPhone-vriendelijke src-wissel plus fade-in.
+- Uitleg opnieuw opgeschoond zodat geen toekomstige Appeliet-varianten als huidige gameplay worden gepresenteerd.
