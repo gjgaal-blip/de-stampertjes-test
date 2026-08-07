@@ -1,20 +1,12 @@
-# De Stampertjes v2.15
+# De Stampertjes v2.20 Beta 1
 
-Alles staat in één map zodat je de bestanden vanaf een iPhone naar GitHub kunt uploaden.
+Eerste sfeerprototype van Castle Expansion.
 
-## Upload naar GitHub
-Upload alle bestanden uit deze ZIP en overschrijf de bestaande bestanden.
+Geen nieuwe Supabase-SQL nodig.
 
-## Supabase
-Voor v2.15 is geen nieuwe SQL nodig als de v2.13-migratie al succesvol is uitgevoerd.
-
-## Nieuw
-- uitgebreide Kronieken;
-- Kasteelkrant met geruchten;
-- uitgebreide roadmap;
-- Hall of Fame;
-- speciale dank aan Vera;
-- bladzijde-omslaangeluid.
-
-## Admin
-De bestaande `admin.html` blijft werken met dezelfde Supabase-instellingen.
+Let tijdens testen vooral op:
+- voelt het nog duidelijk zwart-wit retro?
+- zijn de effecten subtiel genoeg?
+- blijft de gameplay goed leesbaar?
+- blijft de framerate goed op iPhone?
+- zijn de dagberichten leuk of te aanwezig?

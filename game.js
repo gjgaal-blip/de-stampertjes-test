@@ -11,6 +11,7 @@ const nameInput=document.getElementById("nameInput");
 const saveScoreBtn=document.getElementById("saveScoreBtn");
 const scoreList=document.getElementById("scoreList");
 const introText=document.getElementById("introText");
+const dailyCastleMessage=document.getElementById("dailyCastleMessage");
 const mainMenu=document.getElementById("mainMenu");
 const scoresSection=document.getElementById("scoresSection");
 const helpSection=document.getElementById("helpSection");
@@ -45,6 +46,7 @@ const hallStatus=document.getElementById("hallStatus");
 const cafeMenuBtn=document.getElementById("cafeMenuBtn");
 const cafeSection=document.getElementById("cafeSection");
 const cafeName=document.getElementById("cafeName");
+const cafeNameHint=document.getElementById("cafeNameHint");
 const cafeType=document.getElementById("cafeType");
 const cafeMessage=document.getElementById("cafeMessage");
 const cafeCounter=document.getElementById("cafeCounter");
@@ -71,6 +73,10 @@ let levelTransitioning=false;
 
 function showLevelTransition(completedLevel,nextLevel){
   if(musicOn&&!menuSoundtrack.paused)menuSoundtrack.volume=.06;
+  const transitionStats=getStats();
+  transitionStats.bestScore=Math.max(Number(transitionStats.bestScore)||0,Number(score)||0);
+  transitionStats.highestLevel=Math.max(Number(transitionStats.highestLevel)||1,Number(nextLevel)||1);
+  saveStats(transitionStats);
   levelTransitioning=true;
   state="transition";
   document.body.classList.remove("gameplayActive");
@@ -94,6 +100,29 @@ function showLevelTransition(completedLevel,nextLevel){
     }
     document.body.classList.add("gameplayActive");
   },1900);
+}
+
+
+const CASTLE_MESSAGES=[
+  "💡 Drie goede stampen zijn vaak slimmer dan tien haastige.",
+  "🏰 De westelijke toren klinkt vandaag anders.",
+  "🐈 Teddy is ergens in het kasteel gezien. Waarschijnlijk.",
+  "📜 Niet alle verhalen in de Kronieken zijn al voltooid.",
+  "☕ Heb je een idee? Laat het achter in het Stampertjes Café.",
+  "🕯️ Sommige fakkels lijken te flikkeren zonder wind.",
+  "🌫️ Het is vandaag opvallend mistig in de onderste gangen.",
+  "🪨 Hoorde jij dat steentje ook vallen?",
+  "👀 Het kasteel lijkt soms terug te kijken.",
+  "🏆 Eén goede run kan genoeg zijn voor de Hall of Fame.",
+  "🍏 Appelieten houden verrassend weinig van gaten.",
+  "👢 Goede schoenen maken nog geen goede Stamper.",
+  "🪜 Een ladder is soms je beste vriend. Soms ook niet.",
+  "🔒 Sommige hoofdstukken wachten nog op hun ontdekker.",
+  "🏰 Het kasteel wordt met iedere grote update een beetje levendiger."
+];
+function pickCastleMessage(){
+  if(!dailyCastleMessage)return;
+  dailyCastleMessage.textContent=CASTLE_MESSAGES[Math.floor(Math.random()*CASTLE_MESSAGES.length)];
 }
 
 let introFrame=0;
@@ -344,7 +373,7 @@ activateButton(hallMenuBtn,async()=>{
 activateButton(cafeMenuBtn,async()=>{
   stopAttractMode();
   showMenuSection(cafeSection);
-  await loadCafePosts();
+  await refreshCafe();
 });
 
 
@@ -404,6 +433,14 @@ function getPlayerName(){
   );
 }
 
+function updateProgressStats(){
+  const s=getStats();
+  s.bestScore=Math.max(Number(s.bestScore)||0,Number(score)||0);
+  s.highestLevel=Math.max(Number(s.highestLevel)||1,Number(level)||1);
+  saveStats(s);
+  return s;
+}
+
 function saveStats(stats){
   const clean={
     ...DEFAULT_STATS,
@@ -425,7 +462,7 @@ function queueStatsSync(stats=getStats()){
   clearTimeout(statsSyncTimer);
   statsSyncTimer=setTimeout(()=>{
     syncOnlineStats(stats).catch(err=>console.warn("Statistieken synchroniseren mislukt:",err));
-  },650);
+  },250);
 }
 
 async function syncOnlineStats(stats=getStats()){
@@ -458,6 +495,7 @@ async function syncOnlineStats(stats=getStats()){
 }
 
 function renderStats(){
+  updateProgressStats();
   const s=getStats();
   const achievements=Array.isArray(s.achievements)?s.achievements:[];
   statsList.innerHTML=`
@@ -551,7 +589,7 @@ const chroniclePages=[
     art:"👢  💥  🍏",
     body:`<p><span class="chapterDrop">N</span>iemand weet meer wie de eerste was. Volgens de ene legende was het een bewaker, volgens de andere een kok die zijn soeppan liet vallen.</p>
     <p>Wat wel vaststaat: drie harde stampen maakten de verzwakte vloer open. Een Appeliet viel erin en zat muurvast.</p>
-    <p>De bewoners begrepen het onmiddellijk. Lokken. Stampen. Vangen. En nog één laatste dreun.</p>
+    <p>De bewoners begrepen het principe al snel: lokken, stampen, vangen en op het juiste moment toeslaan.</p>
     <p>De dappersten onder hen kregen al snel een naam: <strong>De Stampertjes</strong>.</p>
     <p class="chronicleCliff">Maar de Appelieten leerden sneller dan iemand had verwacht.</p>`
   },
@@ -559,7 +597,7 @@ const chroniclePages=[
     title:"🏰 Het Kasteel Groeit",
     art:"🪜  🏰  🪜",
     body:`<p>Nieuwe zalen werden geopend en oude trappen hersteld. Waar eerst één verdieping was, ontstond een doolhof van ladders, balkons en gangen.</p>
-    <p>De Appelieten pasten zich aan. Sommige werden sneller, andere taaier. Ze begonnen ladders te gebruiken en wachtten soms precies naast de plek waar een Stampertje wilde landen.</p>
+    <p>De Appelieten pasten zich aan. De Appelieten leerden nieuwe routes kennen. Ze gebruikten ladders en wachtten soms precies naast de plek waar een Stampertje wilde landen.</p>
     <p>Voor iedere nieuwe zaal ontstonden nieuwe trucs, nieuwe helden en nieuwe verhalen.</p>
     <p class="chronicleCliff">Tot iemand achter een dichtgemetselde muur een deur vond zonder klink.</p>`
   },
@@ -607,7 +645,7 @@ const chroniclePages=[
     title:"☕ Geruchten uit het Café",
     art:"☕  💬  👑",
     body:`<p>Niet ieder verhaal in het Café is waar. Waarschijnlijk.</p>
-    <p>Er wordt gesproken over een Appeliet die door muren kan lopen, een kamer waarin de tijd langzamer gaat en een melodie die alleen klinkt als alle lichten uit zijn.</p>
+    <p>Er wordt gesproken over vreemde voetstappen achter muren, een kamer waarin de tijd anders lijkt te lopen en een melodie die alleen klinkt als alle lichten uit zijn.</p>
     <p>Ook zou er ergens een sleutel bestaan die niet op een deur past, maar op een hoofdstuk.</p>
     <p class="chronicleCliff">Opvallend genoeg verdween het bericht over die sleutel dezelfde nacht.</p>`
   },
@@ -705,6 +743,7 @@ activateButton(chronicleNext,()=>{
 });
 
 renderChroniclePage();
+initCafeName();
 
 
 function getCafeDeviceId(){
@@ -763,12 +802,63 @@ function setCafeAdminMode(on,code=""){
   }
 }
 
+function isValidCafeName(value){
+  return String(value||"").trim().length>=2;
+}
+
+function updateCafeSubmitState(){
+  if(cafeSubmitBtn.dataset.saving==="1")return;
+  cafeSubmitBtn.disabled=!isValidCafeName(cafeName.value);
+}
+
+function getLockedCafeName(){
+  return String(localStorage.getItem("stampertjesCafeLockedName")||"").trim();
+}
+
+function lockCafeName(name){
+  const clean=String(name||"").trim().toUpperCase().slice(0,10);
+  if(!clean)return "";
+  localStorage.setItem("stampertjesCafeLockedName",clean);
+  localStorage.setItem("stampertjesPlayerName",clean);
+  cafeName.value=clean;
+  cafeName.readOnly=true;
+  cafeName.classList.add("lockedName");
+  cafeNameHint.textContent=`Vaste Café-naam: ${clean}`;
+  return clean;
+}
+
+function initCafeName(){
+  let locked=getLockedCafeName();
+  let saved=String(localStorage.getItem("stampertjesPlayerName")||"").trim();
+
+  // Oude hardcoded standaardnaam uit eerdere testversies opruimen.
+  if(saved.toUpperCase()==="GERT JAN"){
+    localStorage.removeItem("stampertjesPlayerName");
+    saved="";
+  }
+
+  if(locked){
+    cafeName.value=locked;
+    cafeName.readOnly=true;
+    cafeName.classList.add("lockedName");
+    cafeNameHint.textContent=`Vaste Café-naam: ${locked}`;
+  }else{
+    cafeName.value=saved && saved.toUpperCase()!=="GERT JAN" ? saved : "";
+    cafeName.readOnly=false;
+    cafeName.classList.remove("lockedName");
+    cafeNameHint.textContent="Je kiest je Café-naam één keer. Na je eerste bericht wordt hij vastgezet.";
+  }
+
+  updateCafeSubmitState();
+}
+
 function resetCafeEdit(){
   cafeEditingPostId=null;
   cafeSubmitBtn.textContent="BERICHT PLAATSEN";
   cafeCancelEditBtn.classList.add("hidden");
   cafeMessage.value="";
   cafeCounter.textContent="0 / 240";
+  updateCafeSubmitState();
 }
 
 function escapeHtml(value){
@@ -840,9 +930,17 @@ async function loadCafeStats(){
   }
 }
 
+async function refreshCafe(){
+  await loadCafePosts();
+}
+
 async function loadCafePosts(){
   cafePosts.innerHTML="<div>Berichten laden…</div>";
-  cafeStatus.textContent="";
+
+  // Tellers altijd opnieuw ophalen. Dit gebeurt onafhankelijk van de berichtenlijst:
+  // een probleem met één van beide mag de andere niet blokkeren.
+  const statsPromise=loadCafeStats();
+
   try{
     const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_community_posts`,{
       method:"POST",
@@ -860,6 +958,8 @@ async function loadCafePosts(){
     console.error(err);
     cafePosts.innerHTML="<div>Het Café is tijdelijk niet bereikbaar. Probeer het later opnieuw.</div>";
   }
+
+  await statsPromise;
 }
 
 function renderCafePosts(posts){
@@ -917,7 +1017,7 @@ function renderCafePosts(posts){
           body:JSON.stringify({p_post_id:id})
         });
         if(!response.ok)throw new Error(`HTTP ${response.status}`);
-        await loadCafePosts();
+        await refreshCafe();
       }catch(err){
         console.error(err);
         cafeStatus.textContent="Liken lukte niet.";
@@ -953,7 +1053,7 @@ function renderCafePosts(posts){
           throw new Error("Supabase heeft het bericht niet verwijderd.");
         }
         cafeStatus.textContent="Bericht verwijderd.";
-        await loadCafePosts();
+        await refreshCafe();
       }catch(err){
         console.error(err);
         cafeStatus.textContent=isCafeAdmin()
@@ -971,7 +1071,10 @@ function renderCafePosts(posts){
       const post=posts.find(p=>Number(p.id)===id);
       if(!post)return;
       cafeEditingPostId=id;
-      cafeName.value=post.name||"";
+      const lockedName=getLockedCafeName();
+      cafeName.value=lockedName||post.name||"";
+      cafeName.readOnly=Boolean(lockedName);
+      updateCafeSubmitState();
       cafeType.value=post.type||"Algemeen";
       cafeMessage.value=post.message||"";
       cafeCounter.textContent=`${cafeMessage.value.length} / 240`;
@@ -984,15 +1087,46 @@ function renderCafePosts(posts){
 }
 
 nameInput.addEventListener("input",()=>rememberPlayerName(nameInput.value));
-cafeName.addEventListener("input",()=>rememberPlayerName(cafeName.value));
+
+cafeName.addEventListener("input",()=>{
+  const locked=getLockedCafeName();
+  if(locked){
+    cafeName.value=locked;
+    cafeName.readOnly=true;
+    updateCafeSubmitState();
+    return;
+  }
+
+  updateCafeSubmitState();
+  if(isValidCafeName(cafeName.value) && cafeStatus.textContent.includes("naam")){
+    cafeStatus.textContent="";
+  }
+});
 
 cafeMessage.addEventListener("input",()=>{
   cafeCounter.textContent=`${cafeMessage.value.length} / 240`;
 });
 
 activateButton(cafeSubmitBtn,async()=>{
-  const name=(cafeName.value.trim()||"SPELER").toUpperCase().slice(0,10);
-  rememberPlayerName(name);
+  const lockedName=getLockedCafeName();
+  const rawName=(lockedName||cafeName.value).trim();
+
+  if(!isValidCafeName(rawName)){
+    cafeStatus.textContent="Vul eerst je naam in voordat je een bericht plaatst.";
+    updateCafeSubmitState();
+    cafeName.focus();
+    return;
+  }
+
+  const name=rawName.toUpperCase().slice(0,10);
+
+  if(lockedName && name!==lockedName){
+    cafeStatus.textContent="Je Café-naam staat vast op dit apparaat.";
+    cafeName.value=lockedName;
+    cafeName.readOnly=true;
+    updateCafeSubmitState();
+    return;
+  }
   const type=cafeType.value;
   const message=cafeMessage.value.trim().slice(0,240);
 
@@ -1001,6 +1135,7 @@ activateButton(cafeSubmitBtn,async()=>{
     return;
   }
 
+  cafeSubmitBtn.dataset.saving="1";
   cafeSubmitBtn.disabled=true;
   cafeStatus.textContent="";
 
@@ -1033,19 +1168,25 @@ activateButton(cafeSubmitBtn,async()=>{
     });
     if(!response.ok)throw new Error(`${response.status}: ${await response.text()}`);
 
+    if(!getLockedCafeName()){
+      lockCafeName(name);
+    }else{
+      rememberPlayerName(name);
+    }
     cafeStatus.textContent=editing?"Bericht aangepast!":"Bericht geplaatst!";
     resetCafeEdit();
-    await loadCafePosts();
+    await refreshCafe();
   }catch(err){
     console.error(err);
     cafeStatus.textContent="Opslaan lukte niet. Probeer het later opnieuw.";
   }finally{
-    cafeSubmitBtn.disabled=false;
+    delete cafeSubmitBtn.dataset.saving;
     if(!cafeEditingPostId)cafeSubmitBtn.textContent="BERICHT PLAATSEN";
+    updateCafeSubmitState();
   }
 });
 
-const CURRENT_VERSION="2.15";
+const CURRENT_VERSION="2.20-beta1";
 function showUpdateOnce(){
   const seen=localStorage.getItem("stampertjesSeenVersion");
   if(seen!==CURRENT_VERSION){
@@ -1193,6 +1334,7 @@ function startGame(){
   playMenuBtn.textContent="SPELEN";
   audio();
   score=0;level=1;lives=3;state="play";
+  updateProgressStats();
   if(musicOn)startMusic();
   const gameStats=getStats();
   gameStats.gamesPlayed=(Number(gameStats.gamesPlayed)||0)+1;
@@ -1204,6 +1346,7 @@ function startGame(){
   setTimeout(()=>{startingGame=false},250);
 }
 function showGameOverPanel(){
+  updateProgressStats();
   document.body.classList.remove("gameplayActive");
   if(musicOn)startMusic();
   pendingScore=score;
@@ -1436,6 +1579,7 @@ function drawIntro(){
 }
 window.addEventListener("load",()=>{
   openIntro();
+  pickCastleMessage();
   drawIntro();
   setTimeout(tryImmediateMenuAutoplay,200);
   setTimeout(showUpdateOnce,250);
@@ -2282,6 +2426,7 @@ function updateEnemies(){
   enemies=enemies.filter(e=>!e.dead);
   if(enemies.length===0 && !levelTransitioning && state==="play"){
     score+=500;
+    updateProgressStats();
     const completedLevel=level;
     level++;
     showLevelTransition(completedLevel,level);
@@ -2325,6 +2470,7 @@ function collectBonus(){
     enemies.forEach(e=>e.slowTimer=300);
   }
   score+=earned;
+      updateProgressStats();
   effects.push({type:"score",x:bonus.x,y:bonus.y-12,t:70,text:`+${earned}`});
   tone(520,.08,"square",.04,760);
   bonus=null;
@@ -2493,5 +2639,71 @@ function draw(){
   }
   ctx.restore();
 }
-function loop(){update();draw();requestAnimationFrame(loop)}
+
+const livingCastle={
+  dust:Array.from({length:10},()=>({
+    x:Math.random()*c.width,y:Math.random()*c.height,
+    vx:(Math.random()-.5)*.07,vy:.025+Math.random()*.06,
+    a:.08+Math.random()*.16,size:1
+  })),
+  fogOffset:0,pebble:null,nextPebble:performance.now()+5000+Math.random()*9000
+};
+
+function drawLivingCastle(now=performance.now()){
+  if(state!=="play"&&state!=="paused")return;
+  ctx.save();
+
+  // Wit-grijze fakkelgloed; geen kleur, geen gameplayfunctie.
+  const torches=[
+    [c.width*.10,c.height*.28,0],
+    [c.width*.90,c.height*.28,1.7],
+    [c.width*.18,c.height*.58,3.1],
+    [c.width*.82,c.height*.58,4.4]
+  ];
+  torches.forEach((t,i)=>{
+    const flick=.5+.5*Math.sin(now*.008+t[2])+.12*Math.sin(now*.019+i);
+    ctx.fillStyle="#fff";
+    ctx.globalAlpha=.16+flick*.22;
+    const h=2+Math.round(flick*3);
+    ctx.fillRect(Math.round(t[0]-1),Math.round(t[1]-h),3,h+1);
+    ctx.globalAlpha=.04+flick*.05;
+    ctx.fillRect(Math.round(t[0]-5),Math.round(t[1]-8),10,10);
+  });
+
+  // Mist blijft laag en zeer transparant.
+  livingCastle.fogOffset=(livingCastle.fogOffset+.045)%c.width;
+  ctx.fillStyle="#fff";ctx.globalAlpha=.045;
+  for(let i=0;i<3;i++){
+    const y=c.height*(.72+i*.065);
+    const x=((i*c.width*.4+livingCastle.fogOffset)%(c.width*1.3))-c.width*.15;
+    ctx.fillRect(x,y,c.width*.38,1);
+    ctx.fillRect(x+c.width*.11,y+3,c.width*.28,1);
+  }
+
+  // Stof.
+  livingCastle.dust.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.y>c.height*.90){p.y=c.height*.08;p.x=Math.random()*c.width}
+    if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;
+    ctx.fillStyle="#fff";ctx.globalAlpha=p.a;
+    ctx.fillRect(Math.round(p.x),Math.round(p.y),1,1);
+  });
+
+  // Zeldzaam steentje.
+  if(!livingCastle.pebble&&now>livingCastle.nextPebble){
+    livingCastle.pebble={x:c.width*(.15+Math.random()*.7),y:c.height*.06,vy:.55+Math.random()*.25};
+  }
+  if(livingCastle.pebble){
+    livingCastle.pebble.y+=livingCastle.pebble.vy;
+    ctx.fillStyle="#fff";ctx.globalAlpha=.35;
+    ctx.fillRect(Math.round(livingCastle.pebble.x),Math.round(livingCastle.pebble.y),2,2);
+    if(livingCastle.pebble.y>c.height*.88){
+      livingCastle.pebble=null;
+      livingCastle.nextPebble=now+7000+Math.random()*12000;
+    }
+  }
+  ctx.restore();
+}
+
+function loop(){update();draw();drawLivingCastle();requestAnimationFrame(loop)}
 loop();
