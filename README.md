@@ -1,14 +1,16 @@
-# De Stampertjes v2.20 Beta 6 — Four Floors
+# De Stampertjes v2.20 Beta 6.2
 
-Deze build maakt het kasteel echt hoger op iPhone én laptop.
+Gerichte iPhone touch/scroll-update op Beta 6.1.
 
-- Het canvas is verhoogd van 320 naar 382 interne pixels.
-- Er is één extra speelbare verdieping toegevoegd.
-- De nieuwe verdieping heeft ladders en doet mee met Appelieten, gaten en bonusitems.
-- Kasteelachtergrond, mist, fakkels en decoratie zijn aangepast aan de extra hoogte.
-- Op iPhone staat PAUZE/audio boven het speelveld, weg van de bewegingsknoppen.
-- Audio heeft drie standen: 🎵 ALLES AAN → 🔊 ALLEEN FX → 🔇 ALLES UIT.
-- De gekozen audiostand wordt lokaal onthouden.
-- Desktop gebruikt hetzelfde hogere level; de mobiele bedieningsindeling geldt alleen onder 600 px.
+## Nieuw
+- Een menuoptie opent alleen bij een echte korte tik.
+- Beweegt je vinger meer dan 10 px, dan wordt de beweging als scroll gezien.
+- Na een scroll wordt een menu-tik circa 0,28 seconde geblokkeerd.
+- De synthetische Safari-click na `touchend` wordt onderdrukt.
+- Meer verticale ruimte tussen menuknoppen op kleine schermen.
+- Desktop/muisbediening blijft gewone click-bediening.
+
+De grotere demo, vier speelverdiepingen, veiligere level-layouts,
+drie audiostanden en bonusfix blijven behouden.
 
 Geen Supabase-wijziging nodig.

@@ -1,27 +1,21 @@
-# v2.20 Beta 5.1
+# v2.20 Beta 6.2
 
-## Bonusitems
-- [ ] Banaan is duidelijk groter
-- [ ] Klok is duidelijk groter
-- [ ] Kers is duidelijk groter
-- [ ] Ster is duidelijk groter
-- [ ] Geen wit vierkant bij verdwijnen
-- [ ] Item zweeft subtiel
-- [ ] Item blijft goed leesbaar tegen steenachtergrond
-
-## Doodanimatie
-- [ ] Doodscene gebruikt kasteelachtergrond
-- [ ] Fakkels zichtbaar
-- [ ] Speler valt vloeiend
-- [ ] Stof/steendeeltjes zichtbaar
-- [ ] Mist zichtbaar
-- [ ] Respawn werkt
-- [ ] Game Over werkt
+## iPhone menu
+- [ ] Scroll langs Highscores/Kronieken zonder dat een scherm opent
+- [ ] Loslaten boven Historie/Kronieken opent niets na een swipe
+- [ ] Een korte bewuste tik opent de juiste optie
+- [ ] Highscores opent bij tik
+- [ ] Statistieken opent bij tik
+- [ ] Kronieken opent bij tik
+- [ ] Café opent bij tik
+- [ ] Terug-knoppen werken bij bewuste tik
+- [ ] Knoppen hebben iets meer tussenruimte
 
 ## Regressie
-- [ ] SPELEN-knop werkt
-- [ ] Lange demo werkt
-- [ ] Muziek wisselt
-- [ ] Café werkt
-- [ ] Statistieken werken
-- [ ] Hall of Fame werkt
+- [ ] SPELEN werkt
+- [ ] Demo is groot
+- [ ] Vier speelverdiepingen werken
+- [ ] Onderste verdieping heeft twee vluchtladders
+- [ ] Audio 3 standen werken
+- [ ] Bonusobjecten hebben geen wit vlak
+- [ ] Laptop/muisklikken werken normaal

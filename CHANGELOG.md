@@ -1,7 +1,9 @@
 # De Stampertjes
 
-## v2.20 Beta 5.2
-- Unieke game-22052.js om Safari-cache te omzeilen.
-- Bonusflits volledig verwijderd.
-- Bonusobjecten groter en rustiger weergegeven.
-- Doodanimatie van Beta 5.1 behouden.
+## v2.20 Beta 6.2
+- iPhone menu-scroll beveiligd tegen onbedoelde knopacties.
+- Touchbeweging >10 px telt als scroll.
+- Korte blokkering van menuacties direct na scrollen.
+- Safari synthetische click na touch onderdrukt.
+- Mobiele menu-items iets verder uit elkaar gezet.
+- Desktopgedrag ongewijzigd.

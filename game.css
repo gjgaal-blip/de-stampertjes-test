@@ -841,3 +841,52 @@ body.attractMode #panel{max-width:520px}
   body.gameplayActive .small{order:7;margin-top:5px;font-size:10px}
   body.gameplayActive #controls button{min-height:62px}
 }
+
+/* v2.20 Beta 6.1 — larger attract/demo presentation */
+#introCanvas{
+  width:min(94vw,630px);
+  height:auto;
+  max-width:630px;
+}
+@media (max-width:600px){
+  #introCanvas{
+    width:calc(100vw - 14px)!important;
+    max-width:none!important;
+    height:auto!important;
+  }
+}
+
+
+/* =========================================================
+   v2.20 Beta 6.2 — iPhone menu touch safety
+   Desktop layout remains unchanged.
+   ========================================================= */
+@media (max-width:600px){
+  .menuGrid{
+    gap:12px 10px;
+    margin-top:12px;
+  }
+
+  .menuGrid button{
+    min-height:54px;
+    padding-top:11px;
+    padding-bottom:11px;
+    touch-action:manipulation;
+  }
+
+  .menuGrid button:first-child{
+    min-height:58px;
+  }
+
+  .menuSection .backBtn{
+    margin-top:14px;
+    min-height:52px;
+    touch-action:manipulation;
+  }
+
+  /* Give long, scrollable sections a little breathing room so a swipe
+     is less likely to finish directly on the next action button. */
+  .menuSection{
+    padding-bottom:12px;
+  }
+}
