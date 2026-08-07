@@ -1,9 +1,26 @@
-# De Stampertjes v2.20 Beta 6.7
+# De Stampertjes v2.20 Beta 6.8 — Live Analytics
 
-- Bonusvoorwerpen geven nu direct bij verschijnen een kort herkenbaar arcade-geluid.
-- Klok, banaan, ster en kers hebben verschillende cues.
-- De geluiden volgen de bestaande audiostand: ALLES AAN en ALLEEN FX hoorbaar; ALLES UIT stil.
-- Bij de eerste bewuste start kan een speler optioneel een naam van maximaal 10 tekens kiezen.
-- Die naam gebruikt de reeds bestaande `stampertjesPlayerName` en wordt via `submit_player_stats` aan hetzelfde bestaande device-ID gekoppeld.
-- Overslaan blijft mogelijk; dan blijft de speler `SPELER`.
-- Bestaande spelersstatistieken worden dus niet opnieuw begonnen of losgekoppeld.
+Deze build hoort bij de reeds uitgevoerde Beta 6.8 Supabase-migratie.
+
+Game registreert nu:
+- game start / game over;
+- level start / level voltooid;
+- deaths;
+- bonus verschijnt / bonus gepakt;
+- Teddy gevonden;
+- platform;
+- audiostand;
+- gameversie en laatste activiteit.
+
+Developer Portal toont:
+- alle spelers met naam + device-ID;
+- eerste en laatste bezoek;
+- potjes, score, hoogste level, Appelieten, deaths, combo en Teddy;
+- actieve spelers 24 uur / 7 dagen en nieuwe spelers;
+- levelstarts, completions, deaths en completion-rate;
+- bonus spawn/collect-rate;
+- platform- en audioverdeling;
+- recente game-events;
+- Café beheer.
+
+Analytics-fouten onderbreken de gameplay nooit.
