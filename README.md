@@ -1,12 +1,9 @@
-# De Stampertjes v2.20 Beta 6.6
+# De Stampertjes v2.20 Beta 6.7
 
-Polish-update op Beta 6.5.
-
-- De compacte demo staat nu met een vaste binnenmarge netjes tussen de lijnen van het hoofdmenu.
-- Oude mobiele CSS die de demo op viewport-breedte forceerde wordt door een gerichte eindregel overschreven.
-- Fullscreen attract mode blijft ongewijzigd fullscreen werken.
-- Actuele update- en knopteksten verwijzen nu consequent naar Beta 6.6.
-- Verouderde technische teksten zoals 'Beta 4.x', 'v2.15.5' en de oude 18-seconden-demo zijn uit de actuele updatekaart gehaald.
-- Echte historische versienummers in de Kronieken/Kasteelkrant blijven bewust staan: die beschrijven eerdere releases.
-
-Geen Supabase-wijziging nodig.
+- Bonusvoorwerpen geven nu direct bij verschijnen een kort herkenbaar arcade-geluid.
+- Klok, banaan, ster en kers hebben verschillende cues.
+- De geluiden volgen de bestaande audiostand: ALLES AAN en ALLEEN FX hoorbaar; ALLES UIT stil.
+- Bij de eerste bewuste start kan een speler optioneel een naam van maximaal 10 tekens kiezen.
+- Die naam gebruikt de reeds bestaande `stampertjesPlayerName` en wordt via `submit_player_stats` aan hetzelfde bestaande device-ID gekoppeld.
+- Overslaan blijft mogelijk; dan blijft de speler `SPELER`.
+- Bestaande spelersstatistieken worden dus niet opnieuw begonnen of losgekoppeld.
