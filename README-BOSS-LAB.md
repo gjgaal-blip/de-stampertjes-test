@@ -16,3 +16,5 @@ Prototype-mechaniek:
 7. Op de onderste verdieping springt hij na een hit weer naar boven voor een volgende fase.
 
 Dit prototype schrijft geen Boss Lab-score naar de publieke highscorelijst.
+
+Fix 1: startfreeze telt nu correct af; de Opper-Appeliet begint daarna zichtbaar te bewegen.

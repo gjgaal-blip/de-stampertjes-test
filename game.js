@@ -2612,7 +2612,7 @@ function startBossLab(){
 
   boss={
     x:330,y:floors[1]-58,w:78,h:58,floor:1,dir:-1,
-    speed:.62,hp:5,maxHp:5,stunned:0,falling:false,fallTarget:null,
+    speed:1.05,hp:5,maxHp:5,stunned:0,falling:false,fallTarget:null,
     invulnerable:0,phase:1,respawnTimer:0
   };
   startFreeze=70;
@@ -2670,7 +2670,13 @@ function hitBoss(){
 
 function updateBoss(){
   if(!bossLabActive||bossLabWon)return;
-  if(startFreeze>0)return;
+
+  // In de normale game telt updateEnemies() de startpauze af.
+  // Boss Lab gebruikt updateEnemies() niet, dus doen we dat hier zelf.
+  if(startFreeze>0){
+    startFreeze--;
+    return;
+  }
   if(boss.invulnerable>0)boss.invulnerable--;
   if(boss.respawnTimer>0){boss.respawnTimer--;return;}
 
@@ -2696,7 +2702,7 @@ function updateBoss(){
   }
 
   // Large boss patrol. Every lost HP makes him slightly faster.
-  const speed=boss.speed+(boss.maxHp-boss.hp)*.11;
+  const speed=boss.speed+(boss.maxHp-boss.hp)*.16;
   boss.x+=boss.dir*speed;
   if(boss.x<18){boss.x=18;boss.dir=1}
   if(boss.x+boss.w>W-18){boss.x=W-18-boss.w;boss.dir=-1}
