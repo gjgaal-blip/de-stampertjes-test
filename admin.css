@@ -40,3 +40,33 @@ button:disabled{opacity:.5}
 .discoveryRow{display:grid;grid-template-columns:1.3fr .8fr 1.2fr;gap:7px;padding:8px 0;border-bottom:1px dotted #555;font-size:11px;align-items:center}
 .discoveryRow small{text-align:right;color:#999}
 @media(min-width:760px){.teddyDiscoveryGrid{grid-template-columns:1fr 1fr}}
+
+/* v2.22.1 working dashboard — lives inside authenticated #portal */
+#newPortalDashboard{border:3px double #fff;padding:14px;margin:0 0 14px}
+.portalHero{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px dotted #777;padding-bottom:12px}
+.portalHero h2{margin:4px 0}.eyebrow{font-size:10px;letter-spacing:1px;opacity:.75}.liveBadge{border:1px solid #fff;padding:6px 8px;font-weight:bold}
+.portalKpis{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:12px 0}.kpi{border:1px solid #666;padding:9px 5px;text-align:center;display:flex;flex-direction:column;gap:4px}.kpi span{font-size:20px}.kpi b{font-size:18px}.kpi small{font-size:9px;opacity:.7}
+.portalTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}.portalTabs button{font-size:10px;padding:8px 4px;border:1px solid #666}.portalTabs button.active{outline:2px solid #fff}
+.portalDashPanel{display:none;border:1px solid #555;padding:10px}.portalDashPanel.active{display:block}.dashGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dashGrid>article,.metricCard{border:1px solid #555;padding:10px;min-height:92px}.metricCard{display:flex;flex-direction:column;gap:4px}.metricCard>span{font-size:21px}.metricCard>b{font-size:18px}.metricCard small{opacity:.7}
+.miniRow,.recordAdminRow{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px dotted #555;padding:6px 0}.recordAdminRow{grid-template-columns:38px 1fr auto}
+.merchAdmin{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.merchAdmin>div{border:1px solid #555;padding:10px}.merchBig{display:flex;flex-direction:column;text-align:center}.merchBig b{font-size:32px}
+@media(max-width:700px){.portalKpis{grid-template-columns:repeat(3,1fr)}.portalTabs{grid-template-columns:repeat(2,1fr)}.dashGrid,.merchAdmin{grid-template-columns:1fr}.portalHero{padding:0 0 10px}}
+
+/* BUILD 2228 */
+html[data-admin-build="2228"] #portalVersion{font-weight:900}
+
+/* v2.22.3 merch dashboard */
+
+.wallAdminBox{margin-top:14px;border-top:1px dotted #666;padding-top:10px}.wallAdminBox>strong{display:block;margin-bottom:6px}
+
+/* v2.22.6 highscorebeheer */
+.scoreAdminToolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.scoreAdminToolbar h3{margin:0 0 4px}.scoreAdminToolbar button{width:auto}
+.adminScoreRow{display:grid;grid-template-columns:42px minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:1px dotted #555;padding:9px 0}
+.adminScoreMain{display:flex;flex-direction:column;min-width:0}.adminScoreMain strong{overflow-wrap:anywhere}.adminScoreMain small{opacity:.72}
+.adminScoreActions{display:flex;gap:4px}.adminScoreActions button{width:auto;padding:5px 7px}
+.manualBadge{display:inline-block;border:1px solid #888;padding:1px 4px;font-size:8px;margin-left:4px}
+@media(max-width:650px){.scoreAdminToolbar{align-items:flex-start;flex-direction:column}.scoreAdminToolbar button{width:100%}.adminScoreRow{grid-template-columns:34px 1fr auto}.adminScoreActions{grid-column:2/-1;justify-content:flex-end}}
+
+/* v2.22.7 handmatige score invoer */
+.manualScoreForm{border:2px solid #777;padding:12px;margin:10px 0 14px}.manualScoreForm h3{margin:0 0 10px}.manualScoreGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.manualScoreGrid label{display:flex;flex-direction:column;gap:5px;font-size:9px}.manualScoreGrid input{width:100%;box-sizing:border-box}.manualScoreButtons{display:flex;gap:8px;margin-top:10px}.manualScoreButtons button{flex:1}@media(max-width:760px){.manualScoreGrid{grid-template-columns:1fr 1fr}.manualScoreGrid label:first-child{grid-column:1/-1}}

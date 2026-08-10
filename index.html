@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
-<title>De Stampertjes v2.20 RC2</title>
-<link rel="stylesheet" href="game.css?v=220rc2">
+<title>De Stampertjes v2.30 Boss Lab</title>
+<link rel="stylesheet" href="game.css?v=2300">
 
 </head>
 <body>
@@ -18,10 +18,10 @@
     <h1 id="gameTitle"><span class="titleBlock">▓▓</span> DE STAMPERTJES <span class="titleBlock">▓▓</span></h1>
     <div id="studioLine">A GJ STUDIOS GAME</div>
     <div id="versionMusicRow">
-      <div id="versionLabel">v2.20 RC2</div>
+      <div id="versionLabel">v2.30 BOSS LAB</div>
       <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
     </div>
-    <div id="betaBadge">🧪 v2.20 RC2 · RELEASE CANDIDATE</div>
+    <div id="betaBadge">🧪 v2.30 · BOSS LAB · PRIVÉTEST</div>
     <div id="castleSlogan">EEN KASTEEL DAT NOOIT HELEMAAL HETZELFDE IS.</div>
     <div id="dailyCastleMessage" class="dailyCastleMessage"></div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
@@ -31,36 +31,25 @@
       <div class="teddyCat">ᓚᘏᗢ</div>
       <div>TEDDY WAS HERE +1000</div>
     </div>
-    <div id="mainMenu" class="mainMenuGroups">
-      <section class="menuGroup">
-        <h3>🎮 SPELEN</h3>
-        <div class="menuGrid">
-          <button id="playMenuBtn">SPELEN</button>
-          <button id="scoresMenuBtn">HIGHSCORES</button>
-          <button id="statsMenuBtn">STATISTIEKEN</button>
-        </div>
-      </section>
-
-      <section class="menuGroup">
-        <h3>📚 ONTDEKKEN</h3>
-        <div class="menuGrid">
-          <button id="historyMenuBtn">HISTORIE</button>
-          <button id="newsMenuBtn">KASTEELKRANT</button>
-          <button id="helpMenuBtn">UITLEG</button>
-        </div>
-      </section>
-
-      <section class="menuGroup">
-        <h3>🌍 COMMUNITY</h3>
-        <div class="menuGrid">
-          <button id="cafeMenuBtn">CAFÉ</button>
-          <button id="hallMenuBtn">HALL OF FAME</button>
-        </div>
-      </section>
+    <div id="mainMenu" class="mainMenuGroups compactMainMenu">
+      <div class="menuHero">
+        <button id="playMenuBtn">🎮 SPELEN</button>
+        <button id="bossLabBtn" class="bossLabBtn">👑 START BOSS LAB</button>
+      </div>
+      <div class="menuGrid compactGrid">
+        <button id="scoresMenuBtn">🏆 HIGHSCORES</button>
+        <button id="statsMenuBtn">📊 STATISTIEKEN</button>
+        <button id="historyMenuBtn">📜 HISTORIE</button>
+        <button id="newsMenuBtn">📰 KASTEELKRANT</button>
+        <button id="helpMenuBtn">📖 UITLEG</button>
+        <button id="cafeMenuBtn">☕ CAFÉ</button>
+        <button id="hallMenuBtn">👑 HALL OF FAME</button>
+        <button id="merchMenuBtn" class="merchMenuBtn">🎁 MERCHANDISE</button>
+      </div>
     </div>
 
     <div id="scoresSection" class="menuSection hidden">
-      <h2>WERELDWIJDE TOP 10</h2>
+      <h2>WERELDWIJDE TOP 20</h2>
       <div id="scoreList"></div>
       <button class="backBtn" data-back>TERUG</button>
     </div>
@@ -101,6 +90,12 @@
 
     <div id="roadmapSection" class="menuSection hidden">
       <h2>📰 KASTEELKRANT</h2>
+<article class="newsItem featured"><div class="newsVersion">🏰 v2.22.8 · KASTEELUPDATE</div><h3>Meer ruimte voor helden</h3><p>De wereldwijde ranglijst is uitgebreid naar een <strong>Top 20</strong>, zodat meer spelers een plek in het klassement kunnen veroveren.</p><p>De Merchandise-hoek bundelt nu de Stampertjes-shirts en telefoonwallpapers, inclusief een speciale Vera · Bug Tester-editie.</p><p>Daarnaast zijn verschillende mobiele schermen en kleine onderdelen van het kasteel opnieuw aangescherpt.</p></article>
+<article class="newsItem featured"><div class="newsVersion">📊 v2.22 · HET KASTEEL ONTHOUDT</div><h3>De kroniekschrijvers houden voortaan veel meer bij</h3><p>Vanaf v2.22 bouwt De Stampertjes een rijker spelarchief op. Speeltijd, levels, stamps, Appelieten, bonussen, Teddy-momenten en persoonlijke records kunnen voortaan veel uitgebreider worden geregistreerd.</p><p>Ook de fundamenten onder het kasteel zijn verstevigd: publieke statistieken lopen via gecontroleerde Supabase-functies en de database is voorbereid op strengere toegangsregels. Alleen gegevens die nuttig zijn voor het spel worden bewaard; geen exacte GPS-locatie of permanente IP-geschiedenis.</p><p>Met deze gegevens kunnen toekomstige Hall of Fame-records, achievements en kasteeluitdagingen veel persoonlijker worden.</p><p>Daarnaast test GJ Studios voorzichtig een eerste stukje merchandise: spelers kunnen in het spel vrijblijvend aangeven welk Stampertjes-shirt ze het leukst vinden.</p><p>De merchandise-hoek is inmiddels uitgebreid met beter bekijkbare shirtontwerpen en gratis telefoonwallpapers in de stijl van het kasteel.</p></article>
+
+
+<article class="newsItem"><div class="newsVersion">🏛️ v2.21 · POLISH &amp; EREGALERIJ</div><h3>Het kasteel kreeg zijn eregalerij</h3><p>Na de grote v2.20-release zijn de mobiele layout, Kasteelkrant en Roadmap opgepoetst. De Hall of Fame groeide uit tot een interactieve eregalerij met records, Top 5-lijsten, persoonlijke posities en bijzondere onderscheidingen.</p></article>
+<article class="newsItem featured"><div class="newsVersion">🎉 v2.20 · OFFICIËLE RELEASE</div><h3>De poorten van het vernieuwde kasteel zijn open!</h3><p><strong>v2.20 is uit.</strong> Na de bèta- en RC-periode is dit de officiële stabiele release van De Stampertjes.</p><p>Vier verdiepingen, vijf kasteelzalen, verbeterde ladders, een langere attract-demo, bonus-FX en geluiden en uitgebreide online statistieken maken het kasteel levendiger dan ooit.</p><p>Teddy dwaalt heel sporadisch door het kasteel: bereik hem tijdens het spel voor <strong>+2000</strong>. Het verborgen Teddy Easter Egg levert <strong>+1000</strong> op. Beide ontdekkingen worden apart bijgehouden.</p><p>Nieuw: deel na Game Over je score en daag vrienden uit om jouw score en de wereldwijde Top 10 te verslaan.</p></article>
       <article class="newsItem featured"><div class="newsVersion">📖 v2.15</div><h3>Het kasteel krijgt een eigen geschiedenis</h3><p>De Kronieken, Hall of Fame en Kasteelkrant vormen samen steeds meer de wereld rond het spel. Het uitgangspunt voor toekomstige updates is simpel:</p><p style="text-align:center"><strong>“Elke update maakt De Stampertjes niet alleen groter, maar ook levendiger.”</strong></p><p><strong>🙏 Speciale dank aan Vera</strong><br>Voor het uitgebreid testen van de testversies en het melden van bugs. Dankzij haar feedback wordt De Stampertjes iedere update weer een stukje beter.</p></article>
       <article class="newsItem rumor"><div class="newsVersion">🕯️ GERUCHTEN UIT HET KASTEEL</div><h3>Wat fluistert men in de gangen?</h3><p>📰 Een avonturier beweert iets goudkleurigs te hebben gezien bij een afgesloten trap.<br><br>📰 Uit de westelijke toren klinkt 's nachts een melodie die niemand kent.<br><br>📰 In de bibliotheek zou een kaart liggen waarop verdiepingen staan die op geen enkele bouwtekening voorkomen.<br><br>📰 Teddy is opnieuw tussen de oude muren gezien. Sommigen noemen hem inmiddels de Wachter van het Kasteel.<br><br>📰 Diep onder de kelder is een zware poort gevonden. Niemand heeft hem nog kunnen openen.</p><p><em>Geruchten zijn geruchten... tot een volgende update het tegendeel bewijst.</em></p></article>
       <h3>📜 UIT DE ARCHIEVEN</h3>
@@ -110,69 +105,129 @@
       <article class="newsItem"><div class="newsVersion">🏰 v2.00</div><p>De grote remake: een nieuwe engine, levels, geluid en de eerste publieke versie van het vernieuwde kasteel.</p></article>
       <article class="newsItem"><div class="newsVersion">🍏 v1.00</div><p>Het allereerste speelbare prototype. Eén Stampertje, een vloer en de eerste Appelieten.</p></article>
       <h3>🔮 ROADMAP</h3>
-      <article class="newsItem featured"><div class="newsVersion">🌙 v2.20 · HET KASTEEL LEEFT</div><h3>De grote verbouwing nadert zijn einde</h3><p><strong>✓ Gebouwd:</strong> vier verdiepingen, levende fakkels, mist, stof en vallende steentjes, wisselende kasteelzalen, langere attract-demo, bonusvoorwerpen met eigen FX, spelersnamen en uitgebreide live statistieken.</p><p><strong>✓ Beta 6.9.4:</strong> dagberichten, mijlpalen, zaalintro's, zeldzame Teddy-ontmoetingen met een speciaal +2000 dansmoment en extra levende details zoals vleermuizen, vlaggen en veranderende ramen.</p><p><strong>🎵 Doorgeschoven naar v2.50:</strong> eigen muziek per zaal, ambient kasteelgeluiden en de Jukebox. Zo krijgt die versie een duidelijke eigen identiteit: <em>Het Kasteel Klinkt</em>.</p></article>
-      <article class="newsItem roadmapCard"><div class="newsVersion">🎄 v2.20+</div><h3>Seizoenen &amp; Verrassingen</h3><p>Halloween, Sinterklaas, Kerst, Oud &amp; Nieuw, Pasen en zomer kunnen subtiele tijdelijke veranderingen krijgen. Denk aan een ander dagbericht, decoratie of sfeer.</p><p>Heel af en toe kan het kasteel de speler verrassen met een bijzondere melding, een zeldzame verschijning of een kleine bonus. Niet vaak — juist daarom speciaal.</p><p>Op de verjaardag van De Stampertjes kan het startscherm voor één dag feestelijk veranderen met bijvoorbeeld slingers, confetti en een eigen bericht van GJ Studios.</p></article>
-      <article class="newsItem roadmapCard"><div class="newsVersion">👾 v2.30</div><h3>Nieuwe Appelieten</h3><p>Nieuwe soorten Appelieten met ieder hun eigen gedrag, snelheid en tactiek. De exacte varianten worden pas definitief zodra ze echt in het spel worden gebouwd.</p></article>
-      <article class="newsItem roadmapCard"><div class="newsVersion">⭐ v2.40</div><h3>Power-ups</h3><p>Nieuwe hulpmiddelen en tijdelijke krachten, zoals een Superstamp, extra leven, tijdvertraging, snelheid en andere verrassingen die de gameplay tactischer maken.</p></article>
-      <article class="newsItem roadmapCard"><div class="newsVersion">🎵 v2.50</div><h3>Het Kasteel Klinkt</h3><p>Iedere zaal krijgt een duidelijkere muzikale identiteit, met subtiele omgevingsgeluiden van wind, vuur, deuren en oude kettingen.</p><p>Een nieuwe Jukebox laat ontdekte en vrijgespeelde nummers terugluisteren. Verborgen tracks en muzikale geheimen kunnen spelers iets extra's geven om te verzamelen.</p><p>Dagelijkse uitdagingen, weekklassementen en uitgebreidere communityprofielen blijven ideeën voor een latere community-update.</p></article>
-      <article class="newsItem featured roadmapCard"><div class="newsVersion">👑 v3.00</div><h3>De Appelkoning</h3><p>Een groot eindhoofdstuk met een eindbaas in meerdere fases, een eindkasteel, eigen muziek, intro- en eindscènes, eindcredits en misschien zelfs een verborgen einde.</p></article>
-      <article class="newsItem featured roadmapCard"><div class="newsVersion">🏰 v4.00</div><h3>The Living Castle</h3><p>De verre toekomstvisie: een kasteel dat echt als een levende wereld voelt. NPC's kunnen rondlopen, een bibliothecaris kan nieuwe verhalen brengen, een smid kan hints geven, Teddy kan soms iets aanwijzen en geheime kamers kunnen pas na langere tijd of tijdens wereldgebeurtenissen verschijnen.</p><p>Het doel is niet om alles drukker te maken, maar om spelers regelmatig te laten denken: <strong>“Hé... dat heb ik nog nooit gezien.”</strong></p></article>
+      <article class="newsItem featured"><div class="newsVersion">✅ UITGEBRACHT · v2.20</div><h3>Het Kasteel Leeft</h3><p>Vier verdiepingen, levende kasteeldetails, wisselende zalen, langere attract-demo, bonus-FX, spelersnamen, uitgebreide live statistieken, Teddy Encounter en score delen zijn nu onderdeel van de stabiele game.</p></article>
+      <article class="newsItem featured roadmapCard"><div class="newsVersion">📊 NU · v2.22 HET KASTEEL ONTHOUDT</div><h3>Een rijker kasteelarchief</h3><p>Meer gameplay-analytics, levelanalyse, Teddy- en bonusstatistieken, persoonlijke records en een veiligere databasebasis voor toekomstige Hall of Fame-records en achievements.</p></article>
+      <article class="newsItem roadmapCard"><div class="newsVersion">🎵 v2.50 · HET KASTEEL KLINKT</div><h3>Meer muziek, meer sfeer</h3><p>Eigen muziek per zaal, meer omgevingsgeluiden, muzikale geheimen en een Jukebox voor ontdekte tracks.</p></article>
+      <article class="newsItem roadmapCard"><div class="newsVersion">🏆 v2.70 · EVENTS &amp; CHALLENGES</div><h3>Iedere keer iets te doen</h3><p>Dagelijkse en wekelijkse uitdagingen, tijdelijke kasteelevents, speciale beloningen en eventklassementen.</p></article>
+      <article class="newsItem roadmapCard"><div class="newsVersion">🏅 v2.90 · HELDEN &amp; GEHEIMEN</div><h3>Meer om te ontdekken</h3><p>Achievements en medailles, nieuwe Appeliet-types, extra verborgen geheimen en misschien nieuwe krachten voor het Stampertje.</p></article>
+      <article class="newsItem featured roadmapCard bossTeaser"><div class="newsVersion">👑 v3.00 · DE OPPER-APPELIET</div><h3>Er beweegt iets groots diep onder het kasteel…</h3>
+        <div class="bossPixel" aria-label="Teaser van de Opper-Appeliet"><div class="bossCrown">♛</div><div class="bossBody"><i></i><i></i></div><div class="bossFloor"></div></div>
+        <p>Een enorme Appeliet-baas, een speciale eindbaaszaal en een gevecht in meerdere fases. Veel groter. Veel sterker. En niet met één simpele stamp te verslaan.</p></article>
+      <article class="newsItem roadmapCard"><div class="newsVersion">👕 GJ STUDIOS · OOIT?</div><h3>De Stampertjes buiten het scherm</h3><p>Een echt zwart/wit De Stampertjes T-shirt staat op het verlanglijstje. Eerst het kasteel veroveren, daarna misschien de kledingkast.</p></article>
+      <article class="newsItem roadmapCard"><div class="newsVersion">📱 TOEKOMST</div><h3>Meer plekken om te stampen</h3><p>Een Android/Google Play-versie en verdere communityfuncties blijven interessante mogelijkheden voor later.</p></article>
       <p class="cafeInvite">💡 Heb jij een idee voor een level, geheim, verhaal of toekomstige functie? Laat het achter in het <strong>Stampertjes Café</strong>.</p>
       <p class="roadmapSlogan"><strong>Welkom in De Stampertjes. Een kasteel dat nooit helemaal hetzelfde is.</strong></p>
       <button class="backBtn" data-back>TERUG</button>
     </div>
 <div id="hallSection" class="menuSection hidden">
       <h2>🏛️ HALL OF FAME</h2>
-      <p class="hallIntro">In deze zaal krijgen de helden, ontdekkers en helpers van het kasteel een plek in de geschiedenis.</p>
+      <p class="hallIntro">De eregalerij van het kasteel. Tik op een record om te zien wie daar echt geschiedenis schrijft.</p>
 
-      <div class="hallGrid">
-        <div class="hallCard">
-          <div class="hallIcon">🏆</div>
-          <div class="hallLabel">KASTEELKAMPIOEN</div>
-          <strong id="hallChampion">LADEN…</strong>
-          <span id="hallChampionScore">—</span>
-        </div>
+      <div class="hallPodium">
+        <div class="podiumCard silver"><span>🥈</span><strong id="hallSecond">—</strong><small id="hallSecondScore">—</small></div>
+        <div class="podiumCard gold"><span>👑</span><strong id="hallChampion">LADEN…</strong><small id="hallChampionScore">—</small></div>
+        <div class="podiumCard bronze"><span>🥉</span><strong id="hallThird">—</strong><small id="hallThirdScore">—</small></div>
+      </div>
 
-        <div class="hallCard">
-          <div class="hallIcon">🏰</div>
-          <div class="hallLabel">HOOGSTE LEVEL</div>
-          <strong id="hallHighestLevel">—</strong>
-          <span>wereldwijd</span>
-        </div>
+      <h3 class="hallSubhead">🏆 KASTEELRECORDS</h3>
+      <div id="hallRecordGrid" class="hallRecordGrid">
+        <button class="recordTile" data-record="apples"><span>🍎</span><strong>APPELIETENJAGER</strong><b id="recordApplesName">—</b><small id="recordApplesValue">—</small></button>
+        <button class="recordTile" data-record="level"><span>🏰</span><strong>DIEPSTE AVONTURIER</strong><b id="recordLevelName">—</b><small id="recordLevelValue">—</small></button>
+        <button class="recordTile" data-record="games"><span>🎮</span><strong>DOORZETTER</strong><b id="recordGamesName">—</b><small id="recordGamesValue">—</small></button>
+        <button class="recordTile" data-record="teddy"><span>🐈</span><strong>TEDDY WHISPERER</strong><b id="recordTeddyName">—</b><small id="recordTeddyValue">—</small></button>
+        <button class="recordTile" data-record="bonus"><span>🎁</span><strong>BONUSJAGER</strong><b id="recordBonusName">—</b><small id="recordBonusValue">—</small></button>
+        <button class="recordTile" data-record="deaths"><span>💀</span><strong>EEUWIGE STAMPER</strong><b id="recordDeathsName">—</b><small id="recordDeathsValue">—</small></button>
+      </div>
 
-        <div class="hallCard">
-          <div class="hallIcon">🐈</div>
-          <div class="hallLabel">TEDDY-VINDERS</div>
-          <strong id="hallTeddyFinders">—</strong>
-          <span>avonturiers</span>
-        </div>
+      <section class="myHistoryCard">
+        <h3>🧭 JOUW PLAATS IN DE GESCHIEDENIS</h3>
+        <div id="myHallRanks" class="myHallRanks"><div class="small">Jouw posities worden geladen…</div></div>
+      </section>
 
-        <div class="hallCard veraCard">
-          <div class="hallIcon">🐞</div>
-          <div class="hallLabel">BUG HUNTER</div>
-          <strong>VERA</strong>
-          <span>speciale dank voor het testen</span>
-        </div>
-
-        <div class="hallCard">
-          <div class="hallIcon">📜</div>
-          <div class="hallLabel">EERSTE SPELER</div>
-          <strong>NOG NIET VASTGELEGD</strong>
-          <span>een plek voor de toekomst</span>
-        </div>
-
-        <div class="hallCard">
-          <div class="hallIcon">💡</div>
-          <div class="hallLabel">COMMUNITY-EREPLEK</div>
-          <strong>NOG VRIJ</strong>
-          <span>wie schrijft geschiedenis?</span>
-        </div>
+      <h3 class="hallSubhead">🎖️ EREMEDAILLES</h3>
+      <div class="honorGrid">
+        <div class="honorCard"><span>🐞</span><strong>BUG HUNTER</strong><b>VERA</b><small>Hielp het kasteel veiliger te maken.</small></div>
+        <div class="honorCard"><span>🐾</span><strong>TEDDY PIONIER</strong><b id="firstTeddyFinder">—</b><small>Eerste speler die Teddy tijdens een level bereikte.</small></div>
+        <div class="honorCard"><span>🥚</span><strong>GEHEIMENJAGER</strong><b id="firstEasterFinder">—</b><small>Eerste ontdekker van het verborgen Teddy-geheim.</small></div>
+        <div class="honorCard locked"><span>👑</span><strong>OPPER-APPELIET SLAYER</strong><b>🔒 NOG NIEMAND</b><small>Er moet eerst iets ontwaken…</small></div>
       </div>
 
       <p id="hallStatus" class="hallStatus">Live gegevens worden uit het kasteel opgehaald…</p>
       <button class="backBtn" data-back>TERUG</button>
     </div>
 
+    <div id="hallRecordModal" class="hidden" aria-hidden="true">
+      <div id="hallRecordModalCard">
+        <div class="hallModalHead">
+          <h2 id="hallModalTitle">KASTEELRECORD</h2>
+          <button id="hallModalClose" aria-label="Sluiten">✕</button>
+        </div>
+        <div id="hallModalList"></div>
+      </div>
+    </div>
+
+
+<div id="merchSection" class="menuSection hidden">
+  <div class="merchTitleRow">
+    <h2>🎁 STAMPERTJES MERCHANDISE</h2>
+    <span class="merchComing">INTERESSEPEILING</span>
+  </div>
+  <p class="merchIntro">Bekijk de shirts en telefoonwallpapers uit het kasteel. Shirtinteresse is <strong>nog geen bestelling</strong>.</p>
+
+  <div id="merchDesigns" class="merchDesigns">
+    <button type="button" class="merchDesign selected" data-design="classic">
+      <span class="merchDesignLabel">1. CLASSIC</span>
+      <img src="merch-classic.png" alt="De Stampertjes Classic shirt">
+      <small>Klassiek logo voorop, epische kasteelscène achterop.</small>
+    </button>
+    <button type="button" class="merchDesign" data-design="boss">
+      <span class="merchDesignLabel">2. APPELIET BOSS</span>
+      <img src="merch-boss.png" alt="De Stampertjes Appeliet Boss shirt">
+      <small>De strijd tegen de Opper-Appeliet. Voor echte kasteelhelden.</small>
+    </button>
+    <button type="button" class="merchDesign" data-design="held">
+      <span class="merchDesignLabel">3. KASTEELHELD</span>
+      <img src="merch-held.png" alt="De Stampertjes gepersonaliseerd Kasteelheld shirt">
+      <small>Jouw spelersnaam op je eigen Kasteelheld-shirt.</small>
+    </button>
+  </div>
+
+  <div class="merchOptions">
+    <fieldset>
+      <legend>KIES JE MAAT</legend>
+      <div id="merchSizes" class="merchChoiceRow">
+        <button type="button" data-size="S">S</button>
+        <button type="button" data-size="M">M</button>
+        <button type="button" data-size="L" class="selected">L</button>
+        <button type="button" data-size="XL">XL</button>
+        <button type="button" data-size="XXL">XXL</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>PERSONALISATIE</legend>
+      <div id="merchPersonalization" class="merchChoiceRow">
+        <button type="button" data-personalized="false" class="selected">STANDAARD</button>
+        <button type="button" data-personalized="true">MET NAAM</button>
+      </div>
+    </fieldset>
+
+    <label class="merchNameLabel">JOUW SPELERSNAAM
+      <input id="merchPlayerName" maxlength="12" autocomplete="nickname">
+    </label>
+  </div>
+
+  <section class="wallpaperShop"><div class="wallpaperHeading"><h3>📱 TELEFOON WALLPAPERS</h3><span>GRATIS</span></div><p class="wallpaperIntro">Tik op een achtergrond om hem groot te bekijken. Daarna kun je hem bewaren op je telefoon.</p><div id="wallpaperGrid" class="wallpaperGrid"><button type="button" class="wallpaperCard" data-wallpaper="kasteel_nacht" data-src="wallpaper-kasteel-nacht.png" data-title="KASTEEL IN DE NACHT"><img src="wallpaper-kasteel-nacht.png" alt="Kasteel in de nacht"><strong>KASTEEL IN DE NACHT</strong></button><button type="button" class="wallpaperCard" data-wallpaper="entreehal" data-src="wallpaper-entreehal.png" data-title="ENTREEHAL"><img src="wallpaper-entreehal.png" alt="Entreehal"><strong>ENTREEHAL</strong></button><button type="button" class="wallpaperCard" data-wallpaper="kasteel_banner" data-src="wallpaper-kasteel-banner.png" data-title="KASTEELBANNER"><img src="wallpaper-kasteel-banner.png" alt="Kasteelbanner"><strong>KASTEELBANNER</strong></button><button type="button" class="wallpaperCard veraWallpaper" data-wallpaper="vera_bug_tester" data-src="wallpaper-vera-bug-tester.png" data-title="VERA · BUG TESTER"><img src="wallpaper-vera-bug-tester.png" alt="Vera Bug Tester"><strong>VERA · BUG TESTER</strong></button></div></section>
+<div class="merchNotice">👕 We noteren alleen je interesse. Geen betaling, adres of bestelling.</div>
+  <div id="merchStatus" class="merchStatus"></div>
+  <div class="merchActions">
+    <button id="merchInterestBtn" type="button">♥ IK HEB INTERESSE!</button>
+    <button id="merchLaterBtn" type="button">✕ MISSCHIEN LATER</button>
+  </div>
+  <button class="backBtn" data-back>TERUG</button>
+</div>
+
+<div id="mediaViewer" class="hidden" aria-hidden="true"><div id="mediaViewerCard"><div class="mediaViewerHead"><strong id="mediaViewerTitle">BEKIJK GROOT</strong><button id="mediaViewerClose" type="button" aria-label="Sluiten">✕</button></div><img id="mediaViewerImage" alt="Grote voorvertoning"><a id="mediaViewerDownload" class="hidden" href="#" download>⬇ DOWNLOAD / BEWAAR</a><small id="mediaViewerHint" class="hidden">Op iPhone kan de afbeelding eerst openen. Houd hem daarna ingedrukt en kies ‘Bewaar in Foto’s’.</small></div></div>
 <div id="cafeSection" class="menuSection hidden">
       <h2>🍏 STAMPERTJES CAFÉ</h2>
       <div id="cafeAdminStatus" class="hidden">🛠️ GJ STUDIOS BEHEER ACTIEF</div>
@@ -238,7 +293,7 @@
     </div>
 
     <div id="highscoreBox" class="hidden">
-      <h2>WERELDWIJDE TOP 10</h2>
+      <h2>WERELDWIJDE TOP 20</h2>
       <div id="scoreListLegacy"></div>
     </div>
     <div id="shareScoreBox" class="hidden">
@@ -248,24 +303,7 @@
     </div>
   </div>
 </div>
-<div id="updateOverlay" class="hidden">
-  <div id="updateCard">
-    <div class="updateKicker">✨ v2.20 RC2 · RELEASE CANDIDATE</div>
-    <h2>v2.20 RC2</h2>
-    <div class="updateIntro">De belangrijkste vernieuwingen van de huidige 2.20-bèta:</div>
-    <div class="updateList">
-      <div>✓ Vier verdiepingen met vaste zaalvolgorde en verbeterde ladderroutes</div>
-      <div>✓ Zeldzame Teddy-ontmoeting: bereik hem, dansje + jingle, +2000 punten</div>
-      <div>✓ Fullscreen attract-demo en vier verdiepingen in de demo</div>
-      <div>✓ Bonusvoorwerpen met eigen verschijningsgeluiden</div>
-      <div>✓ Live Analytics en uitgebreid Developer Portal met spelersbeheer</div>
-      <div>✓ Kasteel leeft met mist, fakkels, vlaggen, vleermuizen en dagberichten</div>
-      <div>✓ Beta 6.9.5 herstelt de SPELEN-knop/runtime na de Teddy-uitbreiding</div>
-    </div>
-    <div class="updateMore">Alle eerdere details staan in de Kasteelkrant en Kronieken.</div>
-    <div class="updateAction"><button id="closeUpdateBtn">BEKIJK v2.20 RC2</button></div>
-  </div>
-</div>
+<div id="updateOverlay" class="hidden"><div id="updateCard"><div class="updateKicker">🏰 v2.22.8 · KASTEELUPDATE</div><h2>Neem het kasteel mee</h2><div class="updateIntro">Merchandise is uitgebreid en beter te bekijken op mobiel.</div><div class="updateList"><div>✓ T-shirtontwerpen nu groot te bekijken</div><div>✓ Vier telefoonwallpapers om te bewaren</div><div>✓ Speciale Vera · Bug Tester-editie</div></div><div class="updateAction"><button id="closeUpdateBtn">SPEEL v2.22.5</button></div></div></div>
 
 <div id="deathOverlay" class="hidden">
   <div id="deathCard">
@@ -287,6 +325,10 @@
     <p id="levelSubtitle">Klaar voor het volgende level?</p>
   </div>
 </div>
+<div id="bossLabBanner" class="hidden">
+  <strong>🧪 BOSS LAB</strong>
+  <span>Maak 3× een gat onder de Opper-Appeliet → hij valt → loop dichtbij en STAMP terwijl hij versuft is.</span>
+</div>
 <div id="wrap">
   <div id="title">DE STAMPERTJES</div>
   <canvas id="game" width="480" height="382"></canvas>
@@ -307,8 +349,8 @@
   <div id="keyboardHint">Pijltjes = bewegen • Spatie = stampen • P = pauze • M = muziek</div>
   <div class="small">3× stampen voor een gat. Stamp daarna de gevangen appel weg.</div>
 </div>
-<script src="config.js?v=220rc2"></script>
-<script src="game-220rc2.js" defer></script>
+<script src="config.js?v=2300"></script>
+<script src="game.js?v=2300" defer></script>
 
 </body>
 </html>

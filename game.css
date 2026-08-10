@@ -1140,3 +1140,115 @@ body:not(.attractMode) #panel #introCanvas{
 }
 
 #shareScoreBox{margin-top:14px;padding:12px;border:2px solid #111;text-align:center}#shareScoreBox p{font-size:11px;line-height:1.45;margin:8px 0 10px}#shareScoreBtn{font-weight:900;border-width:2px;width:100%}
+
+/* v2.21 Castle Polish — mobile viewport */
+@media (max-width: 700px){
+  .menuSection{min-height:0!important;padding-bottom:max(18px,env(safe-area-inset-bottom))!important}
+  .menuSection .backBtn{position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:20;margin-top:16px}
+  #mainMenu{padding-bottom:max(18px,env(safe-area-inset-bottom))!important}
+}
+/* Roadmap boss teaser — native monochrome game-style pixel silhouette */
+.bossTeaser{text-align:left}
+.bossPixel{width:min(100%,420px);height:170px;margin:16px auto;position:relative;border:2px solid currentColor;overflow:hidden;background:#111}
+.bossBody{position:absolute;width:132px;height:96px;left:50%;bottom:25px;transform:translateX(-50%);background:#000;border:5px solid #ddd;border-radius:45% 45% 35% 35%;box-shadow:-35px 24px 0 -15px #000,35px 24px 0 -15px #000}
+.bossBody i{position:absolute;top:32px;width:18px;height:9px;background:#fff}
+.bossBody i:first-child{left:30px;transform:skewY(-15deg)}.bossBody i:last-child{right:30px;transform:skewY(15deg)}
+.bossCrown{position:absolute;z-index:2;left:50%;bottom:116px;transform:translateX(-50%);font-size:38px;color:#fff}
+.bossFloor{position:absolute;left:0;right:0;bottom:18px;border-top:4px dashed #aaa}
+
+/* v2.21.1 Hall of Fame */
+.hallPodium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;align-items:end;margin:16px 0 22px}
+.podiumCard{border:2px solid currentColor;padding:12px 6px;text-align:center;min-width:0}
+.podiumCard.gold{min-height:150px;border-width:3px}.podiumCard.silver{min-height:125px}.podiumCard.bronze{min-height:110px}
+.podiumCard span{display:block;font-size:30px}.podiumCard strong{display:block;font-size:clamp(12px,3vw,18px);overflow-wrap:anywhere;margin:7px 0}.podiumCard small{display:block;line-height:1.35}
+.hallSubhead{text-align:center;margin:25px 0 12px;letter-spacing:2px}
+@media(max-width:520px){.hallPodium{gap:5px}.podiumCard{padding:10px 3px}.podiumCard span{font-size:24px}}
+
+/* v2.21.2 interactive Hall of Fame */
+.hallRecordGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0 20px}
+.recordTile{min-height:128px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:10px;border:2px solid currentColor}
+.recordTile>span{font-size:28px}.recordTile>strong{font-size:10px;letter-spacing:1px}.recordTile>b{font-size:14px;overflow-wrap:anywhere}.recordTile>small{font-size:9px;opacity:.75}
+.recordTile:active{transform:translateY(1px)}
+.myHistoryCard{border:3px double currentColor;padding:12px;margin:22px 0}.myHistoryCard h3{text-align:center;margin:0 0 10px}
+.myHallRanks{display:grid;gap:0}.myRankRow{display:grid;grid-template-columns:1fr auto;gap:6px;border-bottom:1px dotted #666;padding:8px 0}.myRankRow:last-child{border-bottom:0}.myRankRow strong{font-size:17px}.myRankRow small{grid-column:1/-1;opacity:.7}
+.honorGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.honorCard{border:1px solid #777;padding:12px;text-align:center;min-height:138px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}.honorCard>span{font-size:28px}.honorCard>strong{font-size:10px;letter-spacing:1px}.honorCard>b{font-size:14px}.honorCard small{font-size:9px;opacity:.75;line-height:1.4}.honorCard.locked{opacity:.66}
+#hallRecordModal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:flex;align-items:center;justify-content:center;padding:14px}
+#hallRecordModalCard{width:min(430px,94vw);max-height:min(640px,86dvh);overflow:auto;background:#111;border:3px solid #fff;padding:14px}
+.hallModalHead{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px dotted #777;padding-bottom:8px;margin-bottom:8px}.hallModalHead h2{font-size:16px;margin:0}.hallModalHead button{width:auto;padding:5px 9px}
+.hallRankRow{display:grid;grid-template-columns:38px 1fr auto;gap:7px;align-items:center;border-bottom:1px dotted #555;padding:10px 0}.hallRankRow strong{overflow-wrap:anywhere}.hallRankRow b{text-align:right;font-size:11px}
+@media(max-width:520px){.hallRecordGrid,.honorGrid{grid-template-columns:1fr 1fr}.recordTile,.honorCard{min-height:118px;padding:8px}}
+
+/* v2.22.3 — Stampertjes Shirt */
+.merchMenuBtn{grid-column:1/-1;border-style:double!important}
+.merchTitleRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px dotted #666;margin-bottom:8px}.merchTitleRow h2{margin:0 0 8px}.merchComing{font-size:9px;border:1px solid #888;padding:4px 6px;letter-spacing:1px}
+.merchIntro{text-align:center;line-height:1.5}
+.merchDesigns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:15px 0}.merchDesign{background:#111;border:2px solid #666;padding:7px;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:center}.merchDesign.selected{border-color:#fff;outline:2px double #fff}.merchDesign img{width:100%;height:190px;object-fit:cover;object-position:center;border:1px solid #444;filter:grayscale(1)}.merchDesignLabel{font-weight:900;font-size:10px;letter-spacing:1px}.merchDesign small{font-size:8px;line-height:1.35;opacity:.78}
+.merchOptions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.merchOptions fieldset{border:1px solid #666;padding:9px}.merchOptions legend{padding:0 6px;font-size:10px}.merchChoiceRow{display:flex;gap:5px}.merchChoiceRow button{flex:1;padding:9px 5px;font-size:10px}.merchChoiceRow button.selected{background:#eee;color:#111}
+.merchNameLabel{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;font-size:10px}.merchNameLabel input{width:100%;text-transform:uppercase}.merchNameLabel.disabled{opacity:.45}
+.merchNotice{border:1px solid #666;padding:10px;margin:14px 0;text-align:center;font-size:10px}.merchStatus{text-align:center;min-height:28px;font-weight:900;line-height:1.4}.merchActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.merchActions button{font-weight:900}
+@media(max-width:700px){.merchDesigns{grid-template-columns:1fr}.merchDesign{display:grid;grid-template-columns:115px 1fr;grid-template-rows:auto 1fr;text-align:left}.merchDesign img{grid-row:1/3;width:115px;height:150px}.merchDesignLabel{align-self:end}.merchOptions{grid-template-columns:1fr}.merchNameLabel{grid-column:auto}.merchActions{grid-template-columns:1fr}.merchTitleRow{align-items:flex-start}.merchComing{font-size:8px}}
+
+/* v2.22.4 — hoofdmenu compacter en meer game-achtig */
+.compactMainMenu{padding:8px 12px 12px!important}
+.compactMainMenu .menuHero{margin:0 0 8px}
+.compactMainMenu .menuHero button{width:100%;padding:17px 8px!important;font-size:20px!important;font-weight:900;border:3px double #ddd!important}
+.compactMainMenu .compactGrid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:0!important}
+.compactMainMenu .compactGrid button{min-height:0!important;padding:11px 5px!important;font-size:12px!important;margin:0!important}
+.compactMainMenu .merchMenuBtn{grid-column:auto!important;border-style:double!important}
+@media(max-width:700px){
+ .compactMainMenu{padding:6px 9px 9px!important}
+ .compactMainMenu .menuHero{margin-bottom:6px}
+ .compactMainMenu .menuHero button{padding:14px 5px!important;font-size:18px!important}
+ .compactMainMenu .compactGrid{gap:6px!important}
+ .compactMainMenu .compactGrid button{padding:9px 3px!important;font-size:11px!important}
+}
+
+/* v2.22.5 merch viewer + wallpapers */
+.merchDesign img{cursor:zoom-in}.merchDesign img:active{opacity:.82}.wallpaperShop{margin-top:22px;padding-top:14px;border-top:2px solid #777}.wallpaperHeading{display:flex;align-items:center;justify-content:space-between;gap:10px}.wallpaperHeading h3{margin:0}.wallpaperHeading span{border:1px solid #777;padding:4px 7px;font-size:9px}.wallpaperIntro{font-size:10px;line-height:1.45;opacity:.8}.wallpaperGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.wallpaperCard{min-width:0;padding:6px!important;display:flex;flex-direction:column;align-items:center;gap:6px}.wallpaperCard img{width:100%;aspect-ratio:9/19.5;object-fit:cover;border:1px solid #555}.wallpaperCard strong{font-size:9px;line-height:1.25}.veraWallpaper{border-style:double!important}#mediaViewer{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.96);display:flex;align-items:center;justify-content:center;padding:10px}#mediaViewer.hidden{display:none!important}#mediaViewerCard{width:min(520px,96vw);height:min(94dvh,940px);border:3px double #fff;background:#111;padding:10px;display:flex;flex-direction:column;gap:8px}.mediaViewerHead{display:flex;align-items:center;justify-content:space-between;gap:8px}#mediaViewerClose{width:auto;min-width:44px;padding:7px 10px}#mediaViewerImage{flex:1;min-height:0;max-width:100%;object-fit:contain;background:#000}#mediaViewerDownload{display:block;border:2px solid #fff;padding:12px;text-align:center;color:#fff;text-decoration:none;font-weight:900}#mediaViewerHint{text-align:center;font-size:9px;line-height:1.4;opacity:.72}@media(max-width:700px){.wallpaperGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.wallpaperCard img{max-height:270px}#mediaViewerCard{width:98vw;height:92dvh}}
+
+/* v2.22.8 — volledige Top 20 op mobiel */
+#scoresSection{
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  max-height:none !important;
+}
+#scoreList{
+  display:block;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#scoreList .scoreRow,
+#scoreList > div{
+  flex-shrink:0;
+}
+@media(max-width:700px){
+  #scoresSection{
+    padding-bottom:max(18px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* v2.30 Boss Lab — private prototype */
+.bossLabBtn{
+  margin-top:7px!important;
+  border:3px double #fff!important;
+  background:#111!important;
+  font-weight:900!important;
+}
+#bossLabBanner{
+  max-width:504px;
+  margin:8px auto;
+  border:2px solid #fff;
+  padding:8px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-family:monospace;
+  text-align:center;
+}
+#bossLabBanner strong{font-size:14px;letter-spacing:2px}
+#bossLabBanner span{font-size:10px;line-height:1.4;opacity:.82}
+body.bossLabMode #title::after{
+  content:"  ·  BOSS LAB";
+  font-size:.55em;
+  opacity:.7;
+}
