@@ -1,20 +1,18 @@
-# De Stampertjes v2.30 Boss Lab
+# De Stampertjes v2.3 BÈTA — Appelbaas
 
-Dit is een APARTE privétestbuild en vervangt de publieke v2.22.x niet.
+Dit is de ontwikkelversie richting een toekomstige publieke baasrelease.
 
-Start:
-- Open de game.
-- Kies `👑 START BOSS LAB`.
+Nieuwe kernlus:
+1. Maak 3× een gat onder de Appelbaas.
+2. Hij valt precies één verdieping.
+3. Daarna blijft hij volledig VERSUFT totdat jij hem raakt.
+4. Ga naar dezelfde verdieping en druk STAMP dichtbij de baas.
+5. Dat kost hem 1 HP.
+6. Daarna springt hij terug omhoog en begint een snellere fase.
+7. Oude gaten verdwijnen, dus iedere fase moet opnieuw worden opgebouwd.
+8. Na 5 hits is de Appelbaas verslagen.
 
-Prototype-mechaniek:
-1. De Opper-Appeliet begint hoog in de Troonzaal.
-2. Stamp 3× op dezelfde vloertegel om een gat te maken.
-3. Lok de baas over het gat.
-4. Hij valt één verdieping en is kort VERSUFT.
-5. Ga op dezelfde verdieping dichtbij hem staan en druk STAMP.
-6. Herhaal tot 5 hits.
-7. Op de onderste verdieping springt hij na een hit weer naar boven voor een volgende fase.
-
-Dit prototype schrijft geen Boss Lab-score naar de publieke highscorelijst.
-
-Fix 1: startfreeze telt nu correct af; de Opper-Appeliet begint daarna zichtbaar te bewegen.
+Belangrijk:
+- Hij kan niet meer vanzelf helemaal naar beneden blijven vallen.
+- Op de onderste verdieping kan hij niet vastlopen.
+- Boss Bèta schrijft nog geen score naar de publieke highscorelijst.

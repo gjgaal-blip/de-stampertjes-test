@@ -1668,7 +1668,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.30-boss-lab";
+const CURRENT_VERSION="2.3-beta";
 
 // v2.22 richer analytics — failures never interrupt gameplay.
 const V222_SESSION_KEY="stampertjes_v222_session";
@@ -2249,9 +2249,9 @@ let player={x:30,y:344,w:24,h:28,onLadder:false,cool:0,dir:1,invulnerable:0};
 let bossLabActive=false;
 let bossLabWon=false;
 let boss={
-  x:330,y:68,w:78,h:58,floor:1,dir:-1,speed:.62,
+  x:330,y:68,w:78,h:58,floor:1,dir:-1,speed:1.05,
   hp:5,maxHp:5,stunned:0,falling:false,fallTarget:null,
-  invulnerable:0,phase:1,respawnTimer:0
+  invulnerable:0,phase:1,respawnTimer:0,returning:false
 };
 
 
@@ -2613,7 +2613,7 @@ function startBossLab(){
   boss={
     x:330,y:floors[1]-58,w:78,h:58,floor:1,dir:-1,
     speed:1.05,hp:5,maxHp:5,stunned:0,falling:false,fallTarget:null,
-    invulnerable:0,phase:1,respawnTimer:0
+    invulnerable:0,phase:1,respawnTimer:0,returning:false
   };
   startFreeze=70;
   setMusicContext("special",{playNow:true});
@@ -2632,18 +2632,26 @@ function bossHoleUnder(){
 
 function hitBoss(){
   if(!bossLabActive||bossLabWon||boss.stunned<=0||boss.invulnerable>0)return false;
+
   const sameFloor=floorIndex(player.y+player.h)===boss.floor;
-  const close=Math.abs((player.x+player.w/2)-bossCenterX())<72;
+  const close=Math.abs((player.x+player.w/2)-bossCenterX())<82;
   if(!sameFloor||!close)return false;
 
   boss.hp--;
-  boss.invulnerable=55;
+  boss.invulnerable=45;
   boss.stunned=0;
   boss.phase=1+(boss.maxHp-boss.hp);
   score+=2000;
-  shake=18;
+  shake=20;
   sfxHit();
-  effects.push({type:"score",x:Math.max(30,boss.x-10),y:Math.max(50,boss.y-16),t:90,text:`BOSS HIT! ${boss.hp}/${boss.maxHp}`});
+
+  effects.push({
+    type:"score",
+    x:Math.max(28,boss.x-8),
+    y:Math.max(52,boss.y-18),
+    t:95,
+    text:`RAAK! ${boss.hp}/${boss.maxHp}`
+  });
 
   if(boss.hp<=0){
     bossLabWon=true;
@@ -2657,28 +2665,49 @@ function hitBoss(){
     return true;
   }
 
-  // If the boss reaches the bottom, send him back upstairs for the next phase.
-  if(boss.floor>=floors.length-1){
-    boss.respawnTimer=80;
-    boss.x=330;
-    boss.floor=1;
-    boss.y=floors[1]-boss.h;
-    boss.dir=-1;
-  }
+  // Iedere hit beëindigt de ronde.
+  // De baas springt terug naar boven en begint daarna een snellere fase.
+  boss.returning=true;
+  boss.respawnTimer=85;
+  boss.floor=1;
+  boss.x=(boss.phase%2===0)?55:330;
+  boss.y=floors[1]-boss.h;
+  boss.dir=boss.x<200?1:-1;
+
+  // Oude gaten verdwijnen zodat iedere fase opnieuw bewust moet worden opgebouwd.
+  holes=[];
+  cracks=[];
+
+  player.invulnerable=Math.max(player.invulnerable,90);
+  effects.push({
+    type:"score",
+    x:115,
+    y:98,
+    t:105,
+    text:`FASE ${boss.phase} — HIJ WORDT BOZER!`
+  });
+
   return true;
 }
-
 function updateBoss(){
   if(!bossLabActive||bossLabWon)return;
 
-  // In de normale game telt updateEnemies() de startpauze af.
-  // Boss Lab gebruikt updateEnemies() niet, dus doen we dat hier zelf.
   if(startFreeze>0){
     startFreeze--;
     return;
   }
+
   if(boss.invulnerable>0)boss.invulnerable--;
-  if(boss.respawnTimer>0){boss.respawnTimer--;return;}
+
+  if(boss.respawnTimer>0){
+    boss.respawnTimer--;
+    if(boss.respawnTimer===0){
+      boss.returning=false;
+      shake=10;
+      tone(170,.09,"square",.04,240);
+    }
+    return;
+  }
 
   if(boss.falling){
     boss.y+=4.8;
@@ -2688,22 +2717,38 @@ function updateBoss(){
       boss.floor=boss.fallTarget;
       boss.falling=false;
       boss.fallTarget=null;
-      boss.stunned=145;
-      boss.dir=Math.random()<.5?-1:1;
-      shake=22;
+
+      // Belangrijk voor v2.3 Bèta:
+      // de baas blijft kwetsbaar/versuft TOTDAT de speler hem raakt.
+      boss.stunned=999999;
+
+      // Het gat waardoor hij viel sluit direct.
+      holes=[];
+      cracks=[];
+
+      shake=24;
       tone(90,.18,"sawtooth",.07,55);
+      effects.push({
+        type:"score",
+        x:Math.max(55,boss.x-15),
+        y:Math.max(55,boss.y-18),
+        t:135,
+        text:"VERSUFT! GA NAAR HEM TOE!"
+      });
     }
     return;
   }
 
+  // Tijdens de stun beweegt hij absoluut niet.
   if(boss.stunned>0){
-    boss.stunned--;
     return;
   }
 
-  // Large boss patrol. Every lost HP makes him slightly faster.
-  const speed=boss.speed+(boss.maxHp-boss.hp)*.16;
+  // Na iedere hit wordt hij duidelijk sneller, maar niet absurd snel.
+  const lost=boss.maxHp-boss.hp;
+  const speed=Math.min(2.05,boss.speed+lost*.18);
   boss.x+=boss.dir*speed;
+
   if(boss.x<18){boss.x=18;boss.dir=1}
   if(boss.x+boss.w>W-18){boss.x=W-18-boss.w;boss.dir=-1}
 
@@ -2711,12 +2756,26 @@ function updateBoss(){
   if(hole && boss.floor<floors.length-1){
     boss.falling=true;
     boss.fallTarget=boss.floor+1;
-    hole.timer=Math.max(hole.timer,180);
-    shake=12;
+    shake=14;
     return;
   }
 
-  // Touching the boss hurts, except while stunned.
+  // Als hij op de onderste verdieping is zonder geraakt te zijn,
+  // springt hij terug omhoog in plaats van vast te lopen.
+  if(boss.floor>=floors.length-1){
+    boss.returning=true;
+    boss.respawnTimer=80;
+    boss.floor=1;
+    boss.x=330;
+    boss.y=floors[1]-boss.h;
+    boss.dir=-1;
+    holes=[];
+    cracks=[];
+    effects.push({type:"score",x:125,y:95,t:100,text:"HIJ SPRINGT TERUG OMHOOG!"});
+    return;
+  }
+
+  // Contact doet pijn, behalve wanneer de baas versuft is.
   const px=player.x+player.w/2, py=player.y+player.h/2;
   const touch=px>boss.x-5&&px<boss.x+boss.w+5&&py>boss.y-5&&py<boss.y+boss.h+8;
   if(touch&&player.invulnerable<=0&&state==="play"){
@@ -2725,17 +2784,24 @@ function updateBoss(){
     shake=12;
     sfxHurt();
     resetPlayerSafely();
+
     if(lives<=0){
-      // Boss Lab is a prototype: quick reset instead of writing a public highscore.
+      // Bèta: directe herstart van het baasgevecht, geen publieke highscore.
       lives=5;
       boss.hp=boss.maxHp;
-      boss.floor=1;boss.x=330;boss.y=floors[1]-boss.h;boss.dir=-1;
-      holes=[];cracks=[];
-      effects.push({type:"score",x:120,y:95,t:120,text:"BOSS LAB RESET"});
+      boss.floor=1;
+      boss.x=330;
+      boss.y=floors[1]-boss.h;
+      boss.dir=-1;
+      boss.stunned=0;
+      boss.falling=false;
+      boss.respawnTimer=70;
+      holes=[];
+      cracks=[];
+      effects.push({type:"score",x:125,y:95,t:120,text:"BOSS BÈTA HERSTART"});
     }
   }
 }
-
 function drawBoss(){
   if(!bossLabActive)return;
   ctx.save();
@@ -2743,7 +2809,7 @@ function drawBoss(){
   // HP bar replaces normal room name as the focal HUD element.
   ctx.fillStyle="#fff";
   ctx.font="bold 10px monospace";
-  ctx.fillText("OPPER-APPELIET",190,20);
+  ctx.fillText(`APPELBAAS F${boss.phase}`,190,20);
   const bx=292,by=12,bw=112,bh=8;
   ctx.strokeStyle="#fff";ctx.lineWidth=1;ctx.strokeRect(bx,by,bw,bh);
   ctx.fillStyle="#fff";
@@ -2756,7 +2822,7 @@ function drawBoss(){
     ctx.fillStyle="#fff";ctx.font="bold 22px monospace";
     ctx.fillText("APPELBAAS VERSLAGEN!",82,150);
     ctx.font="12px monospace";
-    ctx.fillText("+10000 · BOSS LAB VOLTOOID",116,178);
+    ctx.fillText("+10000 · v2.3 BÈTA VOLTOOID",116,178);
     ctx.fillText("Tik STAMP om opnieuw te testen",111,207);
     ctx.restore();
     return;
@@ -2793,7 +2859,7 @@ function drawBoss(){
 
   if(boss.stunned>0){
     ctx.font="bold 11px monospace";ctx.fillStyle="#111";
-    ctx.fillText("★ VERSUFT ★",Math.max(20,boss.x-1),Math.max(48,y-12));
+    ctx.fillText("★ VERSUFT — STAMP! ★",Math.max(14,boss.x-18),Math.max(48,y-12));
   }
   ctx.restore();
 }
