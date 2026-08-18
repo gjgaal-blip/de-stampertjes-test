@@ -74,3 +74,14 @@ html[data-admin-build="2245"] #portalVersion{font-weight:900}
 .levelTesterCard select{width:100%;margin:8px 0 10px;padding:10px;font:inherit}
 .levelTesterLabel{display:block;margin-top:12px;font-weight:800}
 #launchDevLevelBtn{width:100%}
+
+/* v2.26-beta.2 — full Developer Portal color treatment */
+:root{--dev-bg:#132019;--dev-panel:#203328;--dev-panel2:#294333;--dev-line:#78a985;--dev-gold:#c9a85c;--dev-text:#e6efd9;--dev-input:#dce7cf}
+html,body{background:var(--dev-bg)!important;color:var(--dev-text)!important}
+body{background-image:linear-gradient(rgba(19,32,25,.95),rgba(19,32,25,.98)),repeating-linear-gradient(0deg,#21372a 0 22px,#294333 22px 23px)!important}
+header,.panel,.card,section{background:linear-gradient(180deg,var(--dev-panel2),var(--dev-panel))!important;border-color:var(--dev-line)!important;color:var(--dev-text)!important}
+h1,h2,h3,.title{color:#a9d8b2!important}
+button,.btn{background:linear-gradient(180deg,#41694e,#2b4936)!important;color:#eef6e5!important;border-color:#8cbd96!important}
+input,select,textarea{background:var(--dev-input)!important;color:#17241b!important;border-color:#70977a!important}
+table,th,td{border-color:#587561!important} th{background:#304d3a!important;color:#d9e9d4!important}
+a{color:#d5b96e!important}

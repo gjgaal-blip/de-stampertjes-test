@@ -1668,7 +1668,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.26-beta.1";
+const CURRENT_VERSION="2.26-beta.2";
 
 // v2.22 richer analytics — failures never interrupt gameplay.
 const V222_SESSION_KEY="stampertjes_v222_session";
@@ -3591,71 +3591,73 @@ function drawDungeonColor(){
 }
 function drawThroneRoomColor(){
   ctx.save();
+  roomBrickWall("#50323d","#76505a");
 
-  // Royal stone shell: warmer and richer than the other rooms.
-  roomBrickWall("#4b3038","#704854");
-
-  // Tall gold-edged columns make the room read as a ceremonial hall.
-  const column=(x)=>{
-    ctx.fillStyle="#6a4650";ctx.fillRect(x,36,13,H-54);
-    ctx.fillStyle="#c49b50";ctx.fillRect(x-3,36,19,6);ctx.fillRect(x-3,H-24,19,6);
-    ctx.fillStyle="#8d6670";ctx.fillRect(x+3,43,4,H-70);
+  // Four broad stone bays with gold capitals: ceremonial architecture, not a generic corridor.
+  const pillar=(x)=>{
+    ctx.fillStyle="#72505a";ctx.fillRect(x,34,15,H-50);
+    ctx.fillStyle="#d0a557";ctx.fillRect(x-4,34,23,7);ctx.fillRect(x-4,H-23,23,7);
+    ctx.fillStyle="#966b73";ctx.fillRect(x+4,43,4,H-72);
   };
-  [18,112,350,448].forEach(column);
+  [18,116,345,443].forEach(pillar);
 
-  // High stained-glass windows, only in guaranteed clear upper wall bays.
-  const royalWindow=(x,y,w,h)=>{
-    ctx.fillStyle="#261e25";ctx.fillRect(x,y,w,h);
-    ctx.fillStyle="#416f8d";ctx.fillRect(x+5,y+8,w-10,h-13);
-    ctx.fillStyle="#8e3547";ctx.fillRect(x+5,y+8,(w-10)/2,h-13);
-    ctx.strokeStyle="#d4b45e";ctx.lineWidth=2;ctx.strokeRect(x+5,y+8,w-10,h-13);
-    ctx.beginPath();ctx.moveTo(x+w/2,y+8);ctx.lineTo(x+w/2,y+h-5);ctx.moveTo(x+5,y+29);ctx.lineTo(x+w-5,y+29);ctx.stroke();
+  // High arched royal windows.
+  const archWindow=(x,y,w,h)=>{
+    ctx.fillStyle="#241b22";ctx.fillRect(x,y+18,w,h-18);
+    ctx.beginPath();ctx.arc(x+w/2,y+19,w/2,Math.PI,0);ctx.fill();
+    ctx.fillStyle="#3f7799";ctx.fillRect(x+5,y+20,w-10,h-25);
+    ctx.fillStyle="#8e3048";ctx.fillRect(x+5,y+20,(w-10)/2,h-25);
+    ctx.strokeStyle="#d8b65d";ctx.lineWidth=2;ctx.strokeRect(x+5,y+20,w-10,h-25);
+    ctx.beginPath();ctx.moveTo(x+w/2,y+20);ctx.lineTo(x+w/2,y+h-5);ctx.stroke();
   };
-  roomSafe(40,52,54,61,()=>royalWindow(40,52,54,61));
-  roomSafe(382,52,54,61,()=>royalWindow(382,52,54,61));
+  roomSafe(42,44,56,70,()=>archWindow(42,44,56,70));
+  roomSafe(378,44,56,70,()=>archWindow(378,44,56,70));
 
-  // Royal banners: deliberately between windows/ladders.
-  const banner=(x,y)=>{
-    ctx.fillStyle="#7e2639";ctx.fillRect(x,y,30,50);
-    ctx.beginPath();ctx.moveTo(x,y+50);ctx.lineTo(x+15,y+62);ctx.lineTo(x+30,y+50);ctx.fill();
-    ctx.fillStyle="#d2ae58";ctx.fillRect(x+12,y+10,6,22);
-    ctx.beginPath();ctx.arc(x+15,y+18,9,0,Math.PI*2);ctx.strokeStyle="#d2ae58";ctx.lineWidth=2;ctx.stroke();
-  };
-  roomSafe(145,55,30,65,()=>banner(145,55));
-  roomSafe(302,55,30,65,()=>banner(302,55));
-
-  // Warm sconces on otherwise empty wall sections.
-  roomSafe(128,176,25,25,()=>roomLamp(140,188));
-  roomSafe(326,176,25,25,()=>roomLamp(338,188));
-
-  // Side ceremonial shield displays, fixed to free wall.
-  const shield=(x,y)=>{
-    ctx.fillStyle="#b48d48";ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+28,y);ctx.lineTo(x+24,y+28);ctx.lineTo(x+14,y+39);ctx.lineTo(x+4,y+28);ctx.closePath();ctx.fill();
-    ctx.fillStyle="#76303b";ctx.beginPath();ctx.moveTo(x+5,y+5);ctx.lineTo(x+23,y+5);ctx.lineTo(x+19,y+24);ctx.lineTo(x+14,y+31);ctx.lineTo(x+9,y+24);ctx.closePath();ctx.fill();
-  };
-  roomSafe(52,192,30,42,()=>shield(52,192));
-  roomSafe(394,192,30,42,()=>shield(394,192));
-
-  // Grand dais + throne on the bottom floor. Everything is grounded.
-  roomSafe(184,294,108,74,()=>{
-    ctx.fillStyle="#6d452c";ctx.fillRect(184,356,108,12);
-    ctx.fillStyle="#9a6a3c";ctx.fillRect(193,348,90,8);
-    // throne back
-    ctx.fillStyle="#6e2535";ctx.fillRect(213,308,50,47);
-    ctx.fillStyle="#9a3447";ctx.fillRect(220,315,36,34);
-    // crown-shaped top
-    ctx.fillStyle="#d0a74f";
-    ctx.beginPath();ctx.moveTo(211,310);ctx.lineTo(218,295);ctx.lineTo(229,305);ctx.lineTo(238,291);ctx.lineTo(248,305);ctx.lineTo(260,295);ctx.lineTo(266,310);ctx.closePath();ctx.fill();
-    // gold arms / legs
-    ctx.fillRect(205,337,10,20);ctx.fillRect(262,337,10,20);
-    ctx.fillRect(216,353,7,15);ctx.fillRect(253,353,7,15);
-    // red carpet toward foreground
-    ctx.fillStyle="#742638";ctx.fillRect(219,356,39,16);
-    ctx.fillStyle="#c7a052";ctx.fillRect(219,356,3,16);ctx.fillRect(255,356,3,16);
+  // Huge central royal crest above the throne sightline.
+  roomSafe(198,48,80,70,()=>{
+    ctx.fillStyle="#7c263b";ctx.fillRect(205,50,66,52);
+    ctx.beginPath();ctx.moveTo(205,102);ctx.lineTo(238,121);ctx.lineTo(271,102);ctx.closePath();ctx.fill();
+    ctx.strokeStyle="#d5ad55";ctx.lineWidth=3;ctx.strokeRect(210,55,56,39);
+    ctx.fillStyle="#d5ad55";ctx.beginPath();ctx.arc(238,74,13,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#7c263b";ctx.fillRect(234,62,8,25);ctx.fillRect(226,70,24,8);
   });
 
-  // Keep ladder corridors visually empty, then ladders/floors render above.
-  roomClearLadders("#4b3038");
+  // Side banners and sconces.
+  const banner=(x,y)=>{ctx.fillStyle="#7e2639";ctx.fillRect(x,y,27,45);ctx.beginPath();ctx.moveTo(x,y+45);ctx.lineTo(x+13.5,y+56);ctx.lineTo(x+27,y+45);ctx.fill();ctx.fillStyle="#d2ae58";ctx.fillRect(x+11,y+9,5,22);};
+  roomSafe(143,61,28,58,()=>banner(143,61));roomSafe(306,61,28,58,()=>banner(306,61));
+  roomSafe(58,185,26,28,()=>roomLamp(71,198));roomSafe(393,185,26,28,()=>roomLamp(406,198));
+
+  // A large, grounded throne ensemble on the bottom floor.
+  // This is intentionally larger than beta.1 and visually dominates the room.
+  roomSafe(172,286,132,86,()=>{
+    // dais
+    ctx.fillStyle="#593821";ctx.fillRect(172,356,132,16);
+    ctx.fillStyle="#bd8b47";ctx.fillRect(181,349,114,8);
+    ctx.fillStyle="#7b2639";ctx.fillRect(208,349,61,23); // carpet
+    ctx.fillStyle="#d4aa54";ctx.fillRect(208,349,4,23);ctx.fillRect(265,349,4,23);
+
+    // tall throne back
+    ctx.fillStyle="#4b241f";ctx.fillRect(204,304,70,48);
+    ctx.fillStyle="#862c42";ctx.fillRect(212,311,54,41);
+    ctx.strokeStyle="#d6ae59";ctx.lineWidth=3;ctx.strokeRect(210,309,58,45);
+
+    // crown silhouette
+    ctx.fillStyle="#d6ae59";
+    ctx.beginPath();ctx.moveTo(205,310);ctx.lineTo(214,291);ctx.lineTo(226,302);ctx.lineTo(239,284);ctx.lineTo(252,302);ctx.lineTo(264,291);ctx.lineTo(274,310);ctx.closePath();ctx.fill();
+
+    // arms and legs
+    ctx.fillRect(195,332,16,7);ctx.fillRect(267,332,16,7);
+    ctx.fillRect(201,337,8,20);ctx.fillRect(269,337,8,20);
+  });
+
+  // Decorative crown chandelier in a clear central upper bay.
+  roomSafe(218,134,42,36,()=>{
+    ctx.strokeStyle="#cda653";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(239,132);ctx.lineTo(239,145);ctx.moveTo(222,151);ctx.lineTo(256,151);ctx.stroke();
+    ctx.fillStyle="#f0c75f";[224,239,254].forEach(x=>{ctx.beginPath();ctx.arc(x,157,4,0,Math.PI*2);ctx.fill();});
+  });
+
+  roomClearLadders("#50323d");
   ctx.restore();
 }
 function drawWineCellarColor(){
