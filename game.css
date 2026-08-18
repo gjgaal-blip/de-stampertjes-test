@@ -1305,7 +1305,7 @@ button:active{background:#8a5b33!important;color:#fff4d5!important}
 #gameOptions button{background:linear-gradient(180deg,#573a25,#36261c)!important}#title{color:#ead5aa!important}
 
 
-/* v2.26-beta.2 — Developer Workshop */
+/* v2.26-beta.3 — Developer Workshop */
 #devSection{
   background:
     linear-gradient(rgba(28,37,34,.96),rgba(20,28,25,.98)),
@@ -1326,11 +1326,11 @@ button:active{background:#8a5b33!important;color:#fff4d5!important}
   background:rgba(34,55,42,.86)!important;border-color:#63876b!important
 }
 #devSection::before{
-  content:"⚙ DEVELOPER WORKSHOP · v2.26-beta.2";
+  content:"⚙ DEVELOPER WORKSHOP · v2.26-beta.3";
   display:block;margin:0 auto 10px;padding:6px 8px;
   max-width:360px;border:1px solid #6f9d79;
   color:#a8d9ae;background:#1b2a20;font-size:10px;letter-spacing:.8px;text-align:center
 }
 
 #devSection{background:linear-gradient(180deg,#243b2d,#17271e)!important;border-color:#84b58f!important}
-#devSection::before{content:"⚙ DEVELOPER WORKSHOP · v2.26-beta.2"!important}
+#devSection::before{content:"⚙ DEVELOPER WORKSHOP · v2.26-beta.3"!important}

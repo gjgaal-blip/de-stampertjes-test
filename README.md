@@ -1,9 +1,13 @@
-# De Stampertjes v2.26-beta.2
+# De Stampertjes v2.26-beta.3 — Troonzaal prototype
 
-Beta.2 bouwt verder op beta.1; live v2.25 blijft onaangeroerd.
+Deze build verandert alleen de Troonzaal fundamenteel. De andere kamers blijven op hun bestaande geometrie.
 
-- Troonzaal verder herbouwd: grotere centrale troon, podium, rood tapijt, koninklijk wapen, glas-in-lood, zuilen en kroonluchter.
-- Developer Portal volledig in kleur, inclusief de aparte adminpagina.
-- Alle bestaande merchandise-afbeeldingen ingekleurd.
-- Alle vier bestaande telefoonwallpapers ingekleurd.
-- Bibliotheek blijft de kwaliteitsreferentie.
+## Proof of concept
+- Troonzaal heeft nu een eigen geometrie met 4 verdiepingen.
+- Zes ladders zijn bewust links/rechts geplaatst; de centrale troonzone blijft vrij.
+- Grote permanente troon, podium, rode loper en gouden wachters.
+- Vier hoge glas-in-loodramen, zuilen, draperieën, banieren, schilden, kroonluchters en warme verlichting.
+- Platforms en ladders hebben een eigen koninklijk goud/bruin palet.
+- Bestaande gameplay (lopen, klimmen, stampen, gaten, vijanden) gebruikt de dynamische `floors`-array.
+
+Doel: eerst beoordelen of deze kamer visueel en speltechnisch de nieuwe standaard kan worden.
