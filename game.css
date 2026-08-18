@@ -1226,29 +1226,3 @@ body:not(.attractMode) #panel #introCanvas{
     padding-bottom:max(18px, env(safe-area-inset-bottom, 0px)) !important;
   }
 }
-
-/* v2.30 Boss Lab — private prototype */
-.bossLabBtn{
-  margin-top:7px!important;
-  border:3px double #fff!important;
-  background:#111!important;
-  font-weight:900!important;
-}
-#bossLabBanner{
-  max-width:504px;
-  margin:8px auto;
-  border:2px solid #fff;
-  padding:8px 10px;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  font-family:monospace;
-  text-align:center;
-}
-#bossLabBanner strong{font-size:14px;letter-spacing:2px}
-#bossLabBanner span{font-size:10px;line-height:1.4;opacity:.82}
-body.bossLabMode #title::after{
-  content:"  ·  BOSS LAB";
-  font-size:.55em;
-  opacity:.7;
-}

@@ -69,8 +69,6 @@ let hallDataCache=null;
 
 
 const merchMenuBtn=document.getElementById("merchMenuBtn");
-const bossLabBtn=document.getElementById("bossLabBtn");
-const bossLabBanner=document.getElementById("bossLabBanner");
 const merchSection=document.getElementById("merchSection");
 const merchDesigns=document.getElementById("merchDesigns");
 const merchSizes=document.getElementById("merchSizes");
@@ -313,14 +311,20 @@ async function loadHallOfFame(){
     if(!response.ok)throw new Error(`Hall ${response.status}: ${await response.text()}`);
     const data=await response.json();
     hallDataCache=data||{};
-    const podium=Array.isArray(data?.podium)?data.podium:[];
+    // Zelfde bron als de publieke Top 20: ook Developer Portal-wijzigingen zijn direct zichtbaar.
+    const scoreResponse=await fetch(
+      `${SUPABASE_URL}/rest/v1/highscores?select=name,score,level,created_at&order=score.desc&limit=20`,
+      {headers:{"apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`}}
+    );
+    if(!scoreResponse.ok)throw new Error(`Hall scores ${scoreResponse.status}: ${await scoreResponse.text()}`);
+    const hallScores=normalizeScores(await scoreResponse.json()).slice(0,3);
     const setPodium=(entry,nameEl,scoreEl)=>{
-      nameEl.textContent=entry?String(entry.player_name||"SPELER").toUpperCase():"NOG VRIJ";
-      scoreEl.textContent=entry?`${Number(entry.value)||0} punten`:"—";
+      nameEl.textContent=entry?String(entry.name||"SPELER").toUpperCase():"NOG VRIJ";
+      scoreEl.textContent=entry?`${Number(entry.score)||0} punten`:"—";
     };
-    setPodium(podium[0],hallChampion,hallChampionScore);
-    setPodium(podium[1],hallSecond,hallSecondScore);
-    setPodium(podium[2],hallThird,hallThirdScore);
+    setPodium(hallScores[0],hallChampion,hallChampionScore);
+    setPodium(hallScores[1],hallSecond,hallSecondScore);
+    setPodium(hallScores[2],hallThird,hallThirdScore);
 
     const lb=data?.leaderboards||{};
     setRecordPreview(lb.apples,recordApplesName,recordApplesValue,"apples");
@@ -437,12 +441,6 @@ function updateMenuMusicIconVisibility(){
 }
 
 function showMainMenu(){
-  if(bossLabActive){
-    bossLabActive=false;
-    bossLabWon=false;
-    document.body.classList.remove("bossLabMode");
-    bossLabBanner?.classList.add("hidden");
-  }
   setMusicContext("menu",{playNow:true});
   document.body.classList.remove("scoreMode");
   document.body.classList.remove("gameplayActive");
@@ -594,7 +592,6 @@ async function registerCoarseLocation(){
 }
 setTimeout(registerCoarseLocation,1800);
 
-activateButton(bossLabBtn,()=>{ensurePlayerName();startBossLab();});
 activateButton(playMenuBtn,()=>{ensurePlayerName();startGame();});
 activateButton(statsMenuBtn,async()=>{
   stopAttractMode();
@@ -633,6 +630,7 @@ activateButton(newsMenuBtn,()=>{
 activateButton(hallMenuBtn,async()=>{
   stopAttractMode();
   showMenuSection(hallSection);
+  await loadOnlineHighscores();
   await loadHallOfFame();
 });
 
@@ -1668,7 +1666,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.3-beta";
+const CURRENT_VERSION="2.22.10";
 
 // v2.22 richer analytics — failures never interrupt gameplay.
 const V222_SESSION_KEY="stampertjes_v222_session";
@@ -1835,10 +1833,6 @@ function openIntro(){
 }
 let startingGame=false;
 function startGame(){
-  bossLabActive=false;
-  bossLabWon=false;
-  document.body.classList.remove("bossLabMode");
-  bossLabBanner?.classList.add("hidden");
   ensureGameplayControlsVisible();
   menuMusicIcon.classList.add("hidden");
   stopAttractMode();
@@ -2246,14 +2240,6 @@ let keys={left:false,right:false,up:false,down:false};
 let frame=0,score=0,level=1,lives=3,state="intro",shake=0,startFreeze=0,deathAnimating=false,deathFrame=0;
 let holes=[],cracks=[],enemies=[],effects=[],bonus=null,bonusSpawnTimer=420,combo=0,comboTimer=0,enemyIdCounter=1;
 let player={x:30,y:344,w:24,h:28,onLadder:false,cool:0,dir:1,invulnerable:0};
-let bossLabActive=false;
-let bossLabWon=false;
-let boss={
-  x:330,y:68,w:78,h:58,floor:1,dir:-1,speed:1.05,
-  hp:5,maxHp:5,stunned:0,falling:false,fallTarget:null,
-  invulnerable:0,phase:1,respawnTimer:0,returning:false
-};
-
 
 let audioCtx=null;
 let audioUnlocked=false;
@@ -2585,291 +2571,6 @@ function resetPlayerSafely(){
   clearStartZone();
 }
 
-
-function startBossLab(){
-  ensureGameplayControlsVisible();
-  stopAttractMode();
-  document.body.classList.remove("scoreMode");
-  document.body.classList.add("gameplayActive","bossLabMode");
-  bossLabBanner?.classList.remove("hidden");
-  overlay.classList.add("hidden");
-  shareScoreBox.classList.add("hidden");
-  audio();
-
-  bossLabActive=true;
-  bossLabWon=false;
-  score=0; level=99; lives=5; state="play";
-  currentLayoutIndex=4; // Troonzaal-look.
-  ladders=ladderLayouts[4].map(l=>({...l}));
-  holes=[];cracks=[];enemies=[];effects=[];bonus=null;combo=0;comboTimer=0;
-  keys.left=keys.right=keys.up=keys.down=false;
-
-  player.x=28;
-  player.y=floors[floors.length-1]-player.h;
-  player.onLadder=false;
-  player.cool=0;
-  player.invulnerable=180;
-
-  boss={
-    x:330,y:floors[1]-58,w:78,h:58,floor:1,dir:-1,
-    speed:1.05,hp:5,maxHp:5,stunned:0,falling:false,fallTarget:null,
-    invulnerable:0,phase:1,respawnTimer:0,returning:false
-  };
-  startFreeze=70;
-  setMusicContext("special",{playNow:true});
-  if(musicOn&&menuSoundtrack.paused)startMusic();
-  effects.push({type:"score",x:120,y:95,t:150,text:"DE OPPER-APPELIET ONTWAAKT..."});
-  shake=16;
-}
-
-function bossCenterX(){return boss.x+boss.w/2}
-function bossBottom(){return boss.y+boss.h}
-
-function bossHoleUnder(){
-  const cx=bossCenterX();
-  return holes.find(h=>h.floor===boss.floor && cx>h.x-5 && cx<h.x+45);
-}
-
-function hitBoss(){
-  if(!bossLabActive||bossLabWon||boss.stunned<=0||boss.invulnerable>0)return false;
-
-  const sameFloor=floorIndex(player.y+player.h)===boss.floor;
-  const close=Math.abs((player.x+player.w/2)-bossCenterX())<82;
-  if(!sameFloor||!close)return false;
-
-  boss.hp--;
-  boss.invulnerable=45;
-  boss.stunned=0;
-  boss.phase=1+(boss.maxHp-boss.hp);
-  score+=2000;
-  shake=20;
-  sfxHit();
-
-  effects.push({
-    type:"score",
-    x:Math.max(28,boss.x-8),
-    y:Math.max(52,boss.y-18),
-    t:95,
-    text:`RAAK! ${boss.hp}/${boss.maxHp}`
-  });
-
-  if(boss.hp<=0){
-    bossLabWon=true;
-    state="bossvictory";
-    keys.left=keys.right=keys.up=keys.down=false;
-    score+=10000;
-    shake=30;
-    tone(110,.3,"sawtooth",.09,45);
-    setTimeout(()=>tone(523,.18,"square",.06,784),350);
-    setTimeout(()=>tone(784,.24,"square",.06,1047),570);
-    return true;
-  }
-
-  // Iedere hit beëindigt de ronde.
-  // De baas springt terug naar boven en begint daarna een snellere fase.
-  boss.returning=true;
-  boss.respawnTimer=85;
-  boss.floor=1;
-  boss.x=(boss.phase%2===0)?55:330;
-  boss.y=floors[1]-boss.h;
-  boss.dir=boss.x<200?1:-1;
-
-  // Oude gaten verdwijnen zodat iedere fase opnieuw bewust moet worden opgebouwd.
-  holes=[];
-  cracks=[];
-
-  player.invulnerable=Math.max(player.invulnerable,90);
-  effects.push({
-    type:"score",
-    x:115,
-    y:98,
-    t:105,
-    text:`FASE ${boss.phase} — HIJ WORDT BOZER!`
-  });
-
-  return true;
-}
-function updateBoss(){
-  if(!bossLabActive||bossLabWon)return;
-
-  if(startFreeze>0){
-    startFreeze--;
-    return;
-  }
-
-  if(boss.invulnerable>0)boss.invulnerable--;
-
-  if(boss.respawnTimer>0){
-    boss.respawnTimer--;
-    if(boss.respawnTimer===0){
-      boss.returning=false;
-      shake=10;
-      tone(170,.09,"square",.04,240);
-    }
-    return;
-  }
-
-  if(boss.falling){
-    boss.y+=4.8;
-    const targetY=floors[boss.fallTarget]-boss.h;
-    if(boss.y>=targetY){
-      boss.y=targetY;
-      boss.floor=boss.fallTarget;
-      boss.falling=false;
-      boss.fallTarget=null;
-
-      // Belangrijk voor v2.3 Bèta:
-      // de baas blijft kwetsbaar/versuft TOTDAT de speler hem raakt.
-      boss.stunned=999999;
-
-      // Het gat waardoor hij viel sluit direct.
-      holes=[];
-      cracks=[];
-
-      shake=24;
-      tone(90,.18,"sawtooth",.07,55);
-      effects.push({
-        type:"score",
-        x:Math.max(55,boss.x-15),
-        y:Math.max(55,boss.y-18),
-        t:135,
-        text:"VERSUFT! GA NAAR HEM TOE!"
-      });
-    }
-    return;
-  }
-
-  // Tijdens de stun beweegt hij absoluut niet.
-  if(boss.stunned>0){
-    return;
-  }
-
-  // Na iedere hit wordt hij duidelijk sneller, maar niet absurd snel.
-  const lost=boss.maxHp-boss.hp;
-  const speed=Math.min(2.05,boss.speed+lost*.18);
-  boss.x+=boss.dir*speed;
-
-  if(boss.x<18){boss.x=18;boss.dir=1}
-  if(boss.x+boss.w>W-18){boss.x=W-18-boss.w;boss.dir=-1}
-
-  const hole=bossHoleUnder();
-  if(hole && boss.floor<floors.length-1){
-    boss.falling=true;
-    boss.fallTarget=boss.floor+1;
-    shake=14;
-    return;
-  }
-
-  // Als hij op de onderste verdieping is zonder geraakt te zijn,
-  // springt hij terug omhoog in plaats van vast te lopen.
-  if(boss.floor>=floors.length-1){
-    boss.returning=true;
-    boss.respawnTimer=80;
-    boss.floor=1;
-    boss.x=330;
-    boss.y=floors[1]-boss.h;
-    boss.dir=-1;
-    holes=[];
-    cracks=[];
-    effects.push({type:"score",x:125,y:95,t:100,text:"HIJ SPRINGT TERUG OMHOOG!"});
-    return;
-  }
-
-  // Contact doet pijn, behalve wanneer de baas versuft is.
-  const px=player.x+player.w/2, py=player.y+player.h/2;
-  const touch=px>boss.x-5&&px<boss.x+boss.w+5&&py>boss.y-5&&py<boss.y+boss.h+8;
-  if(touch&&player.invulnerable<=0&&state==="play"){
-    lives--;
-    player.invulnerable=150;
-    shake=12;
-    sfxHurt();
-    resetPlayerSafely();
-
-    if(lives<=0){
-      // Bèta: directe herstart van het baasgevecht, geen publieke highscore.
-      lives=5;
-      boss.hp=boss.maxHp;
-      boss.floor=1;
-      boss.x=330;
-      boss.y=floors[1]-boss.h;
-      boss.dir=-1;
-      boss.stunned=0;
-      boss.falling=false;
-      boss.respawnTimer=70;
-      holes=[];
-      cracks=[];
-      effects.push({type:"score",x:125,y:95,t:120,text:"BOSS BÈTA HERSTART"});
-    }
-  }
-}
-function drawBoss(){
-  if(!bossLabActive)return;
-  ctx.save();
-
-  // HP bar replaces normal room name as the focal HUD element.
-  ctx.fillStyle="#fff";
-  ctx.font="bold 10px monospace";
-  ctx.fillText(`APPELBAAS F${boss.phase}`,190,20);
-  const bx=292,by=12,bw=112,bh=8;
-  ctx.strokeStyle="#fff";ctx.lineWidth=1;ctx.strokeRect(bx,by,bw,bh);
-  ctx.fillStyle="#fff";
-  ctx.fillRect(bx+1,by+1,Math.max(0,(bw-2)*(boss.hp/boss.maxHp)),bh-2);
-
-  if(bossLabWon){
-    ctx.fillStyle="rgba(0,0,0,.86)";
-    ctx.fillRect(55,112,370,120);
-    ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.strokeRect(55,112,370,120);
-    ctx.fillStyle="#fff";ctx.font="bold 22px monospace";
-    ctx.fillText("APPELBAAS VERSLAGEN!",82,150);
-    ctx.font="12px monospace";
-    ctx.fillText("+10000 · v2.3 BÈTA VOLTOOID",116,178);
-    ctx.fillText("Tik STAMP om opnieuw te testen",111,207);
-    ctx.restore();
-    return;
-  }
-
-  let y=boss.y;
-  if(boss.stunned>0)y+=Math.sin(frame*.8)*2;
-  const blink=boss.invulnerable>0&&Math.floor(boss.invulnerable/5)%2===0;
-  if(blink)ctx.globalAlpha=.35;
-
-  // Huge monochrome apple, deliberately much larger than normal enemies.
-  const cx=boss.x+boss.w/2, cy=y+boss.h/2+2;
-  ctx.fillStyle="#111";
-  ctx.beginPath();ctx.arc(cx,cy,31,0,Math.PI*2);ctx.fill();
-  ctx.fillRect(cx-4,y-8,8,15);
-  ctx.save();ctx.translate(cx+5,y-4);ctx.rotate(-.35);ctx.fillRect(0,0,22,8);ctx.restore();
-
-  // Feet.
-  ctx.fillRect(boss.x+13,y+49,15,8);ctx.fillRect(boss.x+50,y+49,15,8);
-
-  // Angry eyes / brows.
-  ctx.fillStyle="#fff";
-  ctx.fillRect(cx-19,cy-8,8,7);ctx.fillRect(cx+11,cy-8,8,7);
-  ctx.fillStyle="#111";
-  ctx.fillRect(cx-16,cy-6,3,3);ctx.fillRect(cx+13,cy-6,3,3);
-  ctx.strokeStyle="#fff";ctx.lineWidth=4;
-  ctx.beginPath();ctx.moveTo(cx-23,cy-20);ctx.lineTo(cx-9,cy-13);ctx.moveTo(cx+23,cy-20);ctx.lineTo(cx+9,cy-13);ctx.stroke();
-
-  // Mouth and fangs.
-  ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.strokeRect(cx-15,cy+8,30,11);
-  ctx.fillStyle="#fff";
-  ctx.beginPath();ctx.moveTo(cx-11,cy+9);ctx.lineTo(cx-5,cy+15);ctx.lineTo(cx-1,cy+9);ctx.fill();
-  ctx.beginPath();ctx.moveTo(cx+11,cy+9);ctx.lineTo(cx+5,cy+15);ctx.lineTo(cx+1,cy+9);ctx.fill();
-
-  if(boss.stunned>0){
-    ctx.font="bold 11px monospace";ctx.fillStyle="#111";
-    ctx.fillText("★ VERSUFT — STAMP! ★",Math.max(14,boss.x-18),Math.max(48,y-12));
-  }
-  ctx.restore();
-}
-
-function restartBossLabAfterWin(){
-  if(!bossLabActive||state!=="bossvictory")return false;
-  startBossLab();
-  return true;
-}
-
 function spawnLevel(){
   chooseLayoutForLevel(level);
   if(livingCastle.teddy&&!livingCastle.teddy.dancing)livingCastle.teddy=null;
@@ -2893,7 +2594,7 @@ function spawnLevel(){
       id:enemyIdCounter++,
       type,
       x:410-(i*58)%330,y:floors[fi]-24,floor:fi,dir:i%2?1:-1,
-      speed:.41+level*.04+(i%3)*.03+typeSpeed,trapped:0,hitsNeeded:typeHits,
+      speed:.45+Math.min(level,12)*.045+(i%3)*.03+typeSpeed,trapped:0,hitsNeeded:typeHits,
       hitsLeft:typeHits,blink:0,dead:false,
       think:30+Math.random()*110,mood:Math.random(),ladderCooldown:0,
       onLadder:false,ladder:null,ladderTargetFloor:null,holeCooldown:0,slowTimer:0
@@ -2909,16 +2610,7 @@ function trappedEnemyUnderPlayer(){
 
 function stamp(){
   audio();
-  if(state==="bossvictory"){
-    restartBossLabAfterWin();
-    return;
-  }
   if(state!=="play"||player.cool>0||player.onLadder)return;
-
-  if(bossLabActive && hitBoss()){
-    player.cool=18;
-    return;
-  }
 
   const enemy=trappedEnemyUnderPlayer();
   if(enemy){
@@ -3331,21 +3023,31 @@ function updateEnemies(){
     if(e.think<=0){
       const roll=Math.random();
 
-      // Meestal rustig richting de speler, maar niet altijd.
-      if(roll<0.64){
+      // v2.22.10: agressie loopt bewust op per level.
+      const chaseChance=Math.min(.94,
+        level<=2 ? .66+level*.03 :
+        level<=5 ? .72+level*.02 :
+        level<=9 ? .78+level*.015 :
+        .91+Math.min(level-10,3)*.01
+      );
+
+      const wanderChance=Math.max(.05,.18-level*.008);
+
+      if(roll<chaseChance){
         e.dir=pc>(e.x+14)?1:-1;
-      }else if(roll<0.82){
+      }else if(roll<chaseChance+wanderChance){
         e.dir=Math.random()<.5?-1:1;
       }else{
         e.dir=pc>(e.x+14)?-1:1;
       }
 
-      // Iets langer vasthouden aan een keuze voorkomt zenuwachtig heen-en-weer lopen.
-      e.think=60+Math.random()*150;
+      const minThink=Math.max(28,58-level*2);
+      const maxThink=Math.max(72,138-level*4);
+      e.think=minThink+Math.random()*(maxThink-minThink);
     }
 
-    // Minder vaak spontaan omdraaien.
-    if(Math.random()<0.0012)e.dir*=-1;
+    const randomTurnChance=Math.max(.00025,.0010-level*.00005);
+    if(Math.random()<randomTurnChance)e.dir*=-1;
 
     // Kies alleen een ladder wanneer de appel er echt vlakbij staat.
     // De kans is hoger wanneer de speler op een andere verdieping staat.
@@ -3533,12 +3235,8 @@ function update(){
   updatePlayer();
   updateGameplayTeddy();
   if(state!=="play")return; // Teddy encounter freezes enemies/bonus immediately.
-  if(bossLabActive){
-    updateBoss();
-  }else{
-    updateEnemies();
-    updateBonus();
-  }
+  updateEnemies();
+  updateBonus();
   holes.forEach(h=>{
     // Een bezet gat blijft bestaan zolang de appel erin zit.
     if(h.occupiedBy===null)h.timer--;
@@ -3991,7 +3689,7 @@ function draw(){
   ctx.fillStyle="#222";ctx.fillRect(8,6,W-16,20);ctx.strokeStyle="#888";ctx.strokeRect(8,6,W-16,20);ctx.fillStyle="#fff";ctx.font="11px monospace";
   ctx.fillText(`SCORE ${String(score).padStart(5,"0")}`,14,20);
   ctx.fillText(`LV ${level}`,180,20);
-  ctx.fillText(bossLabActive?"BOSS LAB":currentCastleTheme().name,228,20);
+  ctx.fillText(currentCastleTheme().name,228,20);
   ctx.fillText(`♥ ${lives}`,425,20);
   ctx.fillStyle="#111";ctx.strokeStyle="#111";
   if(player.invulnerable>0){
@@ -4029,10 +3727,9 @@ function draw(){
     drawPlayer(Math.round(player.x),Math.round(player.y));
   }
   enemies.forEach(drawApple);
-  if(!bossLabActive)drawBonus();
-  drawBoss();
+  drawBonus();
   drawEffects();
-  if(!bossLabActive)drawLivingCastle();
+  drawLivingCastle();
 
   if(state==="gameover"){
     ctx.fillStyle="rgba(255,255,255,.95)";ctx.fillRect(70,108,340,92);
