@@ -117,12 +117,14 @@ const levelSubtitle=document.getElementById("levelSubtitle");
 let levelTransitioning=false;
 
 function showLevelTransition(completedLevel,nextLevel){
-  logGameEvent("level_complete",{level:completedLevel,score});
+  if(!devTestActive)logGameEvent("level_complete",{level:completedLevel,score});
   if(musicOn&&!menuSoundtrack.paused)menuSoundtrack.volume=.06;
-  const transitionStats=getStats();
-  transitionStats.bestScore=Math.max(Number(transitionStats.bestScore)||0,Number(score)||0);
-  transitionStats.highestLevel=Math.max(Number(transitionStats.highestLevel)||1,Number(nextLevel)||1);
-  saveStats(transitionStats);
+  if(!devTestActive){
+    const transitionStats=getStats();
+    transitionStats.bestScore=Math.max(Number(transitionStats.bestScore)||0,Number(score)||0);
+    transitionStats.highestLevel=Math.max(Number(transitionStats.highestLevel)||1,Number(nextLevel)||1);
+    saveStats(transitionStats);
+  }
   levelTransitioning=true;
   state="transition";
   document.body.classList.remove("gameplayActive");
@@ -141,7 +143,7 @@ function showLevelTransition(completedLevel,nextLevel){
     levelTransitioning=false;
     state="play";
     spawnLevel();
-    logGameEvent("level_start",{level:nextLevel,score});
+    if(!devTestActive)logGameEvent("level_start",{level:nextLevel,score});
     if(musicOn){
       if(menuSoundtrack.paused)startMusic();
       else applyMusicVolume();
@@ -824,6 +826,7 @@ function ensurePlayerName(){
 }
 
 function updateProgressStats(){
+  if(devTestActive)return;
   const s=getStats();
   s.bestScore=Math.max(Number(s.bestScore)||0,Number(score)||0);
   s.highestLevel=Math.max(Number(s.highestLevel)||1,Number(level)||1);
@@ -995,24 +998,23 @@ async function loadOnlineStats(){
   try{
     await syncOnlineStats(getStats());
 
-    const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_stats`,{
-      method:"POST",
-      headers:{
-        "apikey":SUPABASE_KEY,
-        "Authorization":`Bearer ${SUPABASE_KEY}`,
-        "Content-Type":"application/json"
-      },
-      body:"{}"
-    });
-
-    if(!response.ok){
-      const text=await response.text();
-      throw new Error(`${response.status}: ${text}`);
-    }
-
+    const [response,highscoreResponse]=await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_stats`,{
+        method:"POST",
+        headers:{"apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`,"Content-Type":"application/json"},
+        body:"{}"
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/highscores?select=name,score,level,created_at&order=score.desc&limit=200`,{
+        headers:{"apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`}
+      })
+    ]);
+    if(!response.ok)throw new Error(`${response.status}: ${await response.text()}`);
+    if(!highscoreResponse.ok)throw new Error(`${highscoreResponse.status}: ${await highscoreResponse.text()}`);
     const data=await response.json();
+    const highscoreRows=normalizeScores(await highscoreResponse.json());
     const totals=data?.totals||{};
-    const leaders=Array.isArray(data?.leaders)?data.leaders:[];
+    const leaders=highscoreRows.slice(0,10).map(s=>({player_name:s.name,best_score:s.score,highest_level:s.level}));
+    const highscoreHighestLevel=highscoreRows.reduce((m,s)=>Math.max(m,Number(s.level)||1),1);
 
     onlineStatsStatus.textContent="Bijgewerkt vanuit het Stampertjes-kasteel";
     onlineStatsList.innerHTML=`
@@ -1021,7 +1023,7 @@ async function loadOnlineStats(){
       <div class="statRow"><span>Appelieten verslagen</span><strong>${Number(totals.apples_defeated)||0}</strong></div>
       <div class="statRow"><span>Totaal gevallen</span><strong>${Number(totals.deaths)||0}</strong></div>
       <div class="statRow"><span>Teddy gevonden</span><strong>${Number(totals.teddy_finders)||0} spelers</strong></div>
-      <div class="statRow"><span>Hoogste level wereldwijd</span><strong>${Number(totals.highest_level)||1}</strong></div>
+      <div class="statRow"><span>Hoogste level wereldwijd</span><strong>${Math.max(Number(totals.highest_level)||1,highscoreHighestLevel)}</strong></div>
     `;
 
     if(leaders.length){
@@ -1666,7 +1668,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.22.10";
+const CURRENT_VERSION="2.26-beta.1";
 
 // v2.22 richer analytics — failures never interrupt gameplay.
 const V222_SESSION_KEY="stampertjes_v222_session";
@@ -1820,6 +1822,25 @@ function armAttractMode(){
   },{passive:true,capture:false});
 });
 
+const DEV_TEST_PARAMS=new URLSearchParams(location.search);
+const DEV_TEST_LEVEL=Math.max(1,Math.min(10,Number(DEV_TEST_PARAMS.get("devlevel"))||1));
+const DEV_TEST_MODE=DEV_TEST_PARAMS.get("devtest")==="1" && DEV_TEST_PARAMS.has("devlevel");
+let devTestActive=false;
+
+function devTestRoomName(){
+  return CASTLE_ROOM_THEMES[roomIndexForLevel(level)]?.name||`LEVEL ${level}`;
+}
+function devTestSwitchLevel(delta){
+  if(!devTestActive)return;
+  level=Math.max(1,Math.min(10,level+delta));
+  score=0;lives=3;flawlessLevels=0;levelDeaths=0;state="play";
+  pauseOverlay.classList.add("hidden");
+  pauseConfirmStop.classList.add("hidden");
+  pauseMain.classList.remove("hidden");
+  pauseToggle.textContent="⏸ PAUZE";
+  spawnLevel();clearStartZone();startFreeze=60;
+  document.body.classList.add("gameplayActive");
+}
 function openIntro(){
   document.body.classList.remove("gameplayActive");
   state="intro";
@@ -1842,22 +1863,27 @@ function startGame(){
   startingGame=true;
   playMenuBtn.textContent="SPELEN";
   audio();
-  score=0;level=1;lives=3;state="play";
+  score=0;level=DEV_TEST_MODE?DEV_TEST_LEVEL:1;lives=3;
+  devTestActive=DEV_TEST_MODE;
+  flawlessLevels=0;levelDeaths=0;state="play";
   const pendingTeddyBonus=Math.max(0,Number(localStorage.getItem("stampertjesPendingTeddyBonus"))||0);
   if(pendingTeddyBonus){
     score+=pendingTeddyBonus;
     localStorage.removeItem("stampertjesPendingTeddyBonus");
     effects.push({type:"score",x:145,y:90,t:120,text:`EASTER TEDDY +${pendingTeddyBonus}`});
   }
-  updateProgressStats();
+  if(!devTestActive)updateProgressStats();
   setMusicContext("gameplay",{playNow:true});
   if(musicOn&&menuSoundtrack.paused)startMusic();
-  const gameStats=getStats();
-  gameStats.gamesPlayed=(Number(gameStats.gamesPlayed)||0)+1;
-  saveStats(gameStats);
-  const reachedMilestone=milestoneForGames(gameStats.gamesPlayed);
-  updatePlayerContextOnline();
-  logGameEvent("game_start",{level:1,score:0});
+  let reachedMilestone=0;
+  if(!devTestActive){
+    const gameStats=getStats();
+    gameStats.gamesPlayed=(Number(gameStats.gamesPlayed)||0)+1;
+    saveStats(gameStats);
+    reachedMilestone=milestoneForGames(gameStats.gamesPlayed);
+    updatePlayerContextOnline();
+    logGameEvent("game_start",{level,score:0});
+  }
   player.fastStamp=0;pauseOverlay.classList.add("hidden");pauseToggle.textContent="⏸ PAUZE";
   livingCastle.teddy=null;
   livingCastle.teddyCelebrating=false;
@@ -1870,7 +1896,7 @@ function startGame(){
     ? livingCastle.gameStartedAt+60000+Math.random()*30000
     : Infinity;
   spawnLevel();
-  logGameEvent("level_start",{level:1,score:0});
+  if(!devTestActive)logGameEvent("level_start",{level,score:0});
   clearStartZone();
   startFreeze=90;
   overlay.classList.add("hidden");
@@ -1906,6 +1932,24 @@ async function shareCurrentScore(){
   }
 }
 function showGameOverPanel(){
+  if(devTestActive){
+    state="gameover";
+    document.body.classList.remove("gameplayActive");
+    highscoreEntry.classList.add("hidden");
+    shareScoreBox.classList.add("hidden");
+    overlay.classList.remove("hidden");
+    menu.innerHTML=`<div class="menuTitle">🛠️ TEST LEVEL ${level} KLAAR</div>
+      <button id="devRetryBtn">↻ OPNIEUW</button>
+      <button id="devPrevEndBtn">← VORIG LEVEL</button>
+      <button id="devNextEndBtn">VOLGEND LEVEL →</button>
+      <button id="devExitBtn">DEVELOPER PORTAL</button>`;
+    document.getElementById("devRetryBtn")?.addEventListener("click",()=>{state="play";score=0;lives=3;spawnLevel();overlay.classList.add("hidden");document.body.classList.add("gameplayActive")});
+    document.getElementById("devPrevEndBtn")?.addEventListener("click",()=>{state="play";overlay.classList.add("hidden");devTestSwitchLevel(-1)});
+    document.getElementById("devNextEndBtn")?.addEventListener("click",()=>{state="play";overlay.classList.add("hidden");devTestSwitchLevel(1)});
+    document.getElementById("devExitBtn")?.addEventListener("click",()=>location.href="./admin.html");
+    return;
+  }
+
   updateProgressStats();
   logGameEvent("game_over",{level,score});
   document.body.classList.remove("gameplayActive");
@@ -1976,32 +2020,68 @@ saveScoreBtn.addEventListener("pointerdown",async e=>{
   }
 });
 
-function drawIntroCastleBackdrop(){ictx.save();ictx.fillStyle="#c9c9c9";ictx.fillRect(7,7,406,166);ictx.strokeStyle="#888";ictx.lineWidth=1;for(let y=8,row=0;y<174;y+=16,row++){ictx.beginPath();ictx.moveTo(7,y);ictx.lineTo(413,y);ictx.stroke();const off=row%2?15:0;for(let x=7-off;x<413;x+=30){ictx.beginPath();ictx.moveTo(x,y);ictx.lineTo(x,y+16);ictx.stroke()}}const win=(x,y)=>{ictx.fillStyle="#777";ictx.fillRect(x,y+7,34,28);ictx.beginPath();ictx.arc(x+17,y+8,17,Math.PI,0);ictx.fill();ictx.strokeStyle="#ddd";ictx.lineWidth=2;ictx.strokeRect(x,y+8,34,27);ictx.beginPath();ictx.moveTo(x+17,y+1);ictx.lineTo(x+17,y+35);ictx.stroke()};win(20,18);win(366,18);const torch=(x,y,p)=>{const f=.6+.4*Math.sin(introFrame*.14+p);ictx.fillStyle="#333";ictx.fillRect(x-2,y+4,4,9);ictx.fillRect(x-6,y+11,12,2);ictx.fillStyle="#fff";ictx.beginPath();ictx.moveTo(x,y-10-f*4);ictx.lineTo(x-4,y+3);ictx.lineTo(x+4,y+3);ictx.closePath();ictx.fill()};torch(112,41,0);torch(307,41,2);ictx.globalAlpha=.35;ictx.fillStyle="#eee";const off=(introFrame*.45)%500;for(let i=0;i<3;i++){const x=((off+i*155)%520)-70;ictx.beginPath();ictx.ellipse(x,154+i%2*7,55,7,0,0,Math.PI*2);ictx.fill()}ictx.restore()}
+function drawIntroCastleBackdrop(){
+  ictx.fillStyle="#2c3440";ictx.fillRect(0,0,INTRO_LOGICAL_W,INTRO_LOGICAL_H);
+  ictx.strokeStyle="#455365";ictx.lineWidth=1;
+  for(let y=10,row=0;y<INTRO_LOGICAL_H;y+=18,row++){
+    ictx.beginPath();ictx.moveTo(0,y);ictx.lineTo(INTRO_LOGICAL_W,y);ictx.stroke();
+    for(let x=-(row%2?18:0);x<INTRO_LOGICAL_W;x+=36){ictx.beginPath();ictx.moveTo(x,y);ictx.lineTo(x,y+18);ictx.stroke();}
+  }
+  ictx.fillStyle="#6da3bd";ictx.fillRect(182,26,55,48);ictx.strokeStyle="#d8c69f";ictx.lineWidth=2;ictx.strokeRect(182,26,55,48);
+  ictx.beginPath();ictx.moveTo(209,26);ictx.lineTo(209,74);ictx.stroke();
+  ictx.fillStyle="#85323a";ictx.fillRect(86,22,28,45);ictx.fillRect(310,22,28,45);
+  ictx.fillStyle="#d4ad58";ictx.fillRect(97,29,6,17);ictx.fillRect(321,29,6,17);
+}
 function drawIntroCastleLadder(x,y1,y2){ictx.fillStyle="#444";ictx.fillRect(x-2,y1,4,y2-y1);ictx.fillRect(x+19,y1,4,y2-y1);ictx.fillStyle="#777";for(let y=y1+7;y<y2;y+=10)ictx.fillRect(x,y,21,3)}
 function drawIntroCastleFloor(y,holeX=null,crackStage=0){ictx.fillStyle="#333";if(holeX===null)ictx.fillRect(12,y-5,396,10);else{ictx.fillRect(12,y-5,holeX-12,10);ictx.fillRect(holeX+42,y-5,408-(holeX+42),10)}ictx.fillStyle="#eee";ictx.fillRect(12,y-5,396,2);ictx.strokeStyle="#999";for(let x=14;x<407;x+=22){if(holeX!==null&&x>holeX-8&&x<holeX+45)continue;ictx.strokeRect(x,y-3,20,7)}ictx.fillStyle="#111";ictx.strokeStyle="#111";if(crackStage>0){ictx.lineWidth=2;ictx.beginPath();ictx.moveTo(holeX+10,y-7);ictx.lineTo(holeX+20,y);ictx.lineTo(holeX+13,y+7);if(crackStage>1){ictx.moveTo(holeX+32,y-7);ictx.lineTo(holeX+23,y);ictx.lineTo(holeX+31,y+7)}ictx.stroke()}}
-function drawIntroPlayer(x,y,pose="walk"){
-  ictx.fillStyle="#111";
-  ictx.fillRect(x+7,y,10,8);
-  ictx.fillRect(x+3,y+8,18,13);
-  ictx.fillRect(x,y+12,4,8);
-  ictx.fillRect(x+20,y+12,4,8);
 
-  if(pose==="stamp"){
-    ictx.fillRect(x+2,y+21,9,7);
-    ictx.fillRect(x+13,y+21,9,7);
-  }else{
-    const step=Math.floor(introFrame/7)%2;
-    if(step===0){
-      ictx.fillRect(x+3,y+21,7,7);
-      ictx.fillRect(x+14,y+21,7,7);
+function drawStampertjeSprite(targetCtx,x,y,{dir=1,step=0,climbing=false,stamping=false}={}){
+  targetCtx.save();
+  targetCtx.fillStyle="#111";
+  const headY=y+(stamping?3:0);
+
+  targetCtx.fillRect(x+7,headY,10,2);
+  targetCtx.fillRect(x+5,headY+2,14,7);
+  targetCtx.fillRect(x+7,headY+9,10,2);
+  targetCtx.fillRect(x+4,y+10,16,4);
+  targetCtx.fillRect(x+6,y+14,12,8);
+
+  targetCtx.fillStyle="#f5e7c6";
+  const eyeShift=dir>0?1:0;
+  targetCtx.fillRect(x+8+eyeShift,headY+5,2,2);
+  targetCtx.fillRect(x+14+eyeShift,headY+5,2,2);
+  targetCtx.fillStyle="#182532";
+
+  if(climbing){
+    if(step%2===0){
+      targetCtx.fillRect(x+1,y+11,5,4);targetCtx.fillRect(x+18,y+17,5,4);
+      targetCtx.fillRect(x+5,y+21,5,7);targetCtx.fillRect(x+15,y+19,5,7);
     }else{
-      ictx.fillRect(x+6,y+21,7,7);
-      ictx.fillRect(x+11,y+21,7,7);
+      targetCtx.fillRect(x+1,y+17,5,4);targetCtx.fillRect(x+18,y+11,5,4);
+      targetCtx.fillRect(x+5,y+19,5,7);targetCtx.fillRect(x+15,y+21,5,7);
     }
+  }else if(stamping){
+    targetCtx.fillRect(x+1,y+14,5,5);targetCtx.fillRect(x+18,y+14,5,5);
+    targetCtx.fillRect(x+3,y+21,8,6);targetCtx.fillRect(x+14,y+21,8,6);
+  }else if(step%2===0){
+    targetCtx.fillRect(x+1,y+11,4,8);targetCtx.fillRect(x+20,y+14,4,7);
+    targetCtx.fillRect(x+4,y+21,7,7);targetCtx.fillRect(x+15,y+22,6,6);
+  }else{
+    targetCtx.fillRect(x+1,y+14,4,7);targetCtx.fillRect(x+20,y+11,4,8);
+    targetCtx.fillRect(x+5,y+22,6,6);targetCtx.fillRect(x+14,y+21,7,7);
   }
+  targetCtx.restore();
+}
+
+function drawIntroPlayer(x,y,pose="walk"){
+  drawStampertjeSprite(ictx,x,y,{
+    dir:1,
+    step:Math.floor(introFrame/7)%2,
+    stamping:pose==="stamp"
+  });
 }
 function drawIntroApple(x,y,trapped=false,panic=false){
-  ictx.fillStyle="#111";
+  ictx.fillStyle="#34191b";
   ictx.beginPath();
   ictx.arc(x+14,y+11,13,0,Math.PI*2);
   ictx.fill();
@@ -2009,7 +2089,7 @@ function drawIntroApple(x,y,trapped=false,panic=false){
   ictx.fillRect(x+3,y+21,6,5);
   ictx.fillRect(x+19,y+21,6,5);
 
-  ictx.fillStyle="#fff";
+  ictx.fillStyle="#f4dfbd";
   if(panic){
     ictx.fillRect(x+5,y+6,5,5);
     ictx.fillRect(x+18,y+6,5,5);
@@ -2024,12 +2104,11 @@ function drawIntroApple(x,y,trapped=false,panic=false){
   }
 }
 function drawIntroLadder(x,y1,y2){
-  ictx.fillRect(x,y1,3,y2-y1);
-  ictx.fillRect(x+20,y1,3,y2-y1);
-  for(let y=y1+8;y<y2;y+=10)ictx.fillRect(x,y,23,2);
+  ictx.fillStyle="#553720";ictx.fillRect(x,y1,3,y2-y1);ictx.fillRect(x+20,y1,3,y2-y1);
+  ictx.fillStyle="#b07b43";for(let y=y1+8;y<y2;y+=10)ictx.fillRect(x,y,23,2);
 }
 function drawIntroFloor(y,holeX=null,crackStage=0){
-  ictx.fillStyle="#111";
+  ictx.fillStyle="#51351f";
   if(holeX===null){
     ictx.fillRect(12,y-4,396,8);
   }else{
@@ -2037,7 +2116,7 @@ function drawIntroFloor(y,holeX=null,crackStage=0){
     ictx.fillRect(holeX+42,y-4,408-(holeX+42),8);
   }
 
-  ictx.fillStyle="#fff";
+  ictx.fillStyle="#b9864c";
   for(let x=20;x<400;x+=22){
     if(holeX!==null && x>holeX-8 && x<holeX+45)continue;
     ictx.fillRect(x,y-1,10,2);
@@ -2070,7 +2149,7 @@ function drawIntro(){
   const segmentOffsets=[0,520,180,760,340,900];
   const phase=(macroPhase+segmentOffsets[(attractSegment+introScenario)%segmentOffsets.length])%1080;
 
-  ictx.fillStyle="#fff";
+  ictx.fillStyle="#26303b";
   ictx.fillRect(0,0,420,180);
   drawIntroCastleBackdrop();
   ictx.fillStyle="#111";
@@ -2226,12 +2305,61 @@ const ladderLayouts=[
     {x:60,top:188,bottom:250},{x:260,top:188,bottom:250},
     {x:155,top:250,bottom:312},{x:390,top:250,bottom:312},
     {x:65,top:312,bottom:372},{x:290,top:312,bottom:372}
+  ],
+  // 6 Wijnkelder — brede keldergangen, routes wisselen links/rechts.
+  [
+    {x:58,top:64,bottom:126},{x:250,top:64,bottom:126},
+    {x:155,top:126,bottom:188},{x:390,top:126,bottom:188},
+    {x:78,top:188,bottom:250},{x:318,top:188,bottom:250},
+    {x:205,top:250,bottom:312},{x:420,top:250,bottom:312},
+    {x:105,top:312,bottom:372},{x:350,top:312,bottom:372}
+  ],
+  // 7 Alchemistenkamer — grillige routes alsof de kamer rond werktafels is gebouwd.
+  [
+    {x:110,top:64,bottom:126},{x:405,top:64,bottom:126},
+    {x:35,top:126,bottom:188},{x:235,top:126,bottom:188},
+    {x:145,top:188,bottom:250},{x:365,top:188,bottom:250},
+    {x:55,top:250,bottom:312},{x:275,top:250,bottom:312},
+    {x:180,top:312,bottom:372},{x:415,top:312,bottom:372}
+  ],
+  // 8 Schatkamer — lange diagonale jachtroutes.
+  [
+    {x:45,top:64,bottom:126},{x:300,top:64,bottom:126},
+    {x:185,top:126,bottom:188},{x:425,top:126,bottom:188},
+    {x:95,top:188,bottom:250},{x:335,top:188,bottom:250},
+    {x:225,top:250,bottom:312},{x:405,top:250,bottom:312},
+    {x:75,top:312,bottom:372},{x:300,top:312,bottom:372}
+  ],
+  // 9 Geheime Catacomben — smallere, onheilspellende zigzag.
+  [
+    {x:135,top:64,bottom:126},{x:360,top:64,bottom:126},
+    {x:50,top:126,bottom:188},{x:275,top:126,bottom:188},
+    {x:175,top:188,bottom:250},{x:415,top:188,bottom:250},
+    {x:70,top:250,bottom:312},{x:315,top:250,bottom:312},
+    {x:155,top:312,bottom:372},{x:380,top:312,bottom:372}
+  ],
+  // 10 Kasteeltoren — snelle verticale wissels richting de top.
+  [
+    {x:70,top:64,bottom:126},{x:350,top:64,bottom:126},
+    {x:215,top:126,bottom:188},{x:420,top:126,bottom:188},
+    {x:50,top:188,bottom:250},{x:285,top:188,bottom:250},
+    {x:175,top:250,bottom:312},{x:390,top:250,bottom:312},
+    {x:85,top:312,bottom:372},{x:255,top:312,bottom:372}
   ]
 ]
 let ladders=ladderLayouts[0];
 let currentLayoutIndex=0;
 const CASTLE_ROOM_THEMES=[
-  {name:"ENTREEHAL",kind:"hall"},{name:"WAPENZAAL",kind:"arms"},{name:"BIBLIOTHEEK",kind:"books"},{name:"KERKERS",kind:"cells"},{name:"TROONZAAL",kind:"throne"}
+  {name:"ENTREEHAL",kind:"hall"},
+  {name:"WAPENZAAL",kind:"arms"},
+  {name:"BIBLIOTHEEK",kind:"books"},
+  {name:"KERKERS",kind:"cells"},
+  {name:"TROONZAAL",kind:"throne"},
+  {name:"WIJNKELDER",kind:"wine"},
+  {name:"ALCHEMISTENKAMER",kind:"alchemy"},
+  {name:"SCHATKAMER",kind:"treasure"},
+  {name:"GEHEIME CATACOMBEN",kind:"catacombs"},
+  {name:"KASTEELTOREN",kind:"tower"}
 ];
 function currentCastleTheme(){return CASTLE_ROOM_THEMES[currentLayoutIndex%CASTLE_ROOM_THEMES.length]}
 
@@ -2239,6 +2367,7 @@ function currentCastleTheme(){return CASTLE_ROOM_THEMES[currentLayoutIndex%CASTL
 let keys={left:false,right:false,up:false,down:false};
 let frame=0,score=0,level=1,lives=3,state="intro",shake=0,startFreeze=0,deathAnimating=false,deathFrame=0;
 let holes=[],cracks=[],enemies=[],effects=[],bonus=null,bonusSpawnTimer=420,combo=0,comboTimer=0,enemyIdCounter=1;
+let flawlessLevels=0,levelDeaths=0; const MAX_LIVES=5;
 let player={x:30,y:344,w:24,h:28,onLadder:false,cool:0,dir:1,invulnerable:0};
 
 let audioCtx=null;
@@ -2476,6 +2605,14 @@ const deathCanvas=document.getElementById("deathCanvas");
 const dctx=deathCanvas.getContext("2d");
 dctx.imageSmoothingEnabled=false;
 const pauseOverlay=document.getElementById("pauseOverlay");
+const pauseMain=document.getElementById("pauseMain");
+const pauseConfirmStop=document.getElementById("pauseConfirmStop");
+const pauseResumeBtn=document.getElementById("pauseResumeBtn");
+const pauseRestartBtn=document.getElementById("pauseRestartBtn");
+const pauseStopBtn=document.getElementById("pauseStopBtn");
+const pauseCancelStopBtn=document.getElementById("pauseCancelStopBtn");
+const pauseConfirmStopBtn=document.getElementById("pauseConfirmStopBtn");
+let levelStartScore=0,levelStartLives=3;
 let previousState="play";
 let pauseLocked=false;
 
@@ -2494,6 +2631,20 @@ function togglePause(){
   }else{
     previousState=state;
     state="paused";
+    pauseConfirmStop.classList.add("hidden");
+    pauseMain.classList.remove("hidden");
+    let devNav=document.getElementById("devPauseNav");
+    if(devTestActive){
+      if(!devNav){
+        devNav=document.createElement("div");devNav.id="devPauseNav";
+        devNav.innerHTML='<div class="devTestBadge">🛠️ TESTMODUS</div><button id="devPrevLevelBtn">← VORIG LEVEL</button><button id="devNextLevelBtn">VOLGEND LEVEL →</button><button id="devPortalBtn">DEVELOPER PORTAL</button>';
+        pauseMain.appendChild(devNav);
+        document.getElementById("devPrevLevelBtn").onclick=()=>devTestSwitchLevel(-1);
+        document.getElementById("devNextLevelBtn").onclick=()=>devTestSwitchLevel(1);
+        document.getElementById("devPortalBtn").onclick=()=>location.href="./admin.html";
+      }
+      devNav.classList.remove("hidden");
+    }else if(devNav)devNav.classList.add("hidden");
     pauseOverlay.classList.remove("hidden");
     pauseToggle.textContent="▶ VERDER";
     musicTimer=null;
@@ -2507,7 +2658,52 @@ pauseToggle.addEventListener("pointerdown",e=>{
   e.stopPropagation();
   togglePause();
 });
+pauseResumeBtn.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();togglePause();});
+
+pauseRestartBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();e.stopPropagation();
+  score=levelStartScore;
+  lives=levelStartLives;
+  levelDeaths=0;
+  state="play";
+  pauseOverlay.classList.add("hidden");
+  pauseConfirmStop.classList.add("hidden");
+  pauseMain.classList.remove("hidden");
+  pauseToggle.textContent="⏸ PAUZE";
+  spawnLevel();
+  startFreeze=75;
+  document.body.classList.add("gameplayActive");
+  logGameEvent("level_restart",{level,score});
+});
+
+pauseStopBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();e.stopPropagation();
+  pauseMain.classList.add("hidden");
+  pauseConfirmStop.classList.remove("hidden");
+});
+
+pauseCancelStopBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();e.stopPropagation();
+  pauseConfirmStop.classList.add("hidden");
+  pauseMain.classList.remove("hidden");
+});
+
+pauseConfirmStopBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();e.stopPropagation();
+  const stoppedLevel=level,stoppedScore=score;
+  keys.left=keys.right=keys.up=keys.down=false;
+  pauseOverlay.classList.add("hidden");
+  pauseConfirmStop.classList.add("hidden");
+  pauseMain.classList.remove("hidden");
+  pauseToggle.textContent="⏸ PAUZE";
+  if(devTestActive){location.href="./admin.html";return;}
+  logGameEvent("game_abort",{level:stoppedLevel,score:stoppedScore});
+  openIntro();
+});
+
 pauseOverlay.addEventListener("pointerdown",e=>{
+  // Alleen tikken op de donkere achtergrond hervat; knoppen handelen zichzelf af.
+  if(e.target!==pauseOverlay)return;
   e.preventDefault();
   togglePause();
 });
@@ -2522,9 +2718,8 @@ function ladderNear(x,y){
   return ladders.find(l=>x+12>l.x-12&&x+12<l.x+30&&y+28>=l.top-5&&y<=l.bottom+5);
 }
 function roomIndexForLevel(levelNumber){
-  // Levels cycle through the five castle rooms in a fixed order:
-  // 1 Entreehal, 2 Wapenzaal, 3 Bibliotheek, 4 Kerkers, 5 Troonzaal,
-  // then the cycle repeats from level 6.
+  // Levels cycle through ten castle rooms in a fixed order.
+  // Level 1-10 are all visually distinct; only from level 11 does the cycle restart.
   const n=Math.max(1,Number(levelNumber)||1);
   return (n-1)%CASTLE_ROOM_THEMES.length;
 }
@@ -2572,6 +2767,8 @@ function resetPlayerSafely(){
 }
 
 function spawnLevel(){
+  levelStartScore=score;
+  levelStartLives=lives;
   chooseLayoutForLevel(level);
   if(livingCastle.teddy&&!livingCastle.teddy.dancing)livingCastle.teddy=null;
   keys.left=keys.right=keys.up=keys.down=false;
@@ -2802,10 +2999,10 @@ function drawDeathScene(progress){
   const h=deathCanvas.height;
 
   // Monochrome stone chamber instead of the old empty white screen.
-  dctx.fillStyle="#c7c7c7";
+  dctx.fillStyle="#2d3540";
   dctx.fillRect(0,0,w,h);
 
-  dctx.strokeStyle="#888";
+  dctx.strokeStyle="#465363";
   dctx.lineWidth=1;
   for(let y=0,row=0;y<h;y+=16,row++){
     dctx.beginPath();dctx.moveTo(0,y);dctx.lineTo(w,y);dctx.stroke();
@@ -2816,22 +3013,22 @@ function drawDeathScene(progress){
   }
 
   // Side columns and floor.
-  dctx.fillStyle="#888";
+  dctx.fillStyle="#59412e";
   dctx.fillRect(0,0,10,h);
   dctx.fillRect(w-10,0,10,h);
 
-  dctx.fillStyle="#333";
+  dctx.fillStyle="#3a291d";
   dctx.fillRect(8,124,w-16,9);
-  dctx.fillStyle="#efefef";
+  dctx.fillStyle="#a97b49";
   dctx.fillRect(8,124,w-16,2);
 
   // Torch flicker in the death scene.
   const torch=(x,y,phase)=>{
     const f=.5+.5*Math.sin(progress*28+phase);
-    dctx.fillStyle="#333";
+    dctx.fillStyle="#3a291d";
     dctx.fillRect(x-2,y+5,4,9);
     dctx.fillRect(x-6,y+12,12,2);
-    dctx.fillStyle="#fff";
+    dctx.fillStyle="#ffcb59";
     dctx.beginPath();
     dctx.moveTo(x,y-11-f*4);
     dctx.lineTo(x-4,y+3);
@@ -2843,14 +3040,14 @@ function drawDeathScene(progress){
   torch(w-35,57,2);
 
   // Enemy stays visible as the cause of the hit.
-  dctx.fillStyle="#111";
+  dctx.fillStyle="#34191b";
   dctx.beginPath();
   dctx.arc(168,104,15,0,Math.PI*2);
   dctx.fill();
   dctx.fillRect(166,83,4,8);
   dctx.fillRect(156,117,7,5);
   dctx.fillRect(174,117,7,5);
-  dctx.fillStyle="#ddd";
+  dctx.fillStyle="#f4dfbd";
   dctx.fillRect(161,99,3,3);
   dctx.fillRect(173,99,3,3);
 
@@ -2867,20 +3064,14 @@ function drawDeathScene(progress){
   dctx.save();
   dctx.translate(x+12,y+14);
   dctx.rotate(-angle);
-  dctx.translate(-12,-14);
-  dctx.fillStyle="#111";
-  dctx.fillRect(7,0,10,8);
-  dctx.fillRect(3,8,18,13);
-  dctx.fillRect(0,12,4,8);
-  dctx.fillRect(20,12,4,8);
-  dctx.fillRect(3,21,7,7);
-  dctx.fillRect(14,21,7,7);
+  dctx.translate(-(x+12),-(y+14));
+  drawStampertjeSprite(dctx,x,y,{dir:1,step:1});
   dctx.restore();
 
   // Dust / little stone particles appear on impact.
   if(progress>.32){
     const p=Math.min(1,(progress-.32)/.5);
-    dctx.fillStyle="#555";
+    dctx.fillStyle="#7b614d";
     dctx.globalAlpha=1-p*.65;
     const particles=[
       [-26,-3],[-18,-13],[-8,-20],[8,-18],[18,-11],[27,-4]
@@ -2898,7 +3089,7 @@ function drawDeathScene(progress){
   }
 
   // Low drifting mist.
-  dctx.fillStyle="#eee";
+  dctx.fillStyle="#8097a8";
   dctx.globalAlpha=.35;
   for(let i=0;i<3;i++){
     const mx=((progress*95+i*85)%(w+70))-40;
@@ -2908,7 +3099,7 @@ function drawDeathScene(progress){
   }
   dctx.globalAlpha=1;
 
-  dctx.fillStyle="#111";
+  dctx.fillStyle="#34191b";
   dctx.font="bold 14px monospace";
   if(progress>.10&&progress<.52)dctx.fillText("BAM!",92,28);
 
@@ -3139,6 +3330,16 @@ function updateEnemies(){
   enemies=enemies.filter(e=>!e.dead);
   if(enemies.length===0 && !levelTransitioning && state==="play"){
     score+=500;
+    if(levelDeaths===0){
+      flawlessLevels++;
+      if(flawlessLevels>=3 && lives<MAX_LIVES){
+        lives++; flawlessLevels=0;
+        effects.push({type:"score",x:115,y:92,t:130,text:"♥ EXTRA LEVEN — 3 LEVELS FOUTLOOS!"});
+        tone(660,.08,"square",.05,880);setTimeout(()=>tone(990,.12,"square",.05,1320),90);
+        logGameEvent("extra_life",{level,score,bonusType:"flawless"});
+      }
+    }else flawlessLevels=0;
+    levelDeaths=0;
     updateProgressStats();
     const completedLevel=level;
     level++;
@@ -3150,7 +3351,9 @@ function updateEnemies(){
 function sfxBonusAppear(type){
   // Short, recognisable arcade cue when a bonus enters the castle.
   // tone() already respects ALLES AAN / ALLEEN FX / ALLES UIT.
-  if(type==="clock"){
+  if(type==="heart"){
+    tone(620,.06,"square",.03,820);setTimeout(()=>tone(930,.09,"square",.026,1240),65);
+  }else if(type==="clock"){
     tone(880,.055,"square",.028,1040);
     setTimeout(()=>tone(1175,.07,"square",.024,1320),65);
   }else if(type==="banana"){
@@ -3167,7 +3370,8 @@ function sfxBonusAppear(type){
 
 function spawnBonus(){
   const types=["cherry","banana","star","clock"];
-  const type=types[Math.floor(Math.random()*types.length)];
+  const heartChance=(level>=3 && lives<MAX_LIVES)?Math.min(.12,.035+(level-3)*.006):0;
+  const type=Math.random()<heartChance?"heart":types[Math.floor(Math.random()*types.length)];
 
   let floor=Math.floor(Math.random()*floors.length);
   let x=60+Math.random()*(W-120);
@@ -3202,6 +3406,12 @@ function collectBonus(){
   if(bonus.type==="clock"){
     earned=250;
     enemies.forEach(e=>e.slowTimer=300);
+  }
+  if(bonus.type==="heart" && lives<MAX_LIVES){
+    lives++;
+    effects.push({type:"score",x:bonus.x-42,y:bonus.y-18,t:115,text:"♥ EXTRA LEVEN!"});
+    tone(660,.08,"square",.05,880);setTimeout(()=>tone(990,.12,"square",.05,1320),90);
+    logGameEvent("extra_life",{level,score,bonusType:"heart"});
   }
   score+=earned;
       updateProgressStats();
@@ -3249,12 +3459,13 @@ function update(){
 }
 
 function drawPlayer(x,y){
-  ctx.fillRect(x+7,y,10,8);
-  ctx.fillRect(x+3,y+8,18,13);
-  ctx.fillRect(x,y+12,4,8);ctx.fillRect(x+20,y+12,4,8);
-  const step=Math.floor(frame/7)%2;
-  if(step===0){ctx.fillRect(x+3,y+21,7,7);ctx.fillRect(x+14,y+21,7,7)}
-  else{ctx.fillRect(x+6,y+21,7,7);ctx.fillRect(x+11,y+21,7,7)}
+  const walking=(keys.left||keys.right)&&!player.onLadder;
+  drawStampertjeSprite(ctx,x,y,{
+    dir:player.dir,
+    step:walking?Math.floor(frame/6)%2:0,
+    climbing:player.onLadder,
+    stamping:player.cool>12&&!player.onLadder
+  });
 }
 function drawApple(e){
   if(e.trapped>0&&e.trapped<90&&Math.floor(e.blink/6)%2===0)return;
@@ -3266,9 +3477,9 @@ function drawApple(e){
   else ctx.fill();
   ctx.fillRect(e.x+12,e.y-5,4,7);
   ctx.fillRect(e.x+3,e.y+21,6,5);ctx.fillRect(e.x+19,e.y+21,6,5);
-  ctx.fillStyle="#fff";
+  ctx.fillStyle="#f4dfbd";
   ctx.fillRect(e.x+7,e.y+7,3,3);ctx.fillRect(e.x+18,e.y+7,3,3);
-  ctx.fillStyle="#111";
+  ctx.fillStyle="#34191b";
   if(e.type==="black"){
     ctx.fillStyle="#fff";ctx.fillRect(e.x+3,e.y+12,22,3);ctx.fillStyle="#111";
   }
@@ -3327,40 +3538,299 @@ function drawSafeCastleTorch(preferredX,y,phase){
   drawCastleTorch(x,y,phase);
 }
 
-function drawCastleBackdrop(){
-  const theme=currentCastleTheme(), top=30, bottom=H-14, bh=bottom-top;
+
+
+function roomHitsLadder(x,y,w,h,pad=8){
+  return ladders.some(l=>x<l.x+24+pad&&x+w>l.x-pad&&y<l.bottom+pad&&y+h>l.top-pad);
+}
+function roomSafe(x,y,w,h,fn,pad=8){if(!roomHitsLadder(x,y,w,h,pad))fn();}
+function roomBrickWall(bg,mortar){
+  const top=30,bottom=H-14;
+  ctx.fillStyle=bg;ctx.fillRect(10,top,W-20,bottom-top);
+  ctx.strokeStyle=mortar;ctx.lineWidth=1;
+  for(let y=top+15,row=0;y<bottom;y+=21,row++){
+    ctx.beginPath();ctx.moveTo(12,y);ctx.lineTo(W-12,y);ctx.stroke();
+    for(let x=12-(row%2?21:0);x<W-12;x+=42){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+21);ctx.stroke();}
+  }
+}
+function roomWindow(x,y,w,h,sky="#6fa4bd",frame="#d5c7a1"){
+  ctx.fillStyle="#1e252a";ctx.fillRect(x,y,w,h);ctx.fillStyle=sky;ctx.fillRect(x+5,y+8,w-10,h-13);
+  ctx.strokeStyle=frame;ctx.lineWidth=2;ctx.strokeRect(x+5,y+8,w-10,h-13);
+  ctx.beginPath();ctx.moveTo(x+w/2,y+8);ctx.lineTo(x+w/2,y+h-5);ctx.moveTo(x+5,y+h/2);ctx.lineTo(x+w-5,y+h/2);ctx.stroke();
+}
+function roomLamp(x,y){
+  ctx.fillStyle="#73502d";ctx.fillRect(x-7,y,14,3);ctx.fillStyle="#ffcf61";ctx.fillRect(x-2,y-8,4,8);
+  ctx.fillStyle="rgba(255,195,75,.13)";ctx.beginPath();ctx.arc(x,y-5,16,0,Math.PI*2);ctx.fill();
+}
+function roomClearLadders(color){ctx.fillStyle=color;ladders.forEach(l=>ctx.fillRect(l.x-7,l.top-2,34,l.bottom-l.top+4));}
+
+function drawEntranceHallColor(){
+  ctx.save();roomBrickWall("#34404c","#4c5d6c");
+  roomSafe(35,58,54,58,()=>roomWindow(35,58,54,58));roomSafe(385,58,54,58,()=>roomWindow(385,58,54,58));
+  roomSafe(150,66,30,45,()=>{ctx.fillStyle="#8d3030";ctx.fillRect(150,66,30,45);ctx.fillStyle="#d5b767";ctx.fillRect(161,74,8,20);});
+  roomSafe(295,66,30,45,()=>{ctx.fillStyle="#8d3030";ctx.fillRect(295,66,30,45);ctx.fillStyle="#d5b767";ctx.fillRect(306,74,8,20);});
+  roomSafe(206,315,68,53,()=>{ctx.fillStyle="#5b3821";ctx.fillRect(206,315,68,53);ctx.fillStyle="#2a1b13";ctx.fillRect(216,327,48,41);});
+  roomSafe(112,185,25,25,()=>roomLamp(124,195));roomSafe(340,185,25,25,()=>roomLamp(352,195));
+  roomClearLadders("#34404c");ctx.restore();
+}
+function drawArmoryColor(){
+  ctx.save();roomBrickWall("#3a3836","#57524e");
+  const rack=(x,y,w)=>{ctx.fillStyle="#644126";ctx.fillRect(x,y,w,5);ctx.fillRect(x,y+35,w,5);ctx.strokeStyle="#b8bab8";ctx.lineWidth=3;for(let sx=x+12;sx<x+w-10;sx+=22){ctx.beginPath();ctx.moveTo(sx,y+4);ctx.lineTo(sx+10,y+31);ctx.moveTo(sx+10,y+4);ctx.lineTo(sx,y+31);ctx.stroke();}};
+  [[30,76,70],[205,76,75],[365,76,75],[120,204,75],[302,204,75]].forEach(([x,y,w])=>roomSafe(x,y,w,40,()=>rack(x,y,w)));
+  const armor=(x,f)=>{ctx.fillStyle="#73797b";ctx.strokeStyle="#c4c8c8";ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,f-42,8,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillRect(x-11,f-34,22,20);ctx.fillStyle="#555b5d";ctx.fillRect(x-8,f-14,6,14);ctx.fillRect(x+2,f-14,6,14);};
+  roomSafe(42,316,46,56,()=>armor(65,372));roomSafe(392,316,46,56,()=>armor(415,372));
+  roomSafe(215,258,50,45,()=>{ctx.fillStyle="#853535";ctx.beginPath();ctx.arc(240,280,20,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#d0b55e";ctx.lineWidth=3;ctx.stroke();});
+  roomClearLadders("#3a3836");ctx.restore();
+}
+function drawDungeonColor(){
+  ctx.save();roomBrickWall("#20272a","#374044");
+  const cell=(x,y,w,h)=>{ctx.fillStyle="#15191b";ctx.fillRect(x,y,w,h);ctx.strokeStyle="#777f82";ctx.lineWidth=3;ctx.strokeRect(x,y,w,h);for(let bx=x+10;bx<x+w;bx+=12){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx,y+h);ctx.stroke();}};
+  [[28,72,72,42],[365,72,72,42],[205,196,70,42],[30,320,72,40]].forEach(([x,y,w,h])=>roomSafe(x,y,w,h,()=>cell(x,y,w,h)));
+  roomSafe(330,190,55,50,()=>{ctx.strokeStyle="#646b6d";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(350,188);ctx.lineTo(350,220);ctx.arc(350,230,10,Math.PI,0);ctx.stroke();});
+  ctx.fillStyle="rgba(62,110,74,.28)";ctx.fillRect(10,350,W-20,22);roomClearLadders("#20272a");ctx.restore();
+}
+function drawThroneRoomColor(){
   ctx.save();
-  ctx.fillStyle=theme.kind==="cells"?"#b6b6b6":"#cacaca";
-  ctx.fillRect(10,top,W-20,bh);
-  ctx.strokeStyle="#8a8a8a";ctx.lineWidth=1;
-  for(let y=top+1,row=0;y<bottom;y+=17,row++){
-    ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(W-10,y);ctx.stroke();
-    const off=row%2?17:0;
-    for(let x=10-off;x<W-10;x+=34){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+17);ctx.stroke()}
+
+  // Royal stone shell: warmer and richer than the other rooms.
+  roomBrickWall("#4b3038","#704854");
+
+  // Tall gold-edged columns make the room read as a ceremonial hall.
+  const column=(x)=>{
+    ctx.fillStyle="#6a4650";ctx.fillRect(x,36,13,H-54);
+    ctx.fillStyle="#c49b50";ctx.fillRect(x-3,36,19,6);ctx.fillRect(x-3,H-24,19,6);
+    ctx.fillStyle="#8d6670";ctx.fillRect(x+3,43,4,H-70);
+  };
+  [18,112,350,448].forEach(column);
+
+  // High stained-glass windows, only in guaranteed clear upper wall bays.
+  const royalWindow=(x,y,w,h)=>{
+    ctx.fillStyle="#261e25";ctx.fillRect(x,y,w,h);
+    ctx.fillStyle="#416f8d";ctx.fillRect(x+5,y+8,w-10,h-13);
+    ctx.fillStyle="#8e3547";ctx.fillRect(x+5,y+8,(w-10)/2,h-13);
+    ctx.strokeStyle="#d4b45e";ctx.lineWidth=2;ctx.strokeRect(x+5,y+8,w-10,h-13);
+    ctx.beginPath();ctx.moveTo(x+w/2,y+8);ctx.lineTo(x+w/2,y+h-5);ctx.moveTo(x+5,y+29);ctx.lineTo(x+w-5,y+29);ctx.stroke();
+  };
+  roomSafe(40,52,54,61,()=>royalWindow(40,52,54,61));
+  roomSafe(382,52,54,61,()=>royalWindow(382,52,54,61));
+
+  // Royal banners: deliberately between windows/ladders.
+  const banner=(x,y)=>{
+    ctx.fillStyle="#7e2639";ctx.fillRect(x,y,30,50);
+    ctx.beginPath();ctx.moveTo(x,y+50);ctx.lineTo(x+15,y+62);ctx.lineTo(x+30,y+50);ctx.fill();
+    ctx.fillStyle="#d2ae58";ctx.fillRect(x+12,y+10,6,22);
+    ctx.beginPath();ctx.arc(x+15,y+18,9,0,Math.PI*2);ctx.strokeStyle="#d2ae58";ctx.lineWidth=2;ctx.stroke();
+  };
+  roomSafe(145,55,30,65,()=>banner(145,55));
+  roomSafe(302,55,30,65,()=>banner(302,55));
+
+  // Warm sconces on otherwise empty wall sections.
+  roomSafe(128,176,25,25,()=>roomLamp(140,188));
+  roomSafe(326,176,25,25,()=>roomLamp(338,188));
+
+  // Side ceremonial shield displays, fixed to free wall.
+  const shield=(x,y)=>{
+    ctx.fillStyle="#b48d48";ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+28,y);ctx.lineTo(x+24,y+28);ctx.lineTo(x+14,y+39);ctx.lineTo(x+4,y+28);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#76303b";ctx.beginPath();ctx.moveTo(x+5,y+5);ctx.lineTo(x+23,y+5);ctx.lineTo(x+19,y+24);ctx.lineTo(x+14,y+31);ctx.lineTo(x+9,y+24);ctx.closePath();ctx.fill();
+  };
+  roomSafe(52,192,30,42,()=>shield(52,192));
+  roomSafe(394,192,30,42,()=>shield(394,192));
+
+  // Grand dais + throne on the bottom floor. Everything is grounded.
+  roomSafe(184,294,108,74,()=>{
+    ctx.fillStyle="#6d452c";ctx.fillRect(184,356,108,12);
+    ctx.fillStyle="#9a6a3c";ctx.fillRect(193,348,90,8);
+    // throne back
+    ctx.fillStyle="#6e2535";ctx.fillRect(213,308,50,47);
+    ctx.fillStyle="#9a3447";ctx.fillRect(220,315,36,34);
+    // crown-shaped top
+    ctx.fillStyle="#d0a74f";
+    ctx.beginPath();ctx.moveTo(211,310);ctx.lineTo(218,295);ctx.lineTo(229,305);ctx.lineTo(238,291);ctx.lineTo(248,305);ctx.lineTo(260,295);ctx.lineTo(266,310);ctx.closePath();ctx.fill();
+    // gold arms / legs
+    ctx.fillRect(205,337,10,20);ctx.fillRect(262,337,10,20);
+    ctx.fillRect(216,353,7,15);ctx.fillRect(253,353,7,15);
+    // red carpet toward foreground
+    ctx.fillStyle="#742638";ctx.fillRect(219,356,39,16);
+    ctx.fillStyle="#c7a052";ctx.fillRect(219,356,3,16);ctx.fillRect(255,356,3,16);
+  });
+
+  // Keep ladder corridors visually empty, then ladders/floors render above.
+  roomClearLadders("#4b3038");
+  ctx.restore();
+}
+function drawWineCellarColor(){
+  ctx.save();roomBrickWall("#47382d","#655244");ctx.strokeStyle="#7e624c";ctx.lineWidth=6;[90,240,390].forEach(cx=>{ctx.beginPath();ctx.arc(cx,102,68,Math.PI,0);ctx.stroke();});
+  const barrel=(x,f,r=15)=>{const cy=f-r-7;ctx.fillStyle="#754923";ctx.strokeStyle="#a57b4b";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,cy,r,r-3,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.strokeStyle="#37271d";ctx.beginPath();ctx.moveTo(x-r,cy);ctx.lineTo(x+r,cy);ctx.stroke();};
+  [[48,126],[424,126],[110,250],[365,250],[48,372],[420,372]].forEach(([x,f])=>roomSafe(x-18,f-40,36,35,()=>barrel(x,f)));
+  const rack=(x,y,w)=>{ctx.fillStyle="#5a351f";ctx.fillRect(x,y,w,38);for(let bx=x+8,j=0;bx<x+w-7;bx+=13,j++){ctx.fillStyle=j%2?"#6d2730":"#315e45";ctx.fillRect(bx,y+11,7,19);ctx.fillStyle="#d1b46a";ctx.fillRect(bx+2,y+7,3,4);}};
+  [[140,78,65],[275,78,65],[205,202,70]].forEach(([x,y,w])=>roomSafe(x,y,w,38,()=>rack(x,y,w)));
+  roomSafe(205,314,70,54,()=>{ctx.fillStyle="#754923";ctx.fillRect(210,334,60,34);ctx.fillStyle="#a57b4b";ctx.fillRect(237,302,7,32);ctx.fillRect(220,320,42,12);});
+  roomClearLadders("#47382d");ctx.restore();
+}
+function drawAlchemyColor(){
+  ctx.save();roomBrickWall("#292837","#44415b");
+  const cols=["#67c88d","#8b62b3","#48a6a5","#c36bc5","#c1cf5d"];
+  const shelf=(x,y,w,seed=0)=>{ctx.fillStyle="#50382a";ctx.fillRect(x,y+18,w,5);for(let bx=x+7,j=0;bx<x+w-6;bx+=14,j++){ctx.fillStyle=cols[(j+seed)%cols.length];ctx.fillRect(bx,y+5,8,13);ctx.fillRect(bx+2,y+1,4,4);}};
+  [[30,78,76,0],[365,78,76,1],[205,202,76,2],[34,326,76,3]].forEach(([x,y,w,s])=>roomSafe(x,y,w,25,()=>shelf(x,y,w,s)));
+  roomSafe(330,310,60,58,()=>{ctx.fillStyle="#285c3e";ctx.beginPath();ctx.arc(360,346,22,0,Math.PI*2);ctx.fill();ctx.fillStyle="rgba(80,255,145,.18)";ctx.beginPath();ctx.arc(360,335,35,0,Math.PI*2);ctx.fill();});
+  roomSafe(180,72,60,60,()=>{ctx.strokeStyle="#8e7baa";ctx.lineWidth=4;ctx.beginPath();ctx.arc(210,100,24,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(210,76);ctx.lineTo(210,124);ctx.moveTo(186,100);ctx.lineTo(234,100);ctx.stroke();});
+  roomClearLadders("#292837");ctx.restore();
+}
+function drawTreasureColor(){
+  ctx.save();roomBrickWall("#27392f","#3c5647");
+  const chest=(x,f)=>{ctx.fillStyle="#71461f";ctx.fillRect(x,f-28,48,21);ctx.fillStyle="#d0a23b";ctx.fillRect(x,f-21,48,4);ctx.fillRect(x+20,f-18,8,8);};
+  [[35,126],[340,250],[205,372]].forEach(([x,f])=>roomSafe(x,f-30,50,25,()=>chest(x,f)));
+  roomSafe(100,335,80,33,()=>{ctx.fillStyle="#d6ae42";for(let i=0;i<16;i++){ctx.beginPath();ctx.arc(105+(i%8)*9,360-Math.floor(i/8)*7,5,0,Math.PI*2);ctx.fill();}});
+  roomSafe(370,70,55,45,()=>{ctx.fillStyle="#c9a33d";ctx.beginPath();ctx.arc(397,91,17,0,Math.PI*2);ctx.fill();ctx.fillStyle="#7b3f2a";ctx.fillRect(392,78,10,25);});
+  roomClearLadders("#27392f");ctx.restore();
+}
+function drawCatacombsColor(){
+  ctx.save();ctx.fillStyle="#1f2e28";ctx.fillRect(10,30,W-20,H-44);ctx.strokeStyle="#354a40";ctx.lineWidth=2;
+  for(let y=52;y<H-20;y+=28){ctx.beginPath();ctx.moveTo(12,y);for(let x=30;x<W-12;x+=42)ctx.lineTo(x,y+((x+y)%3-1)*5);ctx.stroke();}
+  const niche=(x,y)=>{ctx.fillStyle="#111b17";ctx.beginPath();ctx.arc(x+22,y+22,22,Math.PI,0);ctx.fill();ctx.fillRect(x,y+22,44,28);ctx.fillStyle="#b9aa87";ctx.beginPath();ctx.arc(x+22,y+29,8,0,Math.PI*2);ctx.fill();ctx.fillRect(x+19,y+37,6,11);};
+  [[30,67],[370,67],[205,190],[35,315]].forEach(([x,y])=>roomSafe(x,y,45,50,()=>niche(x,y)));
+  roomSafe(325,205,65,35,()=>{ctx.strokeStyle="#54735d";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(330,235);ctx.quadraticCurveTo(350,205,388,235);ctx.stroke();});
+  ctx.fillStyle="rgba(58,111,70,.20)";ctx.fillRect(10,344,W-20,28);roomClearLadders("#1f2e28");ctx.restore();
+}
+function drawTowerColor(){
+  ctx.save();roomBrickWall("#303844","#485465");
+  roomSafe(28,52,70,70,()=>roomWindow(28,52,70,70,"#315c86"));roomSafe(205,52,70,70,()=>roomWindow(205,52,70,70,"#315c86"));roomSafe(382,52,70,70,()=>roomWindow(382,52,70,70,"#315c86"));
+  roomSafe(28,52,70,70,()=>{ctx.fillStyle="#eee4b5";ctx.beginPath();ctx.arc(48,72,9,0,Math.PI*2);ctx.fill();});
+  roomSafe(320,318,95,50,()=>{ctx.fillStyle="#593f2d";ctx.fillRect(325,348,85,7);ctx.fillRect(365,315,8,33);ctx.strokeStyle="#c39a54";ctx.lineWidth=4;ctx.beginPath();ctx.arc(369,303,19,0,Math.PI*2);ctx.stroke();});
+  roomClearLadders("#303844");ctx.restore();
+}
+function drawLibraryBackdrop(){
+  const top=30,bottom=H-14;
+  ctx.save();
+
+  // PROTOTYPE: warme, gekleurde bibliotheek zonder een nieuwe releaseversie.
+  // Donkere stenen achterwand.
+  ctx.fillStyle="#272421";ctx.fillRect(10,top,W-20,bottom-top);
+  ctx.strokeStyle="#3c3833";ctx.lineWidth=1;
+  for(let y=top+18,row=0;y<bottom;y+=22,row++){
+    ctx.beginPath();ctx.moveTo(12,y);ctx.lineTo(W-12,y);ctx.stroke();
+    for(let x=12-(row%2?22:0);x<W-12;x+=44){
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+22);ctx.stroke();
+    }
   }
-  ctx.fillStyle="#8a8a8a";ctx.fillRect(10,top,14,bh);ctx.fillRect(W-24,top,14,bh);
-  [127,343].forEach(x=>{ctx.fillStyle="#aaa";ctx.fillRect(x,top+1,16,bh-2);ctx.fillStyle="#666";ctx.fillRect(x-3,top+1,22,5);ctx.fillRect(x-3,bottom-5,22,5)});
-  if(theme.kind!=="cells"){
-    const s=livingCastle.windowShift;
-    drawGothicWindow(40,78,s===0);drawGothicWindow(220,140,s===1);
-    drawGothicWindow(401,78,s===2);drawGothicWindow(220,265,s===3);
-  }
-  if(theme.kind==="books")[[35,88],[370,88],[204,205],[45,282]].forEach(([x,y])=>{ctx.fillStyle="#666";ctx.fillRect(x,y,68,36);ctx.fillStyle="#ddd";for(let bx=x+5;bx<x+64;bx+=8)ctx.fillRect(bx,y+5,5,25)});
-  if(theme.kind==="cells")[[42,84],[365,84],[204,204],[42,276]].forEach(([x,y])=>{ctx.strokeStyle="#555";ctx.lineWidth=3;ctx.strokeRect(x,y,68,38);for(let bx=x+10;bx<x+66;bx+=12){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx,y+38);ctx.stroke()}});
-  if(theme.kind==="throne"){ctx.fillStyle="#555";ctx.fillRect(212,274,56,40);ctx.fillRect(220,257,40,20);ctx.fillStyle="#ddd";ctx.fillRect(229,264,22,8)}
-  if(theme.kind==="arms"){ctx.strokeStyle="#555";ctx.lineWidth=3;[[70,95],[390,95],[240,280]].forEach(([x,y])=>{ctx.beginPath();ctx.moveTo(x-12,y-12);ctx.lineTo(x+12,y+12);ctx.moveTo(x+12,y-12);ctx.lineTo(x-12,y+12);ctx.stroke()})}
-  // Subtle moving banners: enough motion to make the room feel inhabited.
-  const wave=Math.sin(performance.now()*.004+livingCastle.flagPhase)*4;
-  ctx.fillStyle="#666";
-  ctx.fillRect(176,38,3,42);ctx.fillRect(301,38,3,42);
-  ctx.beginPath();ctx.moveTo(179,42);ctx.lineTo(202+wave,47);ctx.lineTo(179,61);ctx.closePath();ctx.fill();
-  ctx.beginPath();ctx.moveTo(304,42);ctx.lineTo(328-wave,47);ctx.lineTo(304,61);ctx.closePath();ctx.fill();
-  drawSafeCastleTorch(104,98,0);drawSafeCastleTorch(376,98,1.7);drawSafeCastleTorch(155,218,3);drawSafeCastleTorch(325,218,4.4);drawSafeCastleTorch(240,330,2.2);
-  livingCastle.fogOffset=(livingCastle.fogOffset+.075)%W;ctx.globalAlpha=.35;ctx.fillStyle="#eee";
-  for(let i=0;i<4;i++){const x=((livingCastle.fogOffset+i*135)%(W+170))-105,y=H-46+(i%2)*10;ctx.beginPath();ctx.ellipse(x,y,56,8,0,0,Math.PI*2);ctx.ellipse(x+42,y+2,48,7,0,0,Math.PI*2);ctx.fill()}
-  ctx.restore()
+
+  // Houten dragende structuur, geïntegreerd met het level.
+  ctx.fillStyle="#4a2e1d";
+  [18,112,208,304,400,456].forEach(x=>ctx.fillRect(x,top,8,bottom-top));
+  ctx.fillStyle="#6a4328";
+  [126,250,372].forEach(y=>ctx.fillRect(12,y-7,W-24,7));
+
+  // Gotisch raam: koel blauw contrast met het warme hout.
+  ctx.fillStyle="#40291b";
+  ctx.beginPath();ctx.arc(240,91,35,Math.PI,0);ctx.fill();
+  ctx.fillRect(205,91,70,48);
+  ctx.fillStyle="#72a6bd";
+  ctx.beginPath();ctx.arc(240,92,27,Math.PI,0);ctx.fill();
+  ctx.fillRect(213,92,54,39);
+  ctx.strokeStyle="#d1c4a5";ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(240,65);ctx.lineTo(240,131);ctx.moveTo(213,105);ctx.lineTo(267,105);ctx.stroke();
+
+  // Boekenkasten worden per verdieping in vrije vakken geplaatst.
+  const bookcase=(x,floorY,w,h,seed=0)=>{
+    const y=floorY-h-7;
+    ctx.fillStyle="#3b2417";ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle="#7b5030";ctx.lineWidth=3;ctx.strokeRect(x,y,w,h);
+    ctx.fillStyle="#5c3822";ctx.fillRect(x+4,y+4,5,h-8);ctx.fillRect(x+w-9,y+4,5,h-8);
+    const colors=["#8e3f32","#b1843f","#4d6d63","#6f536e","#c0a064","#536b86"];
+    for(let sy=y+18;sy<y+h-5;sy+=18){
+      ctx.fillStyle="#8a5a34";ctx.fillRect(x+7,sy,w-14,3);
+      let bx=x+9,j=0;
+      while(bx<x+w-10){
+        const bw=4+((j+seed)%3),bh=8+((j*3+seed)%7);
+        ctx.fillStyle=colors[(j+seed)%colors.length];
+        ctx.fillRect(bx,sy-bh,bw,bh);
+        bx+=bw+3;j++;
+      }
+    }
+    ctx.fillStyle="#2b1a11";ctx.fillRect(x-2,floorY-10,w+4,4);
+  };
+
+  // Kasten bewust tussen ladders, nooit erachter.
+  bookcase(28,126,72,48,1);
+  bookcase(360,126,76,48,3);
+  bookcase(210,250,72,48,5);
+  bookcase(326,250,76,48,7);
+  bookcase(28,372,72,48,9);
+  bookcase(220,372,72,48,11);
+
+  // Leeshoek op onderste vloer.
+  ctx.fillStyle="#674126";ctx.fillRect(342,344,82,8);
+  ctx.fillRect(350,352,7,20);ctx.fillRect(409,352,7,20);
+  ctx.fillStyle="#e7d7a2";
+  ctx.beginPath();ctx.moveTo(365,340);ctx.lineTo(383,335);ctx.lineTo(383,342);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(383,335);ctx.lineTo(401,340);ctx.lineTo(383,342);ctx.closePath();ctx.fill();
+
+  // Wandlampen op vrije muurvlakken.
+  const sconce=(x,y)=>{
+    ctx.fillStyle="#7a4c29";ctx.fillRect(x-8,y,16,3);
+    ctx.fillStyle="#ffcb5c";ctx.fillRect(x-2,y-8,4,8);
+    ctx.fillStyle="rgba(255,190,75,.14)";
+    ctx.beginPath();ctx.arc(x,y-5,18,0,Math.PI*2);ctx.fill();
+  };
+  sconce(156,174);sconce(312,174);
+
+  // Ladders krijgen GEEN witte achtergrond meer. Alleen subtiele donkere nis.
+  ctx.fillStyle="rgba(0,0,0,.16)";
+  ladders.forEach(l=>ctx.fillRect(l.x-6,l.top-1,32,l.bottom-l.top+2));
+
+  ctx.restore();
+}
+function drawWineCellarBackdrop(){
+  const top=30,bottom=H-14;ctx.save();
+  ctx.fillStyle="#b5b5b5";ctx.fillRect(10,top,W-20,bottom-top);
+  ctx.strokeStyle="#888";ctx.lineWidth=1;
+  for(let y=44,row=0;y<bottom;y+=24,row++){ctx.beginPath();ctx.moveTo(12,y);ctx.lineTo(W-12,y);ctx.stroke();for(let x=12-(row%2?24:0);x<W-12;x+=48){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+24);ctx.stroke();}}
+  // Lage keldergewelven.
+  ctx.strokeStyle="#666";ctx.lineWidth=6;[90,240,390].forEach(cx=>{ctx.beginPath();ctx.arc(cx,100,68,Math.PI,0);ctx.stroke();});
+  // Vrije ladderzones vóór decoratie.
+  ctx.fillStyle="#dcdcdc";ladders.forEach(l=>ctx.fillRect(l.x-12,l.top-3,44,l.bottom-l.top+6));
+  // Wijnrekken alleen in gereserveerde vrije wandvakken.
+  [[130,78,72,34],[275,78,70,34],[112,202,72,34],[300,202,72,34]].forEach(([x,y,w,h])=>{
+    ctx.fillStyle="#555";ctx.fillRect(x,y,w,h);ctx.fillStyle="#ddd";
+    for(let yy=y+9;yy<y+h-3;yy+=13)for(let xx=x+7;xx<x+w-5;xx+=12){ctx.fillRect(xx,yy,5,7);ctx.fillRect(xx+1,yy-3,3,3);}
+  });
+  const barrel=(x,floorY,r=15)=>{const cy=floorY-r-7;ctx.strokeStyle="#444";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,cy,r,r-3,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(x-r,cy);ctx.lineTo(x+r,cy);ctx.stroke();ctx.beginPath();ctx.moveTo(x-r+3,cy-7);ctx.lineTo(x+r-3,cy-7);ctx.moveTo(x-r+3,cy+7);ctx.lineTo(x+r-3,cy+7);ctx.stroke();};
+  // Elk vat rust aantoonbaar op een platform/floorY.
+  [[45,126],[435,126],[112,250],[360,250],[48,372],[430,372]].forEach(([x,y])=>barrel(x,y));
+  // Wijnpers op onderste vloer.
+  ctx.fillStyle="#555";ctx.fillRect(205,328,70,36);ctx.strokeStyle="#333";ctx.lineWidth=3;ctx.strokeRect(205,328,70,36);ctx.fillRect(219,316,42,12);ctx.fillRect(237,294,6,22);ctx.beginPath();ctx.moveTo(221,302);ctx.lineTo(259,302);ctx.stroke();
+  ctx.restore();
+}
+function drawArmoryBackdrop(){
+  const top=30,bottom=H-14;ctx.save();
+  ctx.fillStyle="#c4c4c4";ctx.fillRect(10,top,W-20,bottom-top);
+  ctx.strokeStyle="#929292";ctx.lineWidth=1;
+  for(let y=top+2,row=0;y<bottom;y+=20,row++){ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(W-10,y);ctx.stroke();for(let x=10-(row%2?20:0);x<W-10;x+=40){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+20);ctx.stroke();}}
+  ctx.fillStyle="#e0e0e0";ladders.forEach(l=>ctx.fillRect(l.x-11,l.top-3,42,l.bottom-l.top+6));
+  // Wapenrekken in eigen wandvlakken: geen ramen en geen losse projecties.
+  const rack=(x,y,w)=>{ctx.fillStyle="#666";ctx.fillRect(x,y,w,5);ctx.fillRect(x,y+34,w,5);ctx.strokeStyle="#444";ctx.lineWidth=2;for(let sx=x+12;sx<x+w-8;sx+=22){ctx.beginPath();ctx.moveTo(sx,y+3);ctx.lineTo(sx+10,y+31);ctx.moveTo(sx+10,y+3);ctx.lineTo(sx,y+31);ctx.stroke();}};
+  rack(30,76,72);rack(210,76,70);rack(365,76,78);rack(120,205,78);rack(300,205,80);
+  // Twee harnassen staan op de onderste vloer.
+  const armor=x=>{ctx.strokeStyle="#444";ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,326,8,0,Math.PI*2);ctx.stroke();ctx.strokeRect(x-11,334,22,22);ctx.beginPath();ctx.moveTo(x-11,338);ctx.lineTo(x-20,354);ctx.moveTo(x+11,338);ctx.lineTo(x+20,354);ctx.moveTo(x-7,356);ctx.lineTo(x-10,371);ctx.moveTo(x+7,356);ctx.lineTo(x+10,371);ctx.stroke();};
+  armor(65);armor(415);
+  // Schild op vrije centrale muur.
+  ctx.strokeStyle="#444";ctx.lineWidth=3;ctx.beginPath();ctx.arc(240,268,18,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(228,268);ctx.lineTo(252,268);ctx.moveTo(240,256);ctx.lineTo(240,280);ctx.stroke();
+  ctx.restore();
 }
 
+function drawCastleBackdrop(){
+  const kind=currentCastleTheme().kind;
+  if(kind==="hall")return drawEntranceHallColor();
+  if(kind==="arms")return drawArmoryColor();
+  if(kind==="books")return drawLibraryBackdrop();
+  if(kind==="cells")return drawDungeonColor();
+  if(kind==="throne")return drawThroneRoomColor();
+  if(kind==="wine")return drawWineCellarColor();
+  if(kind==="alchemy")return drawAlchemyColor();
+  if(kind==="treasure")return drawTreasureColor();
+  if(kind==="catacombs")return drawCatacombsColor();
+  if(kind==="tower")return drawTowerColor();
+}
 function safeTeddySpawnPosition(){
   // Teddy must always appear on a real, reachable floor and away from hazards.
   for(let attempt=0;attempt<60;attempt++){
@@ -3576,8 +4046,29 @@ function drawLivingCastle(){
   ctx.restore();
 }
 function drawCastleFloor(a,b,y){ctx.save();ctx.fillStyle="#333";ctx.fillRect(a,y-7,b-a,14);ctx.fillStyle="#eee";ctx.fillRect(a,y-7,b-a,2);ctx.strokeStyle="#999";for(let x=a+2;x<b;x+=22)ctx.strokeRect(x,y-5,20,10);ctx.restore();ctx.fillStyle="#111";ctx.strokeStyle="#111"}
-function drawCastleLadder(l){ctx.save();ctx.fillStyle="#444";ctx.fillRect(l.x-2,l.top,4,l.bottom-l.top);ctx.fillRect(l.x+18,l.top,4,l.bottom-l.top);ctx.fillStyle="#777";for(let y=l.top+7;y<l.bottom;y+=10)ctx.fillRect(l.x,y,20,3);ctx.restore()}
-function drawFloor(a,b,y){drawCastleFloor(a,b,y)}
+function drawCastleLadder(l){
+  const kind=currentCastleTheme().kind;
+  const pal={
+    hall:["#493220","#b08250"],arms:["#403127","#a47d55"],books:["#4a2d1c","#9a6a3d"],
+    cells:["#343b3e","#899195"],throne:["#4e3038","#b17b70"],wine:["#493326","#9f764d"],
+    alchemy:["#3b3442","#876d91"],treasure:["#433522","#b9944d"],catacombs:["#2c382f","#6c846e"],tower:["#373c43","#8d7b67"]
+  };
+  const c=pal[kind]||["#444","#888"];
+  ctx.save();ctx.fillStyle=c[0];ctx.fillRect(l.x-2,l.top,4,l.bottom-l.top);ctx.fillRect(l.x+18,l.top,4,l.bottom-l.top);
+  ctx.fillStyle=c[1];for(let y=l.top+7;y<l.bottom;y+=10)ctx.fillRect(l.x,y,20,3);ctx.restore();
+}
+function drawFloor(a,b,y){
+  const kind=currentCastleTheme().kind;
+  const pal={
+    hall:["#4b3527","#aa7d4e"],arms:["#46352c","#a27b52"],books:["#3a2418","#8b5b34"],
+    cells:["#30383c","#737d81"],throne:["#55333d","#b17a72"],wine:["#433026","#98704a"],
+    alchemy:["#38323f","#7c668a"],treasure:["#3d3222","#b9954c"],catacombs:["#29362f","#57705e"],tower:["#343a42","#7e7365"]
+  };
+  const c=pal[kind]||["#444","#888"];
+  ctx.save();ctx.fillStyle=c[0];ctx.fillRect(a,y-8,b-a,16);ctx.fillStyle=c[1];ctx.fillRect(a,y-8,b-a,3);
+  ctx.strokeStyle="rgba(255,255,255,.12)";for(let x=a+8;x<b;x+=30){ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+4);ctx.stroke();}
+  ctx.fillStyle="#1c1714";ctx.fillRect(a,y+4,b-a,4);ctx.restore();ctx.fillStyle="#111";ctx.strokeStyle="#111";
+}
 function drawEffects(){
   effects.forEach(e=>{
     if(e.type==="dust"){
@@ -3630,7 +4121,9 @@ function drawBonus(){
   ctx.strokeStyle="#111";
   ctx.lineWidth=2;
 
-  if(bonus.type==="banana"){
+  if(bonus.type==="heart"){
+    ctx.font="bold 28px monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("♥",x,y-7);
+  }else if(bonus.type==="banana"){
     ctx.lineWidth=6;
     ctx.beginPath();
     ctx.arc(x-2,y-7,13,-.38*Math.PI,.57*Math.PI);
@@ -3740,3 +4233,7 @@ function draw(){
 }
 function loop(){update();draw();requestAnimationFrame(loop)}
 loop();
+
+window.addEventListener("load",()=>{
+  if(DEV_TEST_MODE)setTimeout(()=>startGame(),180);
+});

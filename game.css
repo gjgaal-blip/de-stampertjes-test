@@ -1226,3 +1226,108 @@ body:not(.attractMode) #panel #introCanvas{
     padding-bottom:max(18px, env(safe-area-inset-bottom, 0px)) !important;
   }
 }
+
+
+/* v2.24 — mobiele navigatie: TERUG is altijd bereikbaar */
+.menuSection:not(.hidden) .backBtn{
+  position:fixed !important;
+  left:50%;
+  bottom:max(10px, env(safe-area-inset-bottom, 0px)) !important;
+  transform:translateX(-50%);
+  width:min(440px, calc(100vw - 24px)) !important;
+  z-index:4200 !important;
+  margin:0 !important;
+  box-shadow:0 -4px 0 #111;
+}
+.menuSection:not(.hidden){
+  padding-bottom:78px !important;
+}
+
+/* v2.24 — echt pauzemenu */
+#pauseCard{
+  width:min(360px, calc(100vw - 34px));
+}
+#pauseCard button{
+  width:100%;
+  margin-top:8px;
+}
+#pauseConfirmStop p{
+  line-height:1.45;
+}
+
+/* v2.24.1 — Kasteelkrant */
+.newsSectionBlock{margin:0 0 24px}
+.newsSectionTitle{
+  border-top:3px solid #111;
+  border-bottom:3px solid #111;
+  padding:8px 0;
+  margin:10px 0 12px;
+  letter-spacing:1px;
+}
+.rumorsBlock .newsItem{border-style:dashed}
+.archiveBlock .archiveItem{padding:10px 12px}
+.archiveBlock .archiveItem p{margin:5px 0}
+
+/* v2.24.2 — Café TERUG exact gecentreerd */
+#cafeSection .cafeBackBtn{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:max(10px,env(safe-area-inset-bottom,0px))!important;
+  transform:translateX(-50%)!important;
+  width:min(440px,calc(100vw - 24px))!important;
+  margin:0!important;
+  z-index:4200!important;
+}
+.devTestBadge{font-weight:900;margin:12px 0 4px;border-top:2px dashed #111;padding-top:10px}
+
+:root{--bg:#17130f;--panel:#241b15;--panel2:#30231a;--wood:#6f4527;--gold:#d4ad62;--cream:#f0dfbd;--red:#7f3038;--blue:#385d79;--green:#486b4e}
+body{background:var(--bg)!important;color:var(--cream)!important}
+#overlay{background:linear-gradient(rgba(20,14,10,.95),rgba(20,14,10,.98)),repeating-linear-gradient(0deg,#2b211a 0 22px,#34271e 22px 23px)!important;color:var(--cream)!important}
+#panel{background:linear-gradient(180deg,#2c2119,#211812)!important;border-color:var(--gold)!important;box-shadow:0 0 0 4px #16100c,0 0 24px rgba(0,0,0,.55)!important}
+#introCanvas{background:#26303b!important;border-color:var(--gold)!important}
+button{border-color:#b98b51!important;background:linear-gradient(180deg,#56351f,#3b281c)!important;color:var(--cream)!important}
+button:active{background:#8a5b33!important;color:#fff4d5!important}
+.menuGroup{border-color:rgba(212,173,98,.35)!important}.menuGroup h3,.updateKicker,#studioLine{color:#d6b16b!important;opacity:1!important}
+.menuSection{border-color:var(--gold)!important;background:rgba(48,35,26,.55);padding-left:8px;padding-right:8px}
+.menuSection h2,.menuSection h3{color:#e3bf73}
+.helpBlock,.newsItem,.historyItem,.hallCard,.merchCard,.statCard,.recordCard{background:rgba(57,40,28,.72)!important;border-color:#8d643b!important}
+.backBtn{background:linear-gradient(180deg,#4b3020,#2f2118)!important;border-color:var(--gold)!important}
+#cafeWelcome,.cafePost,#cafeForm,.cafeStat{background:#2b2018!important;border-color:#9e7346!important}
+.cafePost.officialPost{background:#35251a!important;border-color:#d1a354!important}
+#cafeName,#cafeType,#cafeMessage,#nameInput{background:#ead8b8!important;color:#2b2018!important;border-color:#9d7144!important}
+#updateOverlay,#pauseOverlay,#levelOverlay,#deathOverlay{background:rgba(18,13,10,.95)!important;color:var(--cream)!important}
+#updateCard,#pauseCard,#levelCard,#deathCard{background:linear-gradient(180deg,#302219,#211711)!important;border-color:var(--gold)!important;color:var(--cream)!important}
+#deathCanvas{background:#2d3540!important;border-color:var(--gold)!important}
+#teddyEgg{border-color:#d2a85c!important;background:#302218!important}.scoreRow{border-color:rgba(210,172,99,.35)!important}
+#scoresSection .scoreRow:nth-child(-n+3){color:#f2c768}
+#chronicleBook .chroniclePage{background:#e8d6ae!important;color:#2c2117!important;border-color:#765331!important}
+#gameOptions button{background:linear-gradient(180deg,#573a25,#36261c)!important}#title{color:#ead5aa!important}
+
+
+/* v2.26-beta.1 — Developer Workshop */
+#devSection{
+  background:
+    linear-gradient(rgba(28,37,34,.96),rgba(20,28,25,.98)),
+    repeating-linear-gradient(90deg,rgba(102,133,109,.08) 0 1px,transparent 1px 24px)!important;
+  border:2px solid #79a783!important;
+  box-shadow:inset 0 0 0 3px #17211d,0 0 18px rgba(52,108,72,.25)!important;
+}
+#devSection h2,#devSection h3{color:#9fd3a8!important;text-shadow:0 1px #101713}
+#devSection button{
+  background:linear-gradient(180deg,#355440,#243a2d)!important;
+  border-color:#83b38d!important;color:#e8f1df!important
+}
+#devSection button:active{background:#4d7659!important}
+#devSection input,#devSection select{
+  background:#dce6cf!important;color:#18231b!important;border-color:#709178!important
+}
+#devSection .helpBlock,#devSection .statCard{
+  background:rgba(34,55,42,.86)!important;border-color:#63876b!important
+}
+#devSection::before{
+  content:"⚙ DEVELOPER WORKSHOP · v2.26-beta.1";
+  display:block;margin:0 auto 10px;padding:6px 8px;
+  max-width:360px;border:1px solid #6f9d79;
+  color:#a8d9ae;background:#1b2a20;font-size:10px;letter-spacing:.8px;text-align:center
+}
