@@ -1,9 +1,15 @@
-# De Stampertjes v2.3.2 — Level 2 HD Portrait Fix
+# De Stampertjes v2.3.3 — Level 2 Viewport Fix
 
-Gebouwd op v2.3.1.
+Fix gebaseerd op de screenshots van level 1 en level 2.
 
-Enige functionele wijziging:
-- Wapenzaal (level 2) gebruikt nu 600x840 portrait geometry.
-- Vijf vloeren en korte ladders, passend bij de HD portrait achtergrond.
+Oorzaak:
+- chooseLayoutForLevel zette level 2 wel naar 600x840;
+- spawnLevel had daarna alleen hard guards voor Entreehal en Troonzaal;
+- Wapenzaal kreeg daardoor niet dezelfde volledige portrait handhaving.
 
-Level 1 en overige gameplaycode zijn niet aangepast.
+Fix:
+- spawnLevel bevat nu ook een Wapenzaal hard guard.
+- Level 2 krijgt exact dezelfde 600x840 geometry als level 1.
+- Extra CSS zorgt dat alle portrait rooms exact dezelfde canvas-wrapper gebruiken.
+
+Geen wijzigingen aan level 1, collisions, smooth-fall of gameplay.
