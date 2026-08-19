@@ -1,19 +1,16 @@
-# De Stampertjes v2.26-beta.3.6.4 — Entreehal + Mascot + Ladder Collision
+# De Stampertjes v2.26-beta.3.6.5 — Entreehal Fine Tune + HD Kerker
 
-## Level 1 — Entreehal
-- Nieuwe schone HD Entreehal als achtergrond.
-- Geen ladders, speelvloeren, Appelieten of speler ingebakken in de achtergrond.
-- 600×840 logische portrait-gamewereld, tot 1800×2520 Retina.
-- Vier echte engine-vloeren met eigen ladderlayout.
+Level 1:
+- 5 volledige oefenvloeren.
+- Kortere en regelmatiger verdeelde ladders.
+- Stenen platformstijl voor betere integratie met de HD Entreehal.
+- Premium speler circa 10% groter.
+- Gekleurde Appelieten, grotere bonussen en grotere vleermuizen ook in de Entreehal.
 
-## Speler
-- Nieuwe blauw/gouden mascotte met kroon in level 1 en level 5.
-- Visueel groter, maar gameplay-hitbox blijft 24×28.
+Doodgaan:
+- Nieuwe HD kerkerachtergrond.
+- Stampertje als gevangene achter sluitende tralies.
+- Retina/image-smoothing actief in death canvas.
+- Eén herkenbaar doodsscherm voor alle levels.
 
-## Ladder collision
-- Nieuwe `checkAllEnemyCollisions()` draait na alle vijandbeweging.
-- Botsing is uitsluitend gebaseerd op wereldpositie-overlap.
-- Floor-state en `onLadder` bepalen niet meer of een botsing telt.
-- Daardoor kan een Appeliet de speler ook midden op een ladder raken.
-
-Level 5 Troonzaal en smooth-fall blijven behouden.
+Bestaande Troonzaal, smooth-fall en collision fixes blijven behouden.
