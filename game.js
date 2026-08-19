@@ -2738,6 +2738,7 @@ function chooseLayoutForLevel(levelNumber){
       {x:145,top:170,bottom:268},{x:315,top:170,bottom:268},
       {x:82,top:268,bottom:372},{x:382,top:268,bottom:372}
     ];
+    console.info("[BETA 3] Troonzaal geometry:",floors,ladders);
     return;
   }
   floors=DEFAULT_FLOORS.slice();
@@ -2785,6 +2786,16 @@ function spawnLevel(){
   levelStartScore=score;
   levelStartLives=lives;
   chooseLayoutForLevel(level);
+
+  // beta.3 hard guard: level 5 must always run its own four-floor geometry.
+  if(currentCastleTheme().kind==="throne"){
+    floors=THRONE_FLOORS.slice();
+    ladders=[
+      {x:78,top:78,bottom:170},{x:382,top:78,bottom:170},
+      {x:145,top:170,bottom:268},{x:315,top:170,bottom:268},
+      {x:82,top:268,bottom:372},{x:382,top:268,bottom:372}
+    ];
+  }
   if(livingCastle.teddy&&!livingCastle.teddy.dancing)livingCastle.teddy=null;
   keys.left=keys.right=keys.up=keys.down=false;
   pauseOverlay.classList.add("hidden");
@@ -4232,6 +4243,12 @@ function draw(){
   ctx.fillText(`LV ${level}`,180,20);
   ctx.fillText(currentCastleTheme().name,228,20);
   ctx.fillText(`♥ ${lives}`,425,20);
+  if(currentCastleTheme().kind==="throne"){
+    ctx.fillStyle="#d9a746";
+    ctx.font="8px monospace";
+    ctx.fillText("B3 · 4 FLOORS",340,36);
+    ctx.font="11px monospace";
+  }
   ctx.fillStyle="#111";ctx.strokeStyle="#111";
   if(player.invulnerable>0){
     ctx.font="10px monospace";
