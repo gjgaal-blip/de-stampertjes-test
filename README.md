@@ -1,15 +1,19 @@
-# De Stampertjes v2.3 STABLE
+# De Stampertjes v2.3.1 — Level 2 HD Wapenzaal
 
-Deze build is rechtstreeks gebaseerd op de door de gebruiker bevestigde werkende
-v2.26-beta.3.6.6.2 SAFE ROLLBACK.
+Gebouwd rechtstreeks vanaf v2.3 STABLE.
 
-Er zijn bewust GEEN gameplay-, sprite-, collision-, level-, achtergrond- of death-screen
-wijzigingen gedaan.
+Enige functionele wijziging:
+- Level 2 / Wapenzaal gebruikt nu de goedgekeurde lichte HD-achtergrond.
 
-Alleen:
-- versienummer naar 2.3
-- zichtbare versie-aanduidingen naar v2.3
-- nieuwe cache-key zodat GitHub Pages/Safari de juiste bestanden laden
+Niet gewijzigd:
+- Level 1 Entreehal
+- level geometry
+- speler
+- Appelieten
+- collisions
+- smooth-fall
+- death screen
+- bonus/bat code
+- overige levels
 
-Doel: eerst een betrouwbare v2.3-basis hebben voordat nieuwe levels en graphics weer
-één voor één worden toegevoegd.
+Doel: één wijziging tegelijk testen op iPhone.
