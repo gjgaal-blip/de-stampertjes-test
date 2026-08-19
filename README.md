@@ -1,10 +1,11 @@
-# De Stampertjes v2.26-beta.3.6.2 — Smooth Fall Fix
+# De Stampertjes v2.26-beta.3.6.3 — Visibility + Collision
 
-Gerichte correctie op de werkende 3.6.1 build.
+Gerichte level-5 verbeteringen op basis van beta 3.6.2.
 
-- Vierkant kader rond het Stampertje verwijderd.
-- Alleen een zachte ronde warm-gouden gloed achter het Stampertje in de Troonzaal.
-- Vallen door een open gestampt gat gebruikt nu een vaste `fallingThroughHole` state.
-- De doelvloer blijft gedurende de volledige val gelijk.
-- Lichte verticale versnelling zorgt voor een vloeiende val tot exact op de volgende vloer.
-- Level 5 achtergrond, vijf vloeren, Appelieten, AI en overige gameplay blijven verder ongewijzigd.
+- Botsing met Appelieten gebruikt nu rechthoek-overlap (AABB) en werkt ook terwijl de speler op een ladder staat.
+- Stampertje is in de Troonzaal visueel 15% groter, met donkerblauw lichaam en gouden ledematen/accenten.
+- De gameplay-hitbox van het Stampertje blijft ongewijzigd.
+- Bonussen zijn in de Troonzaal 42% groter, gekleurd per type en hebben een lichte gloed.
+- Vleermuizen zijn ongeveer 65% groter, paars/goud met lichte ogen.
+- Smooth-fall fix uit beta 3.6.2 blijft behouden.
+- Troonzaalachtergrond en vijf speelvloeren zijn niet gewijzigd.

@@ -1668,7 +1668,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.26-beta.3.6.2";
+const CURRENT_VERSION="2.26-beta.3.6.3";
 
 // v2.22 richer analytics — failures never interrupt gameplay.
 const V222_SESSION_KEY="stampertjes_v222_session";
@@ -2035,9 +2035,9 @@ function drawIntroCastleBackdrop(){
 function drawIntroCastleLadder(x,y1,y2){ictx.fillStyle="#444";ictx.fillRect(x-2,y1,4,y2-y1);ictx.fillRect(x+19,y1,4,y2-y1);ictx.fillStyle="#777";for(let y=y1+7;y<y2;y+=10)ictx.fillRect(x,y,21,3)}
 function drawIntroCastleFloor(y,holeX=null,crackStage=0){ictx.fillStyle="#333";if(holeX===null)ictx.fillRect(12,y-5,396,10);else{ictx.fillRect(12,y-5,holeX-12,10);ictx.fillRect(holeX+42,y-5,408-(holeX+42),10)}ictx.fillStyle="#eee";ictx.fillRect(12,y-5,396,2);ictx.strokeStyle="#999";for(let x=14;x<407;x+=22){if(holeX!==null&&x>holeX-8&&x<holeX+45)continue;ictx.strokeRect(x,y-3,20,7)}ictx.fillStyle="#111";ictx.strokeStyle="#111";if(crackStage>0){ictx.lineWidth=2;ictx.beginPath();ictx.moveTo(holeX+10,y-7);ictx.lineTo(holeX+20,y);ictx.lineTo(holeX+13,y+7);if(crackStage>1){ictx.moveTo(holeX+32,y-7);ictx.lineTo(holeX+23,y);ictx.lineTo(holeX+31,y+7)}ictx.stroke()}}
 
-function drawStampertjeSprite(targetCtx,x,y,{dir=1,step=0,climbing=false,stamping=false}={}){
+function drawStampertjeSprite(targetCtx,x,y,{dir=1,step=0,climbing=false,stamping=false,bodyColor="#111",limbColor="#182532",eyeColor="#f5e7c6"}={}){
   targetCtx.save();
-  targetCtx.fillStyle="#111";
+  targetCtx.fillStyle=bodyColor;
   const headY=y+(stamping?3:0);
 
   targetCtx.fillRect(x+7,headY,10,2);
@@ -2046,11 +2046,11 @@ function drawStampertjeSprite(targetCtx,x,y,{dir=1,step=0,climbing=false,stampin
   targetCtx.fillRect(x+4,y+10,16,4);
   targetCtx.fillRect(x+6,y+14,12,8);
 
-  targetCtx.fillStyle="#f5e7c6";
+  targetCtx.fillStyle=eyeColor;
   const eyeShift=dir>0?1:0;
   targetCtx.fillRect(x+8+eyeShift,headY+5,2,2);
   targetCtx.fillRect(x+14+eyeShift,headY+5,2,2);
-  targetCtx.fillStyle="#182532";
+  targetCtx.fillStyle=limbColor;
 
   if(climbing){
     if(step%2===0){
@@ -3390,7 +3390,12 @@ function updateEnemies(){
       e.y=floors[e.floor]-24;
     }
 
-    const collide=Math.abs((player.x+12)-(e.x+14))<20&&Math.abs((player.y+14)-(e.y+12))<21;
+    const collide=(
+      player.x < e.x+28 &&
+      player.x+player.w > e.x &&
+      player.y < e.y+27 &&
+      player.y+player.h > e.y-4
+    );
     if(collide&&e.trapped<=0&&player.invulnerable<=0&&state==="play"){
       lives--;
       shake=11;
@@ -3538,18 +3543,33 @@ function update(){
 
 function drawPlayer(x,y){
   const walking=(keys.left||keys.right)&&!player.onLadder;
+  const throne=currentCastleTheme().kind==="throne";
 
-  // Troonzaal: zachte ronde gloed voor contrast, zonder zichtbaar kader.
-  if(currentCastleTheme().kind==="throne"){
+  if(throne){
+    // Zachte ronde gloed voor contrast tegen de gedetailleerde achtergrond.
     ctx.save();
-    const cx=x+10,cy=y+14;
-    const glow=ctx.createRadialGradient(cx,cy,3,cx,cy,18);
-    glow.addColorStop(0,"rgba(255,210,95,.30)");
-    glow.addColorStop(.55,"rgba(255,190,70,.13)");
+    const cx=x+12,cy=y+14;
+    const glow=ctx.createRadialGradient(cx,cy,3,cx,cy,21);
+    glow.addColorStop(0,"rgba(255,215,105,.30)");
+    glow.addColorStop(.58,"rgba(255,190,70,.12)");
     glow.addColorStop(1,"rgba(255,170,50,0)");
-    ctx.fillStyle=glow;
-    ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(cx,cy,21,0,Math.PI*2);ctx.fill();
+
+    // Alleen grafisch 15% groter; gameplay-hitbox blijft 24×28.
+    ctx.translate(cx,cy);
+    ctx.scale(1.15,1.15);
+    ctx.translate(-cx,-cy);
+    drawStampertjeSprite(ctx,x,y,{
+      dir:player.dir,
+      step:walking?Math.floor(frame/6)%2:0,
+      climbing:player.onLadder,
+      stamping:player.cool>12&&!player.onLadder,
+      bodyColor:"#193b59",
+      limbColor:"#d6a33f",
+      eyeColor:"#fff3cf"
+    });
     ctx.restore();
+    return;
   }
 
   drawStampertjeSprite(ctx,x,y,{
@@ -4074,12 +4094,32 @@ function drawLivingCastle(){
   }
 
   // Rare bat crosses the upper castle.
-  if(!livingCastle.bat&&now>livingCastle.nextBat)livingCastle.bat={x:-18,y:42+Math.random()*65,vx:1.15+Math.random()*.55};
+  if(!livingCastle.bat&&now>livingCastle.nextBat)livingCastle.bat={x:-26,y:54+Math.random()*90,vx:1.15+Math.random()*.55};
   if(livingCastle.bat){
-    const b=livingCastle.bat;b.x+=b.vx;ctx.globalAlpha=.75;ctx.fillStyle="#222";
-    const flap=Math.sin(now*.018)*4;
-    ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-9,b.y-4-flap);ctx.lineTo(b.x-5,b.y+4);ctx.lineTo(b.x,b.y+1);ctx.lineTo(b.x+5,b.y+4);ctx.lineTo(b.x+9,b.y-4-flap);ctx.closePath();ctx.fill();
-    if(b.x>W+20){livingCastle.bat=null;livingCastle.nextBat=now+8000+Math.random()*15000}
+    const b=livingCastle.bat;b.x+=b.vx;
+    const throneBat=currentCastleTheme().kind==="throne";
+    ctx.globalAlpha=throneBat?.96:.75;
+    ctx.fillStyle=throneBat?"#713b91":"#222";
+    ctx.strokeStyle=throneBat?"#f0bd55":"#222";
+    ctx.lineWidth=throneBat?2:1;
+    ctx.shadowColor=throneBat?"rgba(240,189,85,.55)":"transparent";
+    ctx.shadowBlur=throneBat?6:0;
+    const s=throneBat?1.65:1;
+    const flap=Math.sin(now*.018)*4*s;
+    ctx.beginPath();
+    ctx.moveTo(b.x,b.y);
+    ctx.lineTo(b.x-9*s,b.y-4*s-flap);
+    ctx.lineTo(b.x-5*s,b.y+4*s);
+    ctx.lineTo(b.x,b.y+1*s);
+    ctx.lineTo(b.x+5*s,b.y+4*s);
+    ctx.lineTo(b.x+9*s,b.y-4*s-flap);
+    ctx.closePath();ctx.fill();ctx.stroke();
+    // lichte ogen
+    if(throneBat){
+      ctx.shadowBlur=0;ctx.fillStyle="#fff3cf";
+      ctx.fillRect(b.x-4,b.y-1,2,2);ctx.fillRect(b.x+2,b.y-1,2,2);
+    }
+    if(b.x>W+35){livingCastle.bat=null;livingCastle.nextBat=now+8000+Math.random()*15000}
   }
 
   // Gameplay Teddy is drawn on a reachable floor; the player must walk into him.
@@ -4151,6 +4191,13 @@ function drawBonus(){
   ctx.save();
   ctx.globalAlpha=1;
 
+  const throneBonus=currentCastleTheme().kind==="throne";
+  if(throneBonus){
+    ctx.translate(x,y);
+    ctx.scale(1.42,1.42);
+    ctx.translate(-x,-y);
+  }
+
   ctx.fillStyle="#111";
   ctx.globalAlpha=.18;
   ctx.beginPath();
@@ -4161,6 +4208,21 @@ function drawBonus(){
   ctx.fillStyle="#111";
   ctx.strokeStyle="#111";
   ctx.lineWidth=2;
+
+  if(throneBonus){
+    const bonusColors={
+      heart:"#ff5a72",
+      banana:"#ffd34f",
+      cherry:"#e93f50",
+      star:"#ffd447",
+      clock:"#66d9ff"
+    };
+    const bc=bonusColors[bonus.type]||"#ffd447";
+    ctx.fillStyle=bc;
+    ctx.strokeStyle=bc;
+    ctx.shadowColor=bc;
+    ctx.shadowBlur=8;
+  }
 
   if(bonus.type==="heart"){
     ctx.font="bold 28px monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("♥",x,y-7);
@@ -4201,7 +4263,7 @@ function drawBonus(){
 
   if(bonus.timer<120){
     const s=Math.floor(frame/10)%4;
-    ctx.fillStyle="#555";
+    ctx.fillStyle=throneBonus?"#ffe7a3":"#555";
     const dots=[[x-18,y-19],[x+18,y-13],[x-16,y+5],[x+17,y+4]];
     for(let i=0;i<dots.length;i++){
       if((i+s)%2===0){
@@ -4228,7 +4290,7 @@ function draw(){
   if(currentCastleTheme().kind==="throne"){
     ctx.fillStyle="#d9a746";
     ctx.font="8px monospace";
-    ctx.fillText("B3.6.2 · SMOOTH FALL · 5 FLOORS",292,36);
+    ctx.fillText("B3.6.3 · VISIBILITY + COLLISION · 5 FLOORS",292,36);
     ctx.font="11px monospace";
   }
   ctx.fillStyle="#111";ctx.strokeStyle="#111";
