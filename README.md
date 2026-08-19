@@ -1,3 +1,8 @@
-# De Stampertjes v2.4.0 — ALL HD LEVELS
+# De Stampertjes v2.4.1
 
-Levels 1–10 in HD portrait. New backgrounds for 4 and 6–10.
+- Uniform Stampertje in alle levels.
+- Uniform gekleurde Appelieten in alle levels.
+- Retina intro/demo canvas: 1260x540, schermbreed op mobiel.
+- Kasteelkrant geactualiseerd naar v2.4.1 en huidige levelvolgorde.
+- Helptekst levelvolgorde gecorrigeerd.
+- Bestaande HD-kamers, collisions en smooth-fall behouden.

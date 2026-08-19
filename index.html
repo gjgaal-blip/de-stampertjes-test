@@ -7,21 +7,21 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
 <title>De Stampertjes v2.3.4</title>
-<link rel="stylesheet" href="game.css?v=v240all">
+<link rel="stylesheet" href="game.css?v=v241uniformretina">
 
 </head>
 <body>
 <audio id="menuSoundtrack" src="music-menu.mp3" preload="auto" loop playsinline></audio>
 <div id="overlay">
   <div id="panel">
-    <canvas id="introCanvas" width="504" height="216"></canvas>
+    <canvas id="introCanvas" width="1260" height="540"></canvas>
     <div id="castleCrest" aria-hidden="true">♛</div><h1 id="gameTitle">DE STAMPERTJES</h1>
     <div id="studioLine">A GJ STUDIOS GAME · HD CASTLE EDITION</div>
     <div id="versionMusicRow">
-      <div id="versionLabel">v2.4.0</div>
+      <div id="versionLabel">v2.4.1</div>
       <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
     </div>
-    <div id="betaBadge">🏰 v2.4.0 · HD CASTLE</div>
+    <div id="betaBadge">🏰 v2.4.1 · HD CASTLE</div>
     <div id="castleSlogan">EEN KASTEEL DAT NOOIT HELEMAAL HETZELFDE IS.</div>
     <div id="dailyCastleMessage" class="dailyCastleMessage"></div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
@@ -63,7 +63,7 @@
       <article class="helpBlock"><h3>🎁 BONUSSEN</h3><p>Soms verschijnt er tijdens het spelen een bonus. <strong>Kersen</strong> en <strong>bananen</strong> leveren extra punten op, de <strong>ster</strong> is extra waardevol en de <strong>klok</strong> vertraagt de Appelieten tijdelijk. Vanaf level 3 kan heel soms ook een <strong>Kasteelhart</strong> verschijnen.</p></article>
       <article class="helpBlock"><h3>❤️ LEVENS SPAREN</h3><p>Je begint met <strong>3 levens</strong>. Pak vanaf level 3 een zeldzaam <strong>Kasteelhart</strong> voor +1 leven. Speel je <strong>3 levels achter elkaar foutloos</strong>, dan verdien je eveneens een extra leven. Je kunt maximaal <strong>5 levens</strong> meenemen. Extra levens geven je meer kansen om verder te komen en dus een hogere score neer te zetten.</p></article>
       <article class="helpBlock"><h3>🎵 MUZIEK &amp; PAUZE</h3><p>Gebruik tijdens het spelen <strong>PAUZE</strong> voor verder spelen, het huidige level opnieuw starten of het potje stoppen. Een afgebroken potje wordt niet als highscore opgeslagen. Op laptop werkt ook <strong>M</strong> voor muziek en <strong>P</strong> voor pauze.</p></article>
-      <article class="helpBlock"><h3>🏰 10 KAMERS</h3><p>De eerste tien levels hebben elk hun eigen zaal: Entreehal, Wapenzaal, Bibliotheek, Kerkers, Troonzaal, Wijnkelder, Alchemistenkamer, Schatkamer, Geheime Catacomben en Kasteeltoren.</p></article>
+      <article class="helpBlock"><h3>🏰 10 KAMERS</h3><p>De eerste tien levels hebben elk hun eigen zaal: Entreehal, Wapenzaal, Kerkers, Bibliotheek, Troonzaal, Wijnkelder, Alchemistenkamer, Schatkamer, Catacomben en Kasteeltoren.</p></article>
       <article class="helpBlock"><h3>🌍 ONTDEKKEN</h3><p>Bekijk je persoonlijke en wereldwijde statistieken, probeer de online Top 20 te halen, lees de Kronieken, bezoek de Hall of Fame en deel ideeën of bugs in het Stampertjes Café.</p></article>
       <article class="helpBlock"><h3>🐈 GEHEIMEN</h3><p>Niet alles in het kasteel wordt meteen uitgelegd. Nieuwsgierige spelers kunnen soms iets bijzonders ontdekken.</p></article>
       <article class="helpBlock tipBlock"><h3>💡 TIP VAN GJ STUDIOS</h3><p>Neem de tijd om de bewegingen van de Appelieten te leren. Een goed geplaatst gat levert vaak meer op dan zomaar blijven stampen.</p></article>
@@ -93,37 +93,28 @@
 
       <div class="newsSectionBlock">
         <h3 class="newsSectionTitle">🏰 LAATSTE NIEUWS</h3>
-<article class="newsItem featured"><div class="newsVersion">🎨 v2.3.4 · HD CASTLE</div><h3>Het hele kasteel heeft kleur gekregen</h3><p>Alle tien kamers hebben nu hun eigen kleuren, architectuur en herkenbare details. Ook hoofdmenu, submenu’s, attract mode en doodscherm zijn in dezelfde gekleurde pixelstijl gebracht.</p></article>
-<article class="newsItem featured"><div class="newsVersion">📚 v2.3.4 · HD CASTLE</div><h3>De Bibliotheek krijgt een echte indeling</h3><p>De kamer is rustiger opgebouwd met staande boekenkasten, vrije ladderzones, houten galerijen en een eigen leeshoek. Dit ontwerp wordt de kwaliteitsproef voor de andere kasteelkamers.</p></article>
-<article class="newsItem featured"><div class="newsVersion">🧱 v2.3.4 · HD CASTLE</div><h3>Rustiger, logischer en beter speelbaar</h3><p>Bibliotheek, Wijnkelder en Wapenzaal zijn opnieuw ingericht. Ladders blijven vrij zichtbaar en decoratie staat of hangt voortaan op logische plekken.</p></article>
-<article class="newsItem featured">
-          <div class="newsVersion">📚🍷 v2.3.4 · HD CASTLE</div>
-          <h3>Bibliotheek en Wijnkelder volledig herbouwd</h3>
-          <p>Deze twee kamers hebben nu niet alleen andere decoratie, maar een eigen architectuur, verlichting, vloerstijl en sfeer. Ze vormen de proef voor de verdere verbouwing van het kasteel.</p>
+        <article class="newsItem featured">
+          <div class="newsVersion">🎨 v2.4.1 · UNIFORME HELDEN</div>
+          <h3>Stampertje en Appelieten spreken nu één beeldtaal</h3>
+          <p>In alle tien levels gebruikt het Stampertje dezelfde blauw-gouden heldenstijl. Ook de Appelieten zijn overal gelijk opgebouwd en duidelijk gekleurd, zodat geen level meer terugvalt op de oude zwarte sprites.</p>
         </article>
 
         <article class="newsItem featured">
-          <div class="newsVersion">🏰 v2.24 · KASTEELUITBREIDING</div>
-          <h3>Het kasteel telt nu tien kamers</h3>
-          <p>Na de Troonzaal loopt het avontuur verder door de Wijnkelder, Alchemistenkamer, Schatkamer, Geheime Catacomben en Kasteeltoren. Ook de mobiele navigatie en het pauzemenu zijn uitgebreid.</p>
+          <div class="newsVersion">📱 v2.4.1 · RETINA ATTRACT MODE</div>
+          <h3>De demo op het hoofdscherm is groter en scherper</h3>
+          <p>Het demovenster draait nu op een veel hogere interne resolutie en vult op mobiel de volledige schermbreedte. Daardoor blijft de HD-kasteelachtergrond ook op Retina-schermen veel scherper.</p>
+        </article>
+
+        <article class="newsItem featured">
+          <div class="newsVersion">🏰 v2.4.0 · HET VOLLEDIGE KASTEEL</div>
+          <h3>Tien zalen, tien eigen sferen</h3>
+          <p>De eerste tien levels bestaan nu uit Entreehal, Wapenzaal, Kerkers, Bibliotheek, Troonzaal, Wijnkelder, Alchemistenkamer, Schatkamer, Catacomben en Kasteeltoren. De HD-kamers gebruiken de portrait-opzet; vloeren en ladders worden door de game zelf getekend.</p>
         </article>
 
         <article class="newsItem">
-          <div class="newsVersion">♥ v2.23 · NIEUWE AVONTUREN</div>
-          <h3>Meer kansen voor Stampertjes</h3>
-          <p>Kasteelharten en foutloze-levelbonussen maken het mogelijk extra levens te verdienen. Tegelijk kreeg het Stampertje een nieuwe pixel-look met levendigere loop-, klim- en stampbewegingen.</p>
-        </article>
-
-        <article class="newsItem">
-          <div class="newsVersion">📊 v2.22 · SLIMMER KASTEEL</div>
-          <h3>Meer records, slimmere Appelieten</h3>
-          <p>De Top 20, Hall of Fame, uitgebreidere statistieken en doelgerichtere Appelieten-AI groeiden in de v2.22-reeks samen uit tot één grotere update.</p>
-        </article>
-
-        <article class="newsItem">
-          <div class="newsVersion">🏛️ v2.21 · EREGALERIJ</div>
-          <h3>De helden kregen een vaste plek</h3>
-          <p>De Hall of Fame werd uitgebreid, de mobiele presentatie opgepoetst en het kasteel kreeg meer ruimte voor records en persoonlijke prestaties.</p>
+          <div class="newsVersion">🪜 v2.3.4 · HD CASTLE</div>
+          <h3>HD-kamers en beter leesbare ladders</h3>
+          <p>De overstap naar rijkere kasteelachtergronden begon met Entreehal, Wapenzaal en Kerkers. De ladders kregen extra contrast zodat ze ook tegen gedetailleerde achtergronden goed zichtbaar blijven.</p>
         </article>
       </div>
 
@@ -160,8 +151,8 @@
         </article>
 
         <article class="newsItem archiveItem">
-          <div class="newsVersion">🎮 v2.10 · RETRO HOOFDMENU</div>
-          <p>Attract mode, gameplaydemo en de herkenbare retro-presentatie werden toegevoegd.</p>
+          <div class="newsVersion">🎮 v2.10 · HOOFDMENU & ATTRACT MODE</div>
+          <p>Attract mode, gameplaydemo en de herkenbare menu-presentatie werden toegevoegd.</p>
         </article>
 
         <article class="newsItem archiveItem">
@@ -426,8 +417,8 @@
   <div id="keyboardHint">Pijltjes = bewegen • Spatie = stampen • P = pauze • M = muziek</div>
   <div class="small">3× stampen voor een gat. Stamp daarna de gevangen appel weg.</div>
 </div>
-<script src="config.js?v=v240all"></script>
-<script src="game.js?v=v240all" defer></script>
+<script src="config.js?v=v241uniformretina"></script>
+<script src="game.js?v=v241uniformretina" defer></script>
 
 </body>
 </html>

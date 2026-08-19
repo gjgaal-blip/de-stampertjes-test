@@ -1374,3 +1374,23 @@ body.portraitThroneMode #gameCanvas{
 #studioLine{color:#c8a86c!important;letter-spacing:.18em!important;font-size:clamp(10px,2.5vw,14px)!important;margin-bottom:8px!important}
 #versionLabel{font-size:clamp(19px,5vw,28px)!important;letter-spacing:.22em!important;color:#ead8b4!important}
 #betaBadge{margin-top:8px!important;border-color:#c99a55!important;background:linear-gradient(180deg,rgba(77,44,25,.72),rgba(35,21,14,.78))!important;color:#ead8b4!important}
+
+/* v2.4.1 — full-width Retina attract/demo */
+#panel{width:min(100%,980px)!important}
+#introCanvas{
+  display:block!important;
+  width:100vw!important;
+  max-width:100vw!important;
+  height:auto!important;
+  aspect-ratio:21 / 9!important;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:calc(50% - 50vw)!important;
+  border-left:0!important;
+  border-right:0!important;
+  border-radius:0!important;
+  image-rendering:auto!important;
+  background:#120d0a!important;
+}
+@media (min-width:900px){
+  #introCanvas{width:min(100vw,1200px)!important;margin-left:auto!important;margin-right:auto!important}
+}
