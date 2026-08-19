@@ -1535,3 +1535,9 @@ body.portraitThroneMode #gameCanvas{
   margin:0!important;
   padding:0!important;
 }
+
+/* v2.4.4.2 — keep legacy update DOM for JS compatibility, never show it */
+#updateOverlay{
+  display:none!important;
+  pointer-events:none!important;
+}
