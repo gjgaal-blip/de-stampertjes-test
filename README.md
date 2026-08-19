@@ -1,11 +1,19 @@
-# De Stampertjes v2.26-beta.3.6.3 — Visibility + Collision
+# De Stampertjes v2.26-beta.3.6.4 — Entreehal + Mascot + Ladder Collision
 
-Gerichte level-5 verbeteringen op basis van beta 3.6.2.
+## Level 1 — Entreehal
+- Nieuwe schone HD Entreehal als achtergrond.
+- Geen ladders, speelvloeren, Appelieten of speler ingebakken in de achtergrond.
+- 600×840 logische portrait-gamewereld, tot 1800×2520 Retina.
+- Vier echte engine-vloeren met eigen ladderlayout.
 
-- Botsing met Appelieten gebruikt nu rechthoek-overlap (AABB) en werkt ook terwijl de speler op een ladder staat.
-- Stampertje is in de Troonzaal visueel 15% groter, met donkerblauw lichaam en gouden ledematen/accenten.
-- De gameplay-hitbox van het Stampertje blijft ongewijzigd.
-- Bonussen zijn in de Troonzaal 42% groter, gekleurd per type en hebben een lichte gloed.
-- Vleermuizen zijn ongeveer 65% groter, paars/goud met lichte ogen.
-- Smooth-fall fix uit beta 3.6.2 blijft behouden.
-- Troonzaalachtergrond en vijf speelvloeren zijn niet gewijzigd.
+## Speler
+- Nieuwe blauw/gouden mascotte met kroon in level 1 en level 5.
+- Visueel groter, maar gameplay-hitbox blijft 24×28.
+
+## Ladder collision
+- Nieuwe `checkAllEnemyCollisions()` draait na alle vijandbeweging.
+- Botsing is uitsluitend gebaseerd op wereldpositie-overlap.
+- Floor-state en `onLadder` bepalen niet meer of een botsing telt.
+- Daardoor kan een Appeliet de speler ook midden op een ladder raken.
+
+Level 5 Troonzaal en smooth-fall blijven behouden.
