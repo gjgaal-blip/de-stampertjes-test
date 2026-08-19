@@ -1,3 +1,3 @@
-# De Stampertjes v2.3.4 HD CASTLE COMPLETE
+# De Stampertjes v2.4.0 — ALL HD LEVELS
 
-HD menu header + ladders + level 3 Kerkers.
+Levels 1–10 in HD portrait. New backgrounds for 4 and 6–10.
