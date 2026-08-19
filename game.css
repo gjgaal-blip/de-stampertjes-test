@@ -1375,8 +1375,7 @@ body.portraitThroneMode #gameCanvas{
 #versionLabel{font-size:clamp(19px,5vw,28px)!important;letter-spacing:.22em!important;color:#ead8b4!important}
 #betaBadge{margin-top:8px!important;border-color:#c99a55!important;background:linear-gradient(180deg,rgba(77,44,25,.72),rgba(35,21,14,.78))!important;color:#ead8b4!important}
 
-/* v2.4.1 — full-width Retina attract/demo */
-#panel{width:min(100%,980px)!important}
+/* v2.4.1.1 — Retina attract demo, no gameplay impact */
 #introCanvas{
   display:block!important;
   width:100vw!important;
@@ -1389,8 +1388,11 @@ body.portraitThroneMode #gameCanvas{
   border-right:0!important;
   border-radius:0!important;
   image-rendering:auto!important;
-  background:#120d0a!important;
 }
 @media (min-width:900px){
-  #introCanvas{width:min(100vw,1200px)!important;margin-left:auto!important;margin-right:auto!important}
+  #introCanvas{
+    width:min(100vw,1200px)!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
 }
