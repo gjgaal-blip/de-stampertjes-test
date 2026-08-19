@@ -7,21 +7,22 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
 <title>De Stampertjes v2.3.4</title>
-<link rel="stylesheet" href="game.css?v=v2442buttons">
+<link rel="stylesheet" href="game.css?v=v2443fixed">
 
 </head>
 <body>
 <audio id="menuSoundtrack" src="music-menu.mp3" preload="auto" loop playsinline></audio>
 <div id="overlay">
   <div id="panel">
+<canvas id="introCanvas" width="420" height="180" aria-hidden="true"></canvas>
     
     <div id="castleCrest" aria-hidden="true">♛</div><h1 id="gameTitle">DE STAMPERTJES</h1>
     <div id="studioLine">A GJ STUDIOS GAME · HD CASTLE EDITION</div>
     <div id="versionMusicRow">
-      <div id="versionLabel">v2.4.4.2</div>
+      <div id="versionLabel">v2.4.4.3</div>
       <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
     </div>
-    <div id="betaBadge">🏰 v2.4.4.2 · HD CASTLE</div>
+    <div id="betaBadge">🏰 v2.4.4.3 · HD CASTLE</div>
     <div id="castleSlogan">EEN KASTEEL DAT NOOIT HELEMAAL HETZELFDE IS.</div>
     <div id="dailyCastleMessage" class="dailyCastleMessage"></div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
@@ -48,7 +49,7 @@
     </div>
 
     <div id="scoresSection" class="menuSection hidden">
-      <h2>v2.4.4.2</h2>
+      <h2>v2.4.4.3</h2>
       <div id="scoreList"></div>
       <button class="backBtn" data-back>TERUG</button>
     </div>
@@ -93,32 +94,32 @@
 
       <div class="newsSectionBlock">
         <h3 class="newsSectionTitle">🏰 LAATSTE NIEUWS</h3><article class="newsItem featured">
-<div class="newsVersion">🔧 v2.4.4.2 · MENU FIX</div>
+<div class="newsVersion">🔧 v2.4.4.3 · MENU FIX</div>
 <h3>Startmenu hersteld</h3>
 <p>De zes losse JPG-startschermen blijven behouden. Een ontbrekend intern update-element zorgde ervoor dat JavaScript vóór het koppelen van de menuknoppen stopte. Dat compatibiliteitsprobleem is opgelost en de oude bewegende attract-mode is uitgeschakeld.</p>
 </article><article class="newsItem featured">
-<div class="newsVersion">🖼️ v2.4.4.2 · ZES LOSSE STARTSCHERMEN</div>
+<div class="newsVersion">🖼️ v2.4.4.3 · ZES LOSSE STARTSCHERMEN</div>
 <h3>Zes echte JPG-achtergronden</h3>
 <p>Kasteel, Troonzaal, Bibliotheek, Wijnkelder, Maanbalkon en Kasteelhal staan nu als zes afzonderlijke verticale JPG-bestanden in de game. Bij iedere nieuwe start wordt een ander beeld gekozen en rechtstreeks als achtergrond van het hoofdscherm gebruikt.</p>
 </article><article class="newsItem featured">
-<div class="newsVersion">🖼️ v2.4.4.2 · ZES STARTSCHERMEN</div>
+<div class="newsVersion">🖼️ v2.4.4.3 · ZES STARTSCHERMEN</div>
 <h3>Iedere start een ander kasteel</h3>
 <p>Het beginscherm gebruikt nu één van zes schermvullende verticale kasteelbeelden. De bestaande knoppen en menu-interface liggen daar los bovenop. Bij iedere nieuwe start wordt een ander beeld gekozen; dezelfde achtergrond wordt niet direct herhaald.</p>
 </article>
         <article class="newsItem featured">
-          <div class="newsVersion">🖼️ v2.4.4.2 · ZES GEZICHTEN VAN HET KASTEEL</div>
+          <div class="newsVersion">🖼️ v2.4.4.3 · ZES GEZICHTEN VAN HET KASTEEL</div>
           <h3>Geen bewegende demo meer op het hoofdscherm</h3>
           <p>Bij iedere nieuwe start kiest De Stampertjes één van zes statische HD-kasteelbeelden: Entreehal, Nachtkasteel, Troonzaal, Bibliotheek, Wijnkelder of Maanbalkon. Dezelfde afbeelding blijft staan tijdens die sessie en dezelfde keuze wordt niet direct twee keer achter elkaar gebruikt.</p>
         </article>
         
         <article class="newsItem featured">
-          <div class="newsVersion">🎨 v2.4.4.2 · UNIFORME KASTEELSTIJL</div>
+          <div class="newsVersion">🎨 v2.4.4.3 · UNIFORME KASTEELSTIJL</div>
           <h3>De helden zien er nu overal hetzelfde uit</h3>
           <p>De bestaande blauw-gouden Stampertje-renderer en de gekleurde Appelieten worden nu in alle tien kamers gebruikt. De onderliggende gameplay, hitboxes en AI zijn daarbij niet aangepast.</p>
         </article>
 
         <article class="newsItem featured">
-          <div class="newsVersion">📱 v2.4.4.2 · RETINA DEMO</div>
+          <div class="newsVersion">📱 v2.4.4.3 · RETINA DEMO</div>
           <h3>De demo op het hoofdscherm is scherper</h3>
           <p>Het introcanvas rendert nu op 1260 × 540 pixels en gebruikt op mobiel de volledige schermbreedte. De attract-mode zelf blijft dezelfde vertrouwde demo.</p>
         </article>
@@ -372,7 +373,7 @@
   </div>
 </div>
 <div id="updateOverlay" class="hidden"><div id="updateCard">
-      <div class="updateKicker">🏰 v2.4.4.2 · HD CASTLE</div>
+      <div class="updateKicker">🏰 v2.4.4.3 · HD CASTLE</div>
       <h2>v2.4.2: het kasteel staat</h2>
       <div class="updateIntro">Tien kasteelkamers zijn nu speelbaar in HD. Het hoofdscherm gebruikt bij iedere nieuwe start een andere statische kasteelfoto.</div>
       <div class="updateList">
@@ -436,8 +437,8 @@
   <div id="keyboardHint">Pijltjes = bewegen • Spatie = stampen • P = pauze • M = muziek</div>
   <div class="small">3× stampen voor een gat. Stamp daarna de gevangen appel weg.</div>
 </div>
-<script src="config.js?v=v2442buttons"></script>
-<script src="game.js?v=v2442buttons" defer></script>
+<script src="config.js?v=v2443fixed"></script>
+<script src="game.js?v=v2443fixed" defer></script>
 
 
 <script>

@@ -1541,3 +1541,11 @@ body.portraitThroneMode #gameCanvas{
   display:none!important;
   pointer-events:none!important;
 }
+
+#introCanvas{
+  display:none!important;
+  position:absolute!important;
+  width:0!important;
+  height:0!important;
+  pointer-events:none!important;
+}
