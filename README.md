@@ -1,11 +1,23 @@
-# v2.26-beta.3.6.6.2 SAFE ROLLBACK
+# De Stampertjes v2.3
 
-Diagnostic build made directly from the last screenshot-confirmed working build 3.6.5.
+Full HD castle build, rebuilt from the stable SAFE ROLLBACK base.
 
-No gameplay, sprite, collision, death-screen, level or rendering logic has been changed.
-Only:
-- version number bumped to 3.6.6.2
-- visible HUD marker changed to SAFE ROLLBACK
-- browser cache key changed
+## Levels 1–5
+1. Entreehal — 5 full learning floors
+2. Wapenzaal — warm red/gold armory, 5 floors
+3. Kerkers — cool blue/green dungeon, 5 floors with a more irregular ladder pattern
+4. Bibliotheek — warm amber library, 5 floors
+5. Troonzaal — existing approved HD throne room, 5 floors
 
-Purpose: prove the deployment/startup path is healthy before reintroducing changes one at a time.
+## Graphics
+- Premium blue/gold crowned Stampertje in levels 1–5
+- Colored premium Appelieten with leaf/stem/eyes/highlights
+- Larger/clearer bonuses and bats in levels 1–5
+
+## Death
+- Old death movie disabled
+- Short 'GEVANGEN!' overlay instead
+- Death flow remains short and reliable
+
+## Engine
+- Existing smooth-fall and collision fixes retained from the stable base.
