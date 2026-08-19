@@ -1668,7 +1668,7 @@ activateButton(cafeSubmitBtn,async()=>{
   }
 });
 
-const CURRENT_VERSION="2.26-beta.3.6.1";
+const CURRENT_VERSION="2.26-beta.3.6.2";
 
 // v2.22 richer analytics — failures never interrupt gameplay.
 const V222_SESSION_KEY="stampertjes_v222_session";
@@ -2795,6 +2795,7 @@ function ensureGameplayControlsVisible(){
 }
 
 function resetPlayerSafely(){
+  player.fallingThroughHole=null;
   ensureGameplayControlsVisible();
   player.x=30;
   player.y=floors[floors.length-1]-player.h;
@@ -2993,7 +2994,27 @@ document.getElementById("stamp").addEventListener("pointerdown",e=>{e.preventDef
 
 
 function updatePlayer(){
-  if(player.cool>0)player.cool--;if(player.invulnerable>0)player.invulnerable--;
+  if(player.cool>0)player.cool--;
+  if(player.invulnerable>0)player.invulnerable--;
+
+  // Een val door een gat houdt één vaste doelverdieping vast.
+  // Hierdoor kan floorIndex() de speler niet meer halverwege de val
+  // naar de volgende vloer laten 'snappen'.
+  if(player.fallingThroughHole){
+    const fall=player.fallingThroughHole;
+    const targetY=floors[fall.targetFloor]-player.h;
+
+    // lichte versnelling: zichtbaar vloeiend, maar niet tergend langzaam
+    fall.vy=Math.min((fall.vy||2.8)+0.16,6.0);
+    player.y+=fall.vy;
+
+    if(player.y>=targetY){
+      player.y=targetY;
+      player.fallingThroughHole=null;
+    }
+    return;
+  }
+
   const lad=ladderNear(player.x,player.y);
   if(lad&&(keys.up||keys.down||player.onLadder)){
     player.onLadder=true;
@@ -3028,14 +3049,20 @@ function updatePlayer(){
     supported = !!h && center>h.x-8 && center<h.x+48;
   }
 
-  if(under&&!supported){
-    player.y+=3.5;
-    if(player.y+player.h>floors[fi+1])player.y=floors[fi+1]-player.h;
+  if(under&&!supported && fi<floors.length-1){
+    // Start één echte val naar de eerstvolgende speelvloer.
+    // De bronvloer verandert tijdens de val niet meer.
+    player.onLadder=false;
+    player.fallingThroughHole={
+      sourceFloor:fi,
+      targetFloor:fi+1,
+      vy:2.8
+    };
+    player.y+=2.8;
   }else{
     player.y=fy-player.h;
   }
 }
-
 function startEnemyLadder(e,l,targetFloor){
   e.onLadder=true;
   e.ladder=l;
@@ -3511,18 +3538,26 @@ function update(){
 
 function drawPlayer(x,y){
   const walking=(keys.left||keys.right)&&!player.onLadder;
+
+  // Troonzaal: zachte ronde gloed voor contrast, zonder zichtbaar kader.
+  if(currentCastleTheme().kind==="throne"){
+    ctx.save();
+    const cx=x+10,cy=y+14;
+    const glow=ctx.createRadialGradient(cx,cy,3,cx,cy,18);
+    glow.addColorStop(0,"rgba(255,210,95,.30)");
+    glow.addColorStop(.55,"rgba(255,190,70,.13)");
+    glow.addColorStop(1,"rgba(255,170,50,0)");
+    ctx.fillStyle=glow;
+    ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
   drawStampertjeSprite(ctx,x,y,{
     dir:player.dir,
     step:walking?Math.floor(frame/6)%2:0,
     climbing:player.onLadder,
     stamping:player.cool>12&&!player.onLadder
   });
-  if(currentCastleTheme().kind==="throne"){
-    ctx.save();
-    ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;
-    ctx.strokeRect(x-2,y-2,22,30);
-    ctx.restore();
-  }
 }
 function drawApple(e){
   if(e.trapped>0&&e.trapped<90&&Math.floor(e.blink/6)%2===0)return;
@@ -4193,7 +4228,7 @@ function draw(){
   if(currentCastleTheme().kind==="throne"){
     ctx.fillStyle="#d9a746";
     ctx.font="8px monospace";
-    ctx.fillText("B3.6.1 · SAFE COLOR TEST · 5 FLOORS",292,36);
+    ctx.fillText("B3.6.2 · SMOOTH FALL · 5 FLOORS",292,36);
     ctx.font="11px monospace";
   }
   ctx.fillStyle="#111";ctx.strokeStyle="#111";
