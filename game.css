@@ -1494,3 +1494,44 @@ body.portraitThroneMode #gameCanvas{
     object-position:center center!important;
   }
 }
+
+/* ============================================================
+   v2.4.4.1 — SIX REAL JPG STARTSCREENS
+   Simple implementation: the selected JPG is the CSS background
+   of #panel itself. No <img>, no overlay element, no click layer.
+   ============================================================ */
+#startBackdrop, .startBackdrop { display:none!important; }
+
+#panel{
+  --startscreen:none;
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(7,5,4,.10) 0%,
+      rgba(7,5,4,.18) 35%,
+      rgba(12,8,5,.48) 64%,
+      rgba(13,8,5,.82) 100%
+    ),
+    var(--startscreen)!important;
+  background-size:cover!important;
+  background-position:center top!important;
+  background-repeat:no-repeat!important;
+  background-color:#0b0806!important;
+}
+
+/* Existing UI remains normal HTML above its own background. */
+#panel button,
+#panel a,
+#panel [role="button"],
+#menuMusicIcon{
+  pointer-events:auto!important;
+}
+
+/* Prevent old hero rules from creating space. */
+.introHero, #introHero, #introHeroImage{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
