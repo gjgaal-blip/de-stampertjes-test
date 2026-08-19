@@ -1424,3 +1424,37 @@ body.portraitThroneMode #gameCanvas{
     margin-right:auto;
   }
 }
+
+/* v2.4.3 — approved full portrait castle-cover menu */
+body:not(.gameMode) #panel.castleCoverMenu{
+ position:relative!important;isolation:isolate;overflow:hidden!important;
+ width:min(100%,760px)!important;min-height:100svh;margin:0 auto!important;
+ padding-top:clamp(30px,5vh,64px)!important;background:#140d09!important;
+}
+body:not(.gameMode) #panel.castleCoverMenu .introHero{
+ position:absolute!important;z-index:-2!important;inset:0!important;
+ width:100%!important;height:100%!important;min-height:100%!important;
+ aspect-ratio:auto!important;margin:0!important;border:0!important;overflow:hidden!important;
+}
+body:not(.gameMode) #panel.castleCoverMenu .introHero img{
+ display:block!important;width:100%!important;height:100%!important;
+ object-fit:cover!important;object-position:center top!important;
+ filter:saturate(.96) contrast(1.04) brightness(.78);
+}
+body:not(.gameMode) #panel.castleCoverMenu::after{
+ content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;
+ background:linear-gradient(to bottom,rgba(5,4,3,.02) 0%,rgba(5,4,3,.05) 32%,
+ rgba(13,8,5,.32) 49%,rgba(17,10,6,.72) 66%,rgba(17,10,6,.95) 100%);
+}
+body:not(.gameMode) #panel.castleCoverMenu > *:not(.introHero){
+ position:relative;z-index:2;
+}
+@media(max-width:760px){
+ body:not(.gameMode) #panel.castleCoverMenu{
+  width:100%!important;min-height:145vw!important;
+  border-left:3px double #b98945!important;border-right:3px double #b98945!important;
+ }
+}
+@media(min-width:761px){
+ body:not(.gameMode) #panel.castleCoverMenu{min-height:1050px!important}
+}
