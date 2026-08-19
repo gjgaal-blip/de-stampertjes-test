@@ -1,10 +1,12 @@
-# De Stampertjes v2.26-beta.3.1 — HYBRID FIX
+# De Stampertjes v2.26-beta.3.2 — HD / Retina Troonzaal proof
 
-Deze build maakt zichtbaar welke versie daadwerkelijk draait.
+Gerichte visuele proef voor level 5.
 
-- Versie: v2.26-beta.3.1
-- Level 5 toont `B3.1 · HYBRID · 4 FLOORS` in de HUD.
-- De HD Troonzaal-background is nu als base64/data-URL rechtstreeks in `game.js` ingebouwd.
-  Daardoor is er geen afhankelijkheid meer van een los PNG-pad, GitHub caching of een vergeten asset-upload.
-- `index.html` gebruikt nieuwe cache-key `226b31`.
-- De vier Troonzaalvloeren en custom ladders blijven actief.
+- De Troonzaal gebruikt nu rechtstreeks de centrale Troonzaal-art uit het goedgekeurde conceptbord als bron.
+- De bron is voorbereid op 3× logical game resolution: 1440×1146.
+- Het gamecanvas heeft nu een echte HiDPI backing store (tot devicePixelRatio 3), terwijl alle gameplay-coördinaten 480×382 blijven.
+- Speler, vijanden, gaten en gameplay blijven live boven de achtergrond.
+- Level 5 houdt de 4-floor geometry.
+- HUD marker: `B3.2 · HD · RETINA · 4 FLOORS`.
+
+Dit is nog een proof-of-concept: de concept-art bevat zelf nog voorbeeld-game-elementen. Het doel van deze build is eerst vaststellen hoeveel visuele kwaliteit we in de echte game kunnen behouden.
