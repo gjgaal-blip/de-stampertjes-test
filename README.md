@@ -1,10 +1,15 @@
-# De Stampertjes v2.3.1 — Safari Asset Fix
+# De Stampertjes v2.3 STABLE
 
-Gebouwd op v2.3.
+Deze build is rechtstreeks gebaseerd op de door de gebruiker bevestigde werkende
+v2.26-beta.3.6.6.2 SAFE ROLLBACK.
 
-Fix:
-- HD backgrounds staan niet meer als Base64 in game.js.
-- De vijf HD kamers en het kerkerbeeld worden als losse JPG-bestanden geladen.
-- Dit reduceert de omvang en het geheugengebruik van game.js sterk, vooral belangrijk op iPhone Safari.
-- Alle zichtbare versievelden zijn v2.3.1.
-- Gameplay en levelgeometrie zijn verder ongewijzigd.
+Er zijn bewust GEEN gameplay-, sprite-, collision-, level-, achtergrond- of death-screen
+wijzigingen gedaan.
+
+Alleen:
+- versienummer naar 2.3
+- zichtbare versie-aanduidingen naar v2.3
+- nieuwe cache-key zodat GitHub Pages/Safari de juiste bestanden laden
+
+Doel: eerst een betrouwbare v2.3-basis hebben voordat nieuwe levels en graphics weer
+één voor één worden toegevoegd.
