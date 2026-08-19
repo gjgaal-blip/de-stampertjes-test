@@ -7,23 +7,23 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111111">
 <title>De Stampertjes v2.3.4</title>
-<link rel="stylesheet" href="game.css?v=v243cover">
+<link rel="stylesheet" href="game.css?v=v2431safeposter">
 
 </head>
 <body>
 <audio id="menuSoundtrack" src="music-menu.mp3" preload="auto" loop playsinline></audio>
 <div id="overlay">
-  <div id="panel" class="castleCoverMenu">
+  <div id="panel">
     <div id="introHero" class="introHero" aria-label="Willekeurige kasteelachtergrond">
           <img id="introHeroImage" alt="De Stampertjes — kasteel" decoding="async">
         </div>
     <div id="castleCrest" aria-hidden="true">♛</div><h1 id="gameTitle">DE STAMPERTJES</h1>
     <div id="studioLine">A GJ STUDIOS GAME · HD CASTLE EDITION</div>
     <div id="versionMusicRow">
-      <div id="versionLabel">v2.4.3</div>
+      <div id="versionLabel">v2.4.3.1</div>
       <button id="menuMusicIcon" class="hidden" aria-label="Muziek aan of uit" title="Muziek aan of uit">🔊</button>
     </div>
-    <div id="betaBadge">🏰 v2.4.3 · HD CASTLE</div>
+    <div id="betaBadge">🏰 v2.4.3.1 · HD CASTLE</div>
     <div id="castleSlogan">EEN KASTEEL DAT NOOIT HELEMAAL HETZELFDE IS.</div>
     <div id="dailyCastleMessage" class="dailyCastleMessage"></div>
     <p id="introText"><strong>Het kasteel is gevallen...</strong><br>Alleen een echte Stampertjes-held kan de Appelieten nog stoppen.</p>
@@ -94,25 +94,27 @@
       <h2>📰 DE KASTEELKRANT</h2>
 
       <div class="newsSectionBlock">
-        <h3 class="newsSectionTitle">🏰 LAATSTE NIEUWS</h3><article class="newsItem featured">
-<div class="newsVersion">👑 v2.4.3 · CASTLE COVER MENU</div>
-<h3>Het hoofdscherm is nu een echte game-cover</h3>
-<p>Bij iedere nieuwe start vormt één van zes HD-kasteelbeelden de volledige verticale achtergrond van het menu. Titel, verhaal en knoppen blijven echte scherpe interface-elementen boven de foto. Dezelfde cover wordt niet direct twee keer achter elkaar gekozen.</p>
-</article>
+        <h3 class="newsSectionTitle">🏰 LAATSTE NIEUWS</h3>
         <article class="newsItem featured">
-          <div class="newsVersion">🖼️ v2.4.3 · ZES GEZICHTEN VAN HET KASTEEL</div>
+          <div class="newsVersion">🖼️ v2.4.3.1 · SAFE POSTER MENU</div>
+          <h3>Het hoofdscherm gebruikt nu een echte verticale kasteelposter</h3>
+          <p>De zes wisselende kasteelbeelden zijn opnieuw uitgesneden als verticale scènes. Ze vullen alleen het bovenste deel van het menu en liggen technisch achter alle knoppen, zodat beeld en bediening elkaar niet meer kunnen blokkeren.</p>
+        </article>
+        
+        <article class="newsItem featured">
+          <div class="newsVersion">🖼️ v2.4.3.1 · ZES GEZICHTEN VAN HET KASTEEL</div>
           <h3>Geen bewegende demo meer op het hoofdscherm</h3>
           <p>Bij iedere nieuwe start kiest De Stampertjes één van zes statische HD-kasteelbeelden: Entreehal, Nachtkasteel, Troonzaal, Bibliotheek, Wijnkelder of Maanbalkon. Dezelfde afbeelding blijft staan tijdens die sessie en dezelfde keuze wordt niet direct twee keer achter elkaar gebruikt.</p>
         </article>
         
         <article class="newsItem featured">
-          <div class="newsVersion">🎨 v2.4.3 · UNIFORME KASTEELSTIJL</div>
+          <div class="newsVersion">🎨 v2.4.3.1 · UNIFORME KASTEELSTIJL</div>
           <h3>De helden zien er nu overal hetzelfde uit</h3>
           <p>De bestaande blauw-gouden Stampertje-renderer en de gekleurde Appelieten worden nu in alle tien kamers gebruikt. De onderliggende gameplay, hitboxes en AI zijn daarbij niet aangepast.</p>
         </article>
 
         <article class="newsItem featured">
-          <div class="newsVersion">📱 v2.4.3 · RETINA DEMO</div>
+          <div class="newsVersion">📱 v2.4.3.1 · RETINA DEMO</div>
           <h3>De demo op het hoofdscherm is scherper</h3>
           <p>Het introcanvas rendert nu op 1260 × 540 pixels en gebruikt op mobiel de volledige schermbreedte. De attract-mode zelf blijft dezelfde vertrouwde demo.</p>
         </article>
@@ -416,19 +418,19 @@
   <div id="keyboardHint">Pijltjes = bewegen • Spatie = stampen • P = pauze • M = muziek</div>
   <div class="small">3× stampen voor een gat. Stamp daarna de gevangen appel weg.</div>
 </div>
-<script src="config.js?v=v243cover"></script>
-<script src="game.js?v=v243cover" defer></script>
+<script src="config.js?v=v2431safeposter"></script>
+<script src="game.js?v=v2431safeposter" defer></script>
 
 
 <script>
 (function(){
   const heroes=[
-    "menu-hero-01-entrance.jpg",
-    "menu-hero-02-night-castle.jpg",
-    "menu-hero-03-throne.jpg",
-    "menu-hero-04-library.jpg",
-    "menu-hero-05-wine-cellar.jpg",
-    "menu-hero-06-moon-balcony.jpg"
+    "menu-poster-01-entrance.jpg",
+    "menu-poster-02-night-castle.jpg",
+    "menu-poster-03-throne.jpg",
+    "menu-poster-04-library.jpg",
+    "menu-poster-05-wine-cellar.jpg",
+    "menu-poster-06-moon-balcony.jpg"
   ];
   let previous=-1;
   try{ previous=parseInt(localStorage.getItem("stampertjesMenuHero")||"-1",10); }catch(e){}
@@ -436,7 +438,7 @@
   if(heroes.length>1 && pick===previous) pick=(pick+1+Math.floor(Math.random()*(heroes.length-1)))%heroes.length;
   try{ localStorage.setItem("stampertjesMenuHero",String(pick)); }catch(e){}
   const img=document.getElementById("introHeroImage");
-  if(img) img.src=heroes[pick]+"?v=v243";
+  if(img) img.src=heroes[pick]+"?v=v2431";
 })();
 </script>
 

@@ -1,13 +1,10 @@
-# De Stampertjes v2.4.1.1 SAFE FIX
+# De Stampertjes v2.4.3.1 — SAFE POSTER MENU
 
-Gebouwd rechtstreeks vanaf de werkende v2.4.0.
+Gebouwd vanaf de werkende v2.4.2.
 
-Veilige wijzigingen:
-- bestaande premium Stampertje-renderer geactiveerd in alle 10 kamers;
-- bestaande gekleurde Appeliet-renderer geactiveerd in alle 10 kamers;
-- géén vervanging van drawPlayer of drawApple;
-- introcanvas naar 1260x540 en schermbreed op mobiel;
-- Kasteelkrant geactualiseerd;
-- helptekst levelvolgorde gecorrigeerd.
-
-Gameplay, AI, collision, spawnLevel, layouts en smooth-fall zijn niet aangepast.
+- Zes nieuwe verticale menu-crops uit de goedgekeurde mockup.
+- Foto alleen in het bovenste deel van het hoofdscherm.
+- Foto en gradient hebben pointer-events:none.
+- Alle menu-knoppen staan expliciet boven de foto en blijven klikbaar.
+- Geen oude startup update-popup.
+- Gameplay, levels, AI, collisions en smooth-fall niet gewijzigd.
