@@ -1,19 +1,9 @@
-# De Stampertjes v2.3.1 — Level 2 HD Wapenzaal
+# De Stampertjes v2.3.2 — Level 2 HD Portrait Fix
 
-Gebouwd rechtstreeks vanaf v2.3 STABLE.
+Gebouwd op v2.3.1.
 
 Enige functionele wijziging:
-- Level 2 / Wapenzaal gebruikt nu de goedgekeurde lichte HD-achtergrond.
+- Wapenzaal (level 2) gebruikt nu 600x840 portrait geometry.
+- Vijf vloeren en korte ladders, passend bij de HD portrait achtergrond.
 
-Niet gewijzigd:
-- Level 1 Entreehal
-- level geometry
-- speler
-- Appelieten
-- collisions
-- smooth-fall
-- death screen
-- bonus/bat code
-- overige levels
-
-Doel: één wijziging tegelijk testen op iPhone.
+Level 1 en overige gameplaycode zijn niet aangepast.
