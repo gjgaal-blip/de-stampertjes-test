@@ -1,16 +1,17 @@
-# De Stampertjes v2.4.4.3 — Browser-tested menu fix
+# De Stampertjes v2.4.4.4
 
-Root cause:
-game.js immediately calls introCanvas.getContext("2d") during startup.
-The static startscreen builds had removed introCanvas. JavaScript therefore
-stopped before the menu button handlers were attached.
-
-Fix:
-- hidden compatibility introCanvas restored;
-- six real JPG startscreens remain unchanged;
-- static start screen remains;
-- gameplay and level code unchanged.
-
-Runtime test:
-The final HTML/CSS/config/game code was loaded in Chromium at an iPhone-sized
-viewport. SPELEN was visible and clicking SPELEN made the game canvas visible.
+- Level Tester namen gelijkgetrokken met de echte game:
+  1 Entreehal
+  2 Wapenzaal
+  3 Kerkers
+  4 Bibliotheek
+  5 Troonzaal
+  6 Wijnkelder
+  7 Alchemistenkamer
+  8 Schatkamer
+  9 Catacomben
+  10 Kasteeltoren
+- In-game level 9 heet nu ook CATACOMBEN.
+- HISTORIE hernoemd naar KRONIEKEN met klok-icoon.
+- Kronieken visueel vernieuwd van beige boek naar donker modern kasteelarchief.
+- Gameplay niet gewijzigd.

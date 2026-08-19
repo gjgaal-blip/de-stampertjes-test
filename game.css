@@ -1549,3 +1549,103 @@ body.portraitThroneMode #gameCanvas{
   height:0!important;
   pointer-events:none!important;
 }
+
+/* ==========================================================
+   v2.4.4.4 — KRONIEKEN: modern castle archive
+   Same stories, less old-fashioned "book" presentation.
+   ========================================================== */
+#historySection{
+  --chronicle-gold:#c7954a;
+  --chronicle-cream:#f4e7c9;
+  --chronicle-ink:#17110d;
+}
+
+#historySection > h2{
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--chronicle-cream);
+  text-shadow:0 2px 8px rgba(0,0,0,.7);
+}
+
+#chronicleBook{
+  background:
+    linear-gradient(180deg,rgba(37,24,17,.96),rgba(20,14,11,.98))!important;
+  border:1px solid rgba(199,149,74,.65)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,235,195,.08),
+    0 12px 30px rgba(0,0,0,.35)!important;
+  border-radius:16px!important;
+  padding:14px!important;
+}
+
+#chronicleBook .chroniclePage{
+  min-height:360px!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(185,137,70,.13),transparent 42%),
+    linear-gradient(180deg,#211813 0%,#17110e 100%)!important;
+  color:#f0e4ca!important;
+  border:1px solid rgba(199,149,74,.55)!important;
+  border-radius:12px!important;
+  box-shadow:
+    inset 0 0 32px rgba(0,0,0,.35),
+    0 8px 22px rgba(0,0,0,.22)!important;
+  padding:22px 20px!important;
+}
+
+#chroniclePageContent h3,
+.chronicleChapter{
+  color:#f6d99f!important;
+  letter-spacing:.06em!important;
+  text-transform:uppercase;
+}
+
+#chroniclePageContent p{
+  color:#e9ddc4!important;
+  line-height:1.65!important;
+}
+
+#chroniclePageContent .chapterDrop{
+  color:#d8a653!important;
+}
+
+.chronicleArt{
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(199,149,74,.28)!important;
+  border-radius:10px!important;
+  padding:12px!important;
+}
+
+.chronicleCliff{
+  color:#ffd98d!important;
+  border-left:3px solid #c7954a!important;
+  padding-left:12px!important;
+}
+
+#chronicleNav{
+  margin-top:14px!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+
+#chronicleNav button{
+  background:linear-gradient(180deg,#5b3421,#3b2419)!important;
+  border:2px solid #b9813e!important;
+  color:#f6e6c6!important;
+  border-radius:10px!important;
+  min-height:46px!important;
+  font-weight:700!important;
+}
+
+#chroniclePageNumber{
+  color:#d9c5a1!important;
+  letter-spacing:.05em!important;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(199,149,74,.25);
+  border-radius:8px;
+  padding:8px 10px;
+}
+
+@media(max-width:600px){
+  #chronicleBook{padding:10px!important}
+  #chronicleBook .chroniclePage{padding:18px 15px!important}
+}
