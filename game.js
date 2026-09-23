@@ -1823,6 +1823,7 @@ function devTestSwitchLevel(delta){
   document.body.classList.add("gameplayActive");
 }
 function openIntro(){
+  window.CastleTouch?.cancel();
   document.body.classList.remove("gameplayActive");
   state="intro";
   keys.left=keys.right=keys.up=keys.down=false;
@@ -2259,7 +2260,9 @@ entranceHallBg.src="entrance-hall-empty-portrait@3x.jpg";
 const deathDungeonBg=new Image();
 deathDungeonBg.src="dungeon-death-hd@3x.jpg";
 
-const GAME_DPR=Math.min(Math.max(window.devicePixelRatio||1,1),3);
+// A fixed logical buffer keeps touch coordinates and rendering identical across engines.
+// HD backgrounds are downsampled into the 600×840 game field, not pre-enlarged by DPR.
+const GAME_DPR=1;
 let W=DEFAULT_LOGICAL_W,H=DEFAULT_LOGICAL_H;
 function setLogicalGameSize(w,h){
   W=w;H=h;
@@ -2853,6 +2856,7 @@ function ensureGameplayControlsVisible(){
 }
 
 function resetPlayerSafely(){
+  window.CastleTouch?.cancel();
   player.fallingThroughHole=null;
   ensureGameplayControlsVisible();
   player.x=30;
@@ -2864,6 +2868,7 @@ function resetPlayerSafely(){
 }
 
 function spawnLevel(){
+  window.CastleTouch?.cancel();
   levelStartScore=score;
   levelStartLives=lives;
   chooseLayoutForLevel(level);
@@ -3243,6 +3248,7 @@ function animateDeath(startTime,duration,isGameOver){
 }
 
 function showDeathSequence(isGameOver){
+  window.CastleTouch?.cancel();
   if(musicOn&&!menuSoundtrack.paused){ menuSoundtrack.volume=.05; }
   if(deathAnimating)return;
   deathAnimating=true;

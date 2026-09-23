@@ -17,8 +17,8 @@ test('tap destination moves the player and follows a ladder',async({page})=>{
  test.setTimeout(60000);await page.goto('/');await page.locator('#atlasOpenBtn').click();await page.locator('.atlasRoom').first().click();if(!await page.locator('body').evaluate(b=>b.classList.contains('tapMovement')))await page.locator('#touchMode').click();
  // Practice fixture removes enemies so this tests routing, not random collisions.
  await page.evaluate(()=>{enemies=[];levelTransitioning=true;player.x=215;player.y=772;});
- const box=await page.locator('#game').boundingBox();await page.locator('#game').click({position:{x:box.width*312/600,y:box.height*610/840}});
- await expect.poll(()=>page.evaluate(()=>Math.abs(player.x-300)<=6&&Math.abs(player.y-597)<=1),{timeout:15000}).toBe(true);
+ const box=await page.locator('#game').evaluate(el=>({width:el.clientWidth,height:el.clientHeight}));await page.locator('#game').click({position:{x:box.width*312/600,y:box.height*610/840}});
+ await expect.poll(()=>page.evaluate(()=>({arrived:Math.abs(player.x-300)<=6&&Math.abs(player.y-597)<=1,x:player.x,y:player.y,state})),{timeout:15000}).toMatchObject({arrived:true});
  await page.locator('#pauseToggle').click();await expect(page.locator('#pauseOverlay')).toBeVisible();await page.waitForTimeout(220);await page.keyboard.press('Escape');await expect(page.locator('#pauseOverlay')).toBeHidden();
 });
 test('boss practice plays, pauses and exits without changing normal records',async({page},info)=>{

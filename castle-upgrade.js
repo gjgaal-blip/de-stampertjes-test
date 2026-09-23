@@ -31,7 +31,7 @@ const hint=document.createElement('div');hint.id='touchHint';hint.textContent='T
 function modeUI(){document.body.classList.toggle('tapMovement',touchMode==='tap');modeButton.textContent=touchMode==='tap'?'☝ TIKBEDIENING':'✥ PIJLTJES';modeButton.setAttribute('aria-label','Bediening wisselen, nu '+(touchMode==='tap'?'tikken op het speelveld':'pijltjes'));}
 function cancel(){target=null;if(owned)keys.left=keys.right=keys.up=keys.down=false;owned=false;}
 modeButton.onclick=()=>{cancel();touchMode=touchMode==='tap'?'arrows':'tap';localStore.setItem('stampertjesTouchMode',touchMode);modeUI();};modeUI();
-function canvasPoint(canvas,event,w,h){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)/r.width*w,y:(event.clientY-r.top)/r.height*h};}
+function canvasPoint(canvas,event,w,h){const r=canvas.getBoundingClientRect(),css=getComputedStyle(canvas),left=parseFloat(css.borderLeftWidth)||0,top=parseFloat(css.borderTopWidth)||0,right=parseFloat(css.borderRightWidth)||0,bottom=parseFloat(css.borderBottomWidth)||0;return {x:(event.clientX-r.left-left)/(r.width-left-right)*w,y:(event.clientY-r.top-top)/(r.height-top-bottom)*h};}
 c.addEventListener('pointerdown',event=>{
  if(touchMode!=='tap'||state!=='play')return;
  event.preventDefault();audio();const p=canvasPoint(c,event,W,H);

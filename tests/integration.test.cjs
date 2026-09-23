@@ -12,3 +12,5 @@ test('score names render as text',t=>{const b=fixture(t);b.evaluate('onlineScore
 test('blocked storage still allows boss and regular practice',()=>{const b=boot({blockedStorage:true});try{b.evaluate('startGame(1)');a.equal(b.evaluate('state'),'play');b.evaluate('openIntro()');b.w.document.getElementById('bossPracticeBtn').click();a.equal(b.evaluate('state'),'boss')}finally{b.close()}});
 
 test('tap route in original game climbs then stops at destination',t=>{const b=fixture(t);b.evaluate('startGame(1);player.x=215;player.y=772;');for(let i=0;i<400;i++)b.evaluate('Object.assign(keys,CastleBossEngine.route(player,{x:300,floor:3},floors,ladders).keys);updatePlayer()');a.ok(Math.abs(b.evaluate('player.y')-597)<1);a.ok(Math.abs(b.evaluate('player.x')-300)<=5);});
+
+test('death and new room cancel a pending tap route',t=>{const b=fixture(t);b.evaluate('startGame(1);let cancels=0;CastleTouch.cancel=()=>cancels++;showDeathSequence(false);spawnLevel();');a.equal(b.evaluate('cancels'),2);});

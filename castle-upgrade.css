@@ -67,3 +67,5 @@ body.keyboardMode:not(.tapMovement).gameplayActive #controls{display:none!import
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important}}
 
 #versionLabel{font:11px system-ui!important;letter-spacing:.12em!important}#studioLine{font-size:9px!important}
+
+body.portraitThroneMode.gameplayActive #controls #stamp{background:linear-gradient(100deg,#efd299,#c89a54)!important;color:#201b12!important;border-color:#efd299!important}
