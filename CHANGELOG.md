@@ -1,8 +1,9 @@
-# De Stampertjes
+# v2.5 HD bèta
 
-## v2.26-beta.3
-- Troonzaal is eerste kamer met eigen levelgeometrie.
-- Van 6 naar 4 verdiepingen in level 5.
-- Centrale laddervrije hero-zone voor troon en podium.
-- Nieuwe koninklijke architectuur en decoratie.
-- Overige levels bewust nog niet omgebouwd.
+- Bossarena met vijf fases, aangekondigde aanvallen, pauze, herkansing en lokale kronenteller.
+- Bossgevecht na kamer 10; ook rechtstreeks oefenen.
+- Tikken om te lopen en automatisch ladders te volgen, met doelmarker en optionele pijltjes.
+- Kameratlas en nieuw menu bovenop de bestaande HD-beelden en inhoud.
+- Kerkers-afmetingen hersteld; pauze, statistieken, oefenafsluiting en highscore-escaping gerepareerd.
+- Vaste simulatiesnelheid en minder werk voor verborgen canvassen.
+- Ingebedde afbeeldingen verwijzen naar identieke bestaande JPG-bestanden.
