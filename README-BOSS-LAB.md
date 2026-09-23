@@ -1,18 +1,13 @@
-# De Stampertjes v2.3 BÈTA — Appelbaas
+# De Appelbaas — v2.5 HD bèta
 
-Dit is de ontwikkelversie richting een toekomstige publieke baasrelease.
+Direct via het hoofdmenu te oefenen; ook na kamer 10 in het gewone avontuur.
 
-Nieuwe kernlus:
-1. Maak 3× een gat onder de Appelbaas.
-2. Hij valt precies één verdieping.
-3. Daarna blijft hij volledig VERSUFT totdat jij hem raakt.
-4. Ga naar dezelfde verdieping en druk STAMP dichtbij de baas.
-5. Dat kost hem 1 HP.
-6. Daarna springt hij terug omhoog en begint een snellere fase.
-7. Oude gaten verdwijnen, dus iedere fase moet opnieuw worden opgebouwd.
-8. Na 5 hits is de Appelbaas verslagen.
+1. Stamp drie keer op dezelfde plek, naast de ladders: er ontstaat een magische valvloer.
+2. Lok de baas eroverheen. Alleen zijn gewicht laat hem één verdieping zakken.
+3. Volg hem via een ladder. Hij blijft versuft totdat je hem raakt.
+4. Stamp dichtbij hem op dezelfde verdieping: één van zijn vijf levens verdwijnt.
+5. Hij keert terug naar boven, de oude valvloeren verdwijnen en zijn volgende fase is sneller.
+6. Ontwijk de gouden waarschuwingslijn; daarna wordt deze gevaarlijk.
+7. Vijf treffers winnen de kroon. Winst wordt lokaal bijgehouden. Na kamer 10 ga je verder naar 11; oefenen keert terug naar het menu.
 
-Belangrijk:
-- Hij kan niet meer vanzelf helemaal naar beneden blijven vallen.
-- Op de onderste verdieping kan hij niet vastlopen.
-- Boss Bèta schrijft nog geen score naar de publieke highscorelijst.
+Tik een bestemming, tik op jezelf om te stampen, of gebruik de knoppen/pijltjestoetsen en Spatie. Escape/P pauzeert. Bij appwissel pauzeert het gevecht ook. Oefenscores gaan niet naar de publieke lijst.

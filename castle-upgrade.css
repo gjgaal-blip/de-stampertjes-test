@@ -32,15 +32,15 @@ body.submenu #panel{background-image:linear-gradient(#101923f2,#101923f2),var(--
 .atlasGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
 .atlasRoom{text-align:left;display:grid;grid-template-columns:30px 1fr;gap:5px 10px;padding:15px;background:#1d2b38;border:1px solid #536b76;border-radius:12px}
 .atlasRoom span{grid-row:span 2;color:#dabb7f;font:25px Georgia,serif}.atlasRoom strong{font-size:11px}.atlasRoom small{font-size:8px;color:#9ebcc8}
-body.gameplayActive #wrap{gap:6px!important;padding:8px!important;justify-content:center!important;height:100dvh!important}
-body.gameplayActive #gameOptions{position:static!important;order:4!important;display:flex!important;justify-content:center!important;width:auto!important;gap:6px!important;max-width:100%!important}
-body.gameplayActive #gameOptions button{font:700 10px system-ui!important;min-height:36px!important;height:auto!important;background:#1d2d3d!important;border:1px solid #76818a!important;border-radius:9px!important;padding:8px!important;color:#f2e7d0!important}
-body.gameplayActive #controls{position:static!important;order:3!important;display:grid!important;grid-template-columns:1fr 1fr 1.5fr 1fr 1fr!important;width:min(440px,95vw)!important;gap:6px!important;margin:0!important;opacity:1!important}
-body.gameplayActive #controls button{min-height:46px!important;height:46px!important;font-size:14px!important;background:#26384a!important;border:1px solid #7c8e9a!important;border-radius:10px!important}
-body.gameplayActive #stamp{background:#b99354!important;color:#101922!important}
-body.gameplayActive #game{order:1!important;max-height:calc(100dvh - 164px)!important;max-width:96vw!important;width:auto!important;height:auto!important;object-fit:contain;border:1px solid #ad8e5b!important;border-radius:8px;background:#101923}
+body.portraitThroneMode.gameplayActive #wrap{gap:6px!important;padding:8px!important;justify-content:center!important;height:100dvh!important}
+body.portraitThroneMode.gameplayActive #gameOptions{position:static!important;order:4!important;display:flex!important;justify-content:center!important;width:auto!important;gap:6px!important;max-width:100%!important}
+body.portraitThroneMode.gameplayActive #gameOptions button{font:700 10px system-ui!important;min-height:36px!important;height:auto!important;background:#1d2d3d!important;border:1px solid #76818a!important;border-radius:9px!important;padding:8px!important;color:#f2e7d0!important}
+body.portraitThroneMode.gameplayActive #controls{position:static!important;order:3!important;display:grid!important;grid-template-columns:1fr 1fr 1.5fr 1fr 1fr!important;width:min(440px,95vw)!important;gap:6px!important;margin:0!important;opacity:1!important}
+body.portraitThroneMode.gameplayActive #controls button{min-height:46px!important;height:46px!important;font-size:14px!important;background:#26384a!important;border:1px solid #7c8e9a!important;border-radius:10px!important}
+body.portraitThroneMode.gameplayActive #stamp{background:#b99354!important;color:#101922!important}
+body.portraitThroneMode.gameplayActive #game{order:1!important;max-height:calc(100dvh - 164px)!important;max-width:96vw!important;width:auto!important;height:auto!important;object-fit:fill!important;border:1px solid #ad8e5b!important;border-radius:8px;background:#101923}
 body.portraitThroneMode.gameplayActive #game{height:min(calc(100dvh - 164px),calc(96vw * 1.4))!important;max-height:calc(100dvh - 164px)!important}
-body.gameplayActive #controlLabels,body.gameplayActive #keyboardHint,body.gameplayActive #title,body.gameplayActive #wrap>.small{display:none!important}
+body.portraitThroneMode.gameplayActive #controlLabels,body.portraitThroneMode.gameplayActive #keyboardHint,body.portraitThroneMode.gameplayActive #title,body.portraitThroneMode.gameplayActive #wrap>.small{display:none!important}
 #touchHint{display:none;font:10px system-ui;color:#aac6d4;order:2;text-align:center}
 body.gameplayActive.tapMovement #touchHint{display:block}
 body.gameplayActive.tapMovement #controls{grid-template-columns:1fr!important;width:min(250px,70vw)!important}
@@ -65,3 +65,5 @@ body.keyboardMode:not(.tapMovement).gameplayActive #controls{display:none!import
 @media(max-width:550px){#overlay{padding:10px}#panel{padding:20px!important;border-radius:18px!important}#adventureHub h2{font-size:39px;margin-top:18px}.chapterLine span{display:none}.adventureCards{gap:8px;margin-top:18px}.adventureCards button{padding:12px!important;grid-template-columns:24px 1fr;column-gap:6px;min-height:88px}.adventureCards strong{font-size:10px}.adventureCards small{font-size:10px}.adventureCards span{font-size:25px}#mainMenu .compactGrid{grid-template-columns:repeat(2,1fr)!important}.atlasGrid{grid-template-columns:1fr}#panel .menuSection{padding:15px!important}.bossHeader h2{font-size:21px}.bossFooter span{font-size:9px}#bossCanvas{height:min(calc(100dvh - 250px),calc((100vw - 26px)*4/3))}.bossDialog{padding:20px}.bossDialog h2{font-size:25px}.bossDialog p{font-size:12px}}
 @media(max-height:520px) and (min-width:600px){.bossShell{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;min-height:0}.bossHeader{grid-column:2;grid-row:1}.bossMeters{grid-column:2;grid-row:2}#bossCanvas{grid-column:1;grid-row:1/7;height:calc(100dvh - 24px);margin:auto}#bossInstruction,.bossControls,.bossFooter{grid-column:2}.bossFooter span{display:none}#bossCurtain{position:fixed;border-radius:0}.bossDialog{padding:12px 24px}#bossDialogIcon{display:none}.bossDialog h2{margin:8px}.bossDialog p{font-size:12px;line-height:1.4}.bossDialog button{padding:10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important}}
+
+#versionLabel{font:11px system-ui!important;letter-spacing:.12em!important}#studioLine{font-size:9px!important}

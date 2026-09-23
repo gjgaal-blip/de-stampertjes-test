@@ -4284,6 +4284,7 @@ function drawBonus(){
 }
 
 function draw(){
+  ctx.setTransform(GAME_DPR,0,0,GAME_DPR,0,0);
   ctx.save();
   if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
   ctx.fillStyle="#fff";ctx.fillRect(-10,-10,W+20,H+20);

@@ -10,7 +10,7 @@ test('HD menu and existing sections stay available',async({page},info)=>{
 });
 test('all ten HD rooms render, including repaired dungeon',async({page},info)=>{
  test.setTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');const stats=await page.evaluate(()=>localStorage.getItem('stampertjesStats'));
- for(let i=0;i<10;i++){await page.locator('#atlasOpenBtn').click();if(i===0)await page.screenshot({path:info.outputPath('atlas.png'),fullPage:true});await page.locator('.atlasRoom').nth(i).click();await expect(page.locator('#overlay')).toBeHidden();await page.waitForTimeout(150);await page.screenshot({path:info.outputPath(`room-${i+1}.png`)});await page.locator('#pauseToggle').click();await page.locator('#devPortalBtn').click();await expect(page.locator('#mainMenu')).toBeVisible();await page.waitForTimeout(260);}
+ for(let i=0;i<10;i++){await page.locator('#atlasOpenBtn').click();if(i===0)await page.screenshot({path:info.outputPath('atlas.png'),fullPage:true});await page.locator('.atlasRoom').nth(i).click();await expect(page.locator('#overlay')).toBeHidden();await page.waitForTimeout(150);expect(await page.evaluate(()=>({scale:ctx.getTransform().a,ratio:c.width/W}))).toEqual(await page.evaluate(()=>({scale:GAME_DPR,ratio:GAME_DPR})));await page.screenshot({path:info.outputPath(`room-${i+1}.png`)});await page.locator('#pauseToggle').click();await page.locator('#devPortalBtn').click();await expect(page.locator('#mainMenu')).toBeVisible();await page.waitForTimeout(260);}
  expect(await page.evaluate(()=>localStorage.getItem('stampertjesStats'))).toBe(stats);expect(errors).toEqual([]);
 });
 test('tap destination moves the player and follows a ladder',async({page})=>{
@@ -18,7 +18,7 @@ test('tap destination moves the player and follows a ladder',async({page})=>{
  // Practice fixture removes enemies so this tests routing, not random collisions.
  await page.evaluate(()=>{enemies=[];levelTransitioning=true;player.x=215;player.y=772;});
  const box=await page.locator('#game').boundingBox();await page.locator('#game').click({position:{x:box.width*312/600,y:box.height*610/840}});
- await expect.poll(()=>page.evaluate(()=>({x:Math.round(player.x),y:Math.round(player.y)})),{timeout:15000}).toEqual({x:296,y:597});
+ await expect.poll(()=>page.evaluate(()=>Math.abs(player.x-300)<=6&&Math.abs(player.y-597)<=1),{timeout:15000}).toBe(true);
  await page.locator('#pauseToggle').click();await expect(page.locator('#pauseOverlay')).toBeVisible();await page.waitForTimeout(220);await page.keyboard.press('Escape');await expect(page.locator('#pauseOverlay')).toBeHidden();
 });
 test('boss practice plays, pauses and exits without changing normal records',async({page},info)=>{

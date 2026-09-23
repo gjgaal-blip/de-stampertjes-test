@@ -24,7 +24,7 @@ function route(player,target,levels,stairs){
   if(Math.abs(target.x-player.x)>4){keys[target.x>player.x?'right':'left']=true;return {keys,done:false};}
   return {keys,done:true};
 }
-function create(){return {status:'play',ticks:0,hp:5,lives:3,cool:0,invulnerable:100,attackTimer:240,hazards:[],cracks:[],holes:[],target:null,message:'Maak 3× een gat op de vloer van de baas.',player:{x:90,y:222,w:24,h:28},boss:{x:380,floor:0,y:218,dir:-1,mode:'walk',timer:0},hits:0};}
+function create(){return {status:'play',ticks:0,hp:5,lives:3,cool:0,invulnerable:180,attackTimer:300,hazards:[],cracks:[],holes:[],target:null,message:'Maak 3× een gat op de vloer van de baas.',player:{x:90,y:222,w:24,h:28},boss:{x:380,floor:0,y:218,dir:-1,mode:'walk',timer:120},hits:0};}
 function hurt(s){if(s.invulnerable>0||s.status!=='play')return;s.lives--;s.invulnerable=100;s.target=null;if(s.lives<=0){s.status='lost';s.message='De Appelbaas wint deze ronde. Probeer het opnieuw!';}}
 function stamp(s){
   if(s.status!=='play'||s.cool>0)return false;
@@ -58,7 +58,8 @@ function step(s,input={}){
   else if(!ladders.some(l=>Math.abs(p.x-l.x)<14&&foot>l.top+.01&&foot<l.bottom-.01)){
     p.x=Math.max(24,Math.min(552,p.x+(keys.left?-3:0)+(keys.right?3:0)));
   }
-  if(b.mode==='walk'){
+  if(b.mode==='walk'&&b.timer>0){b.timer--;}
+  else if(b.mode==='walk'){
     b.x+=b.dir*(1.25+(5-s.hp)*.32);
     if(b.x<35||b.x>525){b.x=Math.max(35,Math.min(525,b.x));b.dir*=-1;}
     const h=s.holes.find(h=>h.floor===b.floor&&Math.abs(h.x-(b.x+16))<24);
@@ -70,7 +71,7 @@ function step(s,input={}){
     b.timer--;b.y+=(218-b.y)*.06;
     if(b.timer<=0){b.floor=0;b.y=218;b.x=p.x<300?480:60;b.mode='walk';s.attackTimer=180;}
   }
-  if(b.mode==='walk'){
+  if(b.mode==='walk'&&b.timer===0){
     s.attackTimer--;
     if(s.attackTimer<=0){s.hazards.push({x:p.x+12,t:120});s.attackTimer=Math.max(130,260-(5-s.hp)*25);s.message='Let op de gouden lijn: stap opzij!';}
     if(Math.abs((p.y+p.h)-floors[b.floor])<25&&Math.abs(p.x-b.x)<40)hurt(s);
